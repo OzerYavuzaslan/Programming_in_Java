@@ -13,10 +13,10 @@ public class Main {
             ch = strNum.charAt(i);
 
             if (Integer.parseInt(String.valueOf(ch)) % 2 != 0)
-                return "odd";
+                return num + " has an odd digit.";
         }
 
-        return "even";
+        return num + "'s every digit is even.";
     }
 
     public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class Main {
         long num = scanner.nextLong();
         scanner.nextLine();
         String resultStr = evenOrNot(num);
-        System.out.println("\n" + num + "'s every digit is " + resultStr);
+        System.out.println("\n" + resultStr);
         scanner.close();
     }
 }
