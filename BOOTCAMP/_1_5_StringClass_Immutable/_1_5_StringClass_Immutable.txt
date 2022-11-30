@@ -1,0 +1,24 @@
+Genel olarak önce immutable nasıl olunur onu açıkladıktan sonra String classının durumu kesinlik kazanacaktır.
+Bir classın immutable olması için 4 koşul gerekir.
+
+1) Class içerisindeki değişkenler private olarak tanımlanmalıdır.
+2) Class içerisindeki değişkenlerin setterları olmamalıdır.
+3) Değişkenler final olarak oluşturulmalı ve constructor çağırıldığında doldurulmalı. Kaldı ki, Class değişkenleri final olduğunda sadece constructordayken değer ataması yapılabilir.
+4) Class final olarak işaretlenmeli.
+
+Java'da String'in içine gittiğimizde ilk karşılaştığımız String classının tanımıdır:
+
+public final class String implements java.io.Serializable, Comparable<String>, CharSequence {
+    @Stable
+    private final byte[] value;
+    private final byte coder;
+
+    public String() {
+        this.value = "".value;
+        this.coder = "".coder;
+    }
+
+.
+.
+.
+}
