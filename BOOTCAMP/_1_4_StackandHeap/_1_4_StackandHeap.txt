@@ -1,0 +1,24 @@
+Stack ve Heap RAM'in logical bölümleridir.
+
+Stack, primitive data tiplerini saklar (int, double, char, long, byte vb.). Örneğin int num = 0; num değeri stackta saklanır.
+Stack LIFO (last in first out), son giren ilk çıkar mantığı ile çalışmaktadır.
+
+Class tipi değişkenler ise, referans (adres) tipleridir ve class tiplerin referansları STACK'ta saklanırken, o referansları değerleri HEAP'te saklanır.
+Örneğin Human diye bir class yazdım:
+
+public class Person(){
+	String name;
+	int age;
+
+	public Person(String name, int age){
+		this.name = name;
+		this.age = age;
+	}
+} 
+
+Person person = new Person("Özer", 34);
+
+şeklinde bir obje ürettiğimde buradaki person benim referansım oluyor ve referans (adres) değeri Stack'ta saklanıyor. human.name; ve human.age; bunların tuttukları değerler de HEAP'te saklanıyor.
+
+Heap'te veriler karışık bir biçimde saklanır. Stack'ta tutulan verilerle işimiz bittiğinde hemen silinirken Heap'ta tutulan veriler Garbage Collector tarafından toplanıp silinmektedir.
+Heap, Run Time zamanında kullanılır ve Heap'te saklanan bir veriye erişmek Stack'ta saklanan bir veriye erişmekten daha yavaştır.
