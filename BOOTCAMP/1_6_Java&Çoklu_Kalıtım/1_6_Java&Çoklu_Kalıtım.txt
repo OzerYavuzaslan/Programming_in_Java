@@ -1,0 +1,31 @@
+Java multiple inheritence desteklemez. Şöyle bir önekle açıklamak daha doğru olacaktır:
+
+public class A{
+	public void printClassName(){
+		System.out.println("Class A");
+	}
+}
+
+public class B extends A{
+	@Override
+	public void printClassName(){
+		System.out.println("Class B");
+	}
+}
+
+public class C extends A{
+	@Override
+	public void printClassName(){
+		System.out.println("Class C");
+	}
+}
+
+public class D extends C, B{
+	public void print{
+		super.printClassName();
+	}
+}
+
+class D'de yapılan işlem normalde Java'da izin verilmez ama diyelim ki, yapabildik. Bu durumda class D'den çağırdığımız printClassName methodu hangi ata sınıftaki metodu çağıracak?
+Burada bir çelişki olduğundan Java bu tür durumlarla karşılaşmamız için doğrudan değil de Interfaceler üzerinden çoklu katılım yapmamız sağlamaktadır. C++'da buna izin varken Java'da yok.
+Bu da dilin tasarım şeklinden dolayıdır.
