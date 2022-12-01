@@ -1,0 +1,7 @@
+Build tool, bir yazılım projesini oluşturmak ve projeyi derledikten sonra gereksinim duyulan kütüphanelerle birleştirme süreçlerinde kullanılan araçlardır.
+Bir yazılım projesi derlelendiğinde, ihtiyaç duyulan kütüphaneler de derlenmiş olan kodla beraber birleştirilir. İşte build toolun görebi de bu birleştirme işlemini yapmasıdır.
+
+Build Toollar:
+- Gradle
+- Apache Ant
+- Apache Maven
