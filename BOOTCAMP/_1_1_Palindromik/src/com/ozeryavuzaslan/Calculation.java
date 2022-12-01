@@ -8,13 +8,13 @@ public class Calculation {
         byte counter = 0;
 
         while(true) {
-            tmpNumber2 = reverseInteger(tmpNumber);
+            tmpNumber2 = reverseNumber(tmpNumber);
             sum = tmpNumber + tmpNumber2;
 
             System.out.print(tmpNumber + " + " + tmpNumber2 + " = " + sum + " ---> ");
             counter++;
 
-            if (sum == reverseInteger(sum)) {
+            if (sum == reverseNumber(sum)) {
                 System.out.println("is a palindromic number. " + counter + " time(s) took to find that palindromic number.");
                 break;
             } else
@@ -24,7 +24,7 @@ public class Calculation {
         }
     }
 
-    public static long reverseInteger(long number){
+    public static long reverseNumber(long number){
         String tmpNumStr = String.valueOf(number);
         StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(tmpNumStr);
