@@ -1,0 +1,286 @@
+Set<E>
+	En belirgin özelliği aynı elemandan birden fazla olmasına izin vermez ve aynı zamanda null eleman da kabul etmez.
+	Set interfaceinden türetilen diğer temel 3 collection framework üyeleri vardır.
+	Set<E> bir abstract olduğundan doğrudan kendisinden instance(obje) üretemeyiz ama anonim olarak metodları implement edebiliriz:
+
+	Set<String> set = new Set<String>() {
+		@Override
+		public int size() {
+			return 0;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			return false;
+		}
+
+		@Override
+		public Iterator<String> iterator() {
+			return null;
+		}
+
+		@Override
+		public Object[] toArray() {
+			return new Object[0];
+		}
+
+		@Override
+		public <T> T[] toArray(T[] a) {
+			return null;
+		}
+
+		@Override
+		public boolean add(String s) {
+			return false;
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			return false;
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			return false;
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends String> c) {
+			return false;
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			return false;
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			return false;
+		}
+
+		@Override
+		public void clear() {
+
+		}
+	};
+
+
+HashSet<E>
+	Burada veriler hash alarak saklanır. Verilerin sırasının korunacağının bir garantisi yoktur. Örneğin, eleman1 sonra eleman2 elemanını kaydettikten sonra sıralarını değiştirebiliriz.
+	Aynı zamanda senkronize olmadığı için birden fazla thread aynı anda bir HashSet'e erişip veri değiştirmeye ya da eklemeye çalışırsa, sorun yaşamamak için manuel olarak senkronize
+	şeklinde erişim sağlayacak bir yol üretmeliyiz.
+
+	Put(Key,Value):Parametre olarak alınan anahtarı ve veriyi birbiri ile eşleyip yapımızın içerisine eklenmesini sağlar.
+	Remove(Key) & Remove(Key,Value): İki türlü kullanımı mümkün olan bu metot yapımızda verilen parametreler yapı içerisinde aranır ve bulunursa yapı içerisinde o veri kaldırılır.
+	Get(Key): Parametre olarak almış olduğu anahtar değerini LinkedHashMap üzerinde arar ve eğer bulunuyorsa anahtarın değerini geriye döndürür. Eğer verilen anahtar ile eşleyen bir veri yoksa null olarak geriye değer döner.
+	Equals(Value): Parametre olarak almış olduğu değeri LinkedHashMap üzerinde bir eşitliğinin olup olmadığını sorgular.
+	ContainsKey(Key) & ContainsValue(Value): Verilen anahtar veya veri değerine göre arama gerçekleştirdikten sonra eşleşme sağlanırsa true değerini döndürür.
+	KeySet(): LinkedHashMap içerisinde anahtarları bir küme şeklinde oluşturmaya yarar.
+	HashCode(): Oluşturmuş olduğumuz LinkedHashMap yapısının hash kodunu bizlere verir.
+	EntrySet(): LinkedHashMap içerisinde yer alan değerleri küme şeklinde geriye değer olarak döndürür.
+
+
+LinkedHashSet<E>
+	HashSet'ten tek farkı eklediğimiz elemanların ekleme sırasına göre tutulmasıdır.
+	Tekrarlı (duplicate) eleman ekleme sonucunda bundan ilk eklenen eleman etkilenmez.
+
+	Add(Parametre): Parametre olarak girilen veri tipine ait öğeleri ekler. Fakat, parametre olarak girilen değer daha önce "HashSet" yapısında bulunuyorsa, o değeri tekrar eklemez.
+	Remove(Parametre): HashSet içerisinde parametre olarak aldığı veri bulunuyorsa o veriyi siler.
+	Clear(): Tanımlamış olduğumuz HashSet yapısı içerisinde bulunan bütün değerleri siler.
+	Clone(): HashSet yapımızın içerdiği değerlerle birlikte bir kopyasını oluşturur.
+	Size(): HashSet içerisinde bulunan öğe sayısını belirtir.
+	Contains(Parametre): Parametre olarak aldığı değeri küme içerisinde bulunuyorsa true, bulunmuyorsa false değerlerini döndürür.
+	IsEmpty(): HashSet içerisinde eleman içermediğini kontrol etmek için kullanılır. Eğer, küme yapımız boş ise true değerini döndürür.
+	Iterator(): Girmiş olduğumuz verilerin üzerinde bir tekrarlayıcı döndürmek için kullanılır.
+
+
+TreeSet<E>
+	Elemanlar artan sıralamayla (ascending order) mantığı ile tutulur.
+	Null eleman kabul etmez. Bu sebeple olası ekleme çabası sarf edilirse NullPointerException fırlatılır.
+	   
+	Add(Parametre): Parametre olarak verilen değerin eklemesini gerçekleştirir. Fakat, parametre olarak verilen değer daha önce “TreeSet” yapısı içinde bulunuyorsa, o değer tekrar eklenmez.
+    Remove(Parametre): TreeSet yapısı içerisinde parametre olarak alınan değer bulunuyorsa o veriyi siler.
+    Contains(Parametre): Parametre olarak alınan değeri küme içerisinde bulunuyorsa true, bulunmuyorsa false olarak değer döndürür.
+    Ceiling(Parametre): Kümedeki belirtilen öğeye eşit olan değeri veya daha büyük olan son öğeyi verir.
+    Comparator(): Küme içerisinde sıralama yapılacak comparator verilir. Ancak kümede doğal sıra varsa, metot geriye null değeri döndürür.
+    Clear(): TreeSet yapımıza tanımlamış olduğumuz bütün değerleri siler.
+    Clone(): Küme içerisinde bulunan değerlerin bir kopyasını oluşturur.
+    Size(): TreeSet yapısı içerisinde bulunan öğe sayısını geriye döndürür.
+    IsEmpty(): Küme içerisindeki verileri kontrol etmek için kullanılır. Eğer, küme içeriği boş ise true değilse false değerini döndürür.
+    Iterator(): Eklemiş olduğumuz değerlerin üzerinde bir tekrarlayıcı döndürmek için kullanılır.
+
+List<E>
+	En temel özelliği duplicate elemanların saklanmasına izin vermesi.
+	Elemanlar ekleme sırasına göre tutulur. Eleman indexleri üzerinden eleman değerlerine erişilir.
+	List<E> bir abstract olduğundan doğrudan kendisinden instance(obje) üretemeyiz ama anonim olarak metodları implement edebiliriz:
+	
+    List<String> list = new List<>() {
+		@Override
+		public int size() {
+			return 0;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			return false;
+		}
+
+		@Override
+		public Iterator<String> iterator() {
+			return null;
+		}
+
+		@Override
+		public Object[] toArray() {
+			return new Object[0];
+		}
+
+		@Override
+		public <T> T[] toArray(T[] a) {
+			return null;
+		}
+
+		@Override
+		public boolean add(String s) {
+			return false;
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			return false;
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			return false;
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends String> c) {
+			return false;
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends String> c) {
+			return false;
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			return false;
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			return false;
+		}
+
+		@Override
+		public void clear() {
+
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public String get(int index) {
+			return null;
+		}
+
+		@Override
+		public String set(int index, String element) {
+			return null;
+		}
+
+		@Override
+		public void add(int index, String element) {
+
+		}
+
+		@Override
+		public String remove(int index) {
+			return null;
+		}
+
+		@Override
+		public int indexOf(Object o) {
+			return 0;
+		}
+
+		@Override
+		public int lastIndexOf(Object o) {
+			return 0;
+		}
+
+		@Override
+		public ListIterator<String> listIterator() {
+			return null;
+		}
+
+		@Override
+		public ListIterator<String> listIterator(int index) {
+			return null;
+		}
+
+		@Override
+		public List<String> subList(int fromIndex, int toIndex) {
+			return null;
+		}
+	};
+
+ArrayList<E>
+	List<E>'ten türetilmiştir. En sık kullanılan veri saklama
+
+    Add(parametre): Non-generic bir ArrayList tanımlamasında veri tipi fark etmeksizin her türlü öğenin eklemesini gerçekleştirirken, Generic bir ArrayList tanımlamasında belirtilen veri tipindeki değerlerin eklenmesine yardımcı olur.
+    Remove(parametre): Parametre olarak verilecek indis numarası ya da herhangi bir veriyi dizi üzerinden silmek için kullanılır.
+    Clear(): İşlemlerimizi gerçekleştirdikten sonra bir sonraki işlem için dizimizi temizlemek istediğimiz zaman tek bir kod satırı ile bu işlemi bizim için gerçekleştiren temizleme metodudur.
+    Count: Örnek projeler incelediğiniz zaman genelde count isminde bir şeyleri saymak için değişken tanımladıklarını görürsünüz, bu sayma işlemini bir döngü içerisinde gerçekleştirmektense bir satırlık kod ile bizlere dizi içerisinde bulunan eleman sayısını gösteren özelliktir.
+    Contains (parametre): Parametre olarak verilen değeri ArrayList içerisindeki elemanlarda bulunup, bulunmadığını kontrol eder ve geriye boolean bir değer döndürür.
+    Sort():Java.Util kütüphanesi içerisinde bulunan Collections içerisinde elemanları küçükten büyüğe sıralamak için kullanılır. Sıralama işleminin gerçekleşebilmesi için öğelerin karşılaştırılmaya müsait olması gerekmektedir.
+    Size(): ArrayList içerisindeki eleman sayısını döndürür.
+	toArray(): Collection üzerinde yer alan elemanların birer kopyasını içeren bir dizi döndürür. Bazı işlemlerin daha hızlı gerçekleşmesi ya da veri aktarımı için bu yöntem kullanılabilir.
+    trimToSize(): Java ArrayList kullanımı konusunda oluşturduğumuz dizinin dinamik bir yapıda olduğundan bahsetmiştik. Bu dinamik kavramda sürekli değişen bir eleman sayısı olduğundan dolayı bazı durumlarda bu sayıyı, dizi içerisinde bulunan eleman sayısına eşitlemek isteyebiliriz.
+    lastIndexOf(parametre): Parametre olarak verilen değeri dizinin en son görüldüğü konumun indis numarasını alarak geri döndüren metottur. Eğer parametredeki değer, dizi içerisinde bulunmuyorsa -1 olarak dönüşte bulunur.
+
+
+LinkedList<E>
+	ArrayList ile bazı benzer yolları vardır ama veriye erişim maliyeti ArrayList'e göre daha maliyetlidir. Arama işlemlerinde worst caseine göre time complexitysi O(n).
+	Silme işlemlerinde ise ArrayList'in time complexitysi O(n)'dir.
+	
+	Add(parametre) ve Add(index numarası, parametre) Tanımlamış olduğumuz Linked List yapımıza iki türde veri eklemesi gerçekleştirebiliriz. Bunlardan ilkinde bir sonraki indexe veri eklerken, bir diğerinde belirtilen index numarasına ekleme işlemi gerçekleştirir.
+    Remove(parametre): Parametre olarak aldığı indis numarasını ya da veriyi liste üzerinde arar ve bulduğu takdirde veriyi siler.
+    RemoveLast() ve RemoveFirst(): Bu metot yapımız listemizin başında ya da sonunda bulunan değeri silmek için kullanılır.
+    Get(parametre), getLast() ve getFirst(): Get metodu almış olduğu parametre değerindeki indis numarasına giderek orada bulunan veriyi getirir. GetLast ve GetFirst metotları ise başlangıç indisini ve listenin son indisinden verileri getirmeye yarar.
+    Clear():Liste yapımızın içeriğin komple temizlemek istediğimiz zaman kullanabileceğimiz bir metot.
+    Count: Liste yapımız içerisinde bulunan toplam eleman sayısının bilgisini bizlere veren metot.list.stream().count();
+    Contains(parametre): Parametre olarak almış olduğu değeri liste üzerinde arar. Eğer liste üzerinde belirtilen parametre değeri varsa “true” yoksa “false” değerini döndürür.
+    Sort(): Collections kütüphanesi içerisinde yer alan bu metodumuz liste içerisindeki verileri küçükten büyüğe doğru sıralar.
+    Size(): Listemizin içerisinde bulunan eleman sayısını bize geri değer olarak döndüren metodumuz.
+    toArray(): Liste yapımızın elemanlarının birer kopyasını içeren bir dizi döndürür. Bazı işlemlerin daha hızlı bir şekilde gerçekleşmesi ya da veri aktarımının sağlanması için kullanılan metottur.
+    lastIndexOf(parametre): Parametre olarak aldığı veriyi liste yapının içerisinde en son gördüğü indis numarasını geri döndürür. Eğer parametredeki değer liste içerisinde bulunmuyorsa geriye -1 değerini döndürür.
+
+Vector<E>
+	Senkronize bir collection elemanıdır. Default kapasitesi başlangıçta 10'dır.
+	Manuel olarak default kapasiteyi ve kapasite artış şeklini biz belirleyebiliriz.
+
+Queue<E>
+	First in First out (FIFO) mantığı ile ilk eklenen ilk çıkar şeklinde çalışır.
