@@ -12,7 +12,7 @@ public class MyList {
     }
 
     private void increaseSize(){
-        int newArraySize = getArrayStr().length + 7;
+        int newArraySize = getArrayStr().length + INCREASE_SIZE;
         String[] newArrayStr = new String[newArraySize];
 
         for (int i = 0; i < getArrayStr().length; i++)
