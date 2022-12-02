@@ -3,7 +3,7 @@ package com.ozeryavuzaslan;
 import java.util.Scanner;
 
 public class Main {
-    public static Scanner scanner = new Scanner(System.in);
+    public static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
         boolean loopFlag = true;
