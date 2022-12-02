@@ -4,6 +4,8 @@ public class MyList {
     private String[] arrayStr;
     private int currentElementNumber = 0;
     private static final char LETTER_C = 'C';
+    private static final int INCREASE_SIZE = 7;
+    private static final int MIN_ARRAY_SIZE = 5;
 
     public MyList(){
         setArrayStr(new String[5]);
@@ -22,12 +24,13 @@ public class MyList {
     private void decreaseSize(){
         int newArraySize;
         int currentArraySize = getArrayStr().length;
-        final int minArraySize = 5;
 
-        if (currentArraySize - 7 > minArraySize)
-            newArraySize = getArrayStr().length - 7;
+        if (currentArraySize - INCREASE_SIZE >= getCurrentElementNumber() && currentArraySize - INCREASE_SIZE >= MIN_ARRAY_SIZE)
+            newArraySize = getArrayStr().length - INCREASE_SIZE;
+        else if (getCurrentElementNumber() <= MIN_ARRAY_SIZE && currentArraySize > MIN_ARRAY_SIZE)
+            newArraySize = MIN_ARRAY_SIZE;
         else
-            newArraySize = minArraySize;
+            return;
 
         String[] newArrayStr = new String[newArraySize];
 
@@ -35,6 +38,18 @@ public class MyList {
             newArrayStr[i] = getArrayStr()[i];
 
         setArrayStr(newArrayStr);
+    }
+
+    private void fixIndexes(String[] arrayStr){
+        String[] tmpArrayStr = new String[arrayStr.length];
+        int i = 0;
+
+        for (String str : arrayStr) {
+            if (str != null)
+                tmpArrayStr[i++] = str;
+        }
+
+        setArrayStr(tmpArrayStr);
     }
 
     public void delete(int index){
@@ -45,6 +60,7 @@ public class MyList {
         else {
             getArrayStr()[index] = null;
             setCurrentElementNumber(getCurrentElementNumber() - 1);
+            fixIndexes(getArrayStr());
             System.out.println("The deletion request is successfully done.\n");
             decreaseSize();
         }
@@ -81,13 +97,7 @@ public class MyList {
             if (getArrayStr().length == getCurrentElementNumber())
                 increaseSize();
 
-            for (int i = 0; i < getArrayStr().length; i++) {
-                if (getArrayStr()[i] == null) {
-                    getArrayStr()[i] = str;
-                    break;
-                }
-            }
-
+            getArrayStr()[getCurrentElementNumber()] = str;
             setCurrentElementNumber(getCurrentElementNumber() + 1);
             return true;
         }
