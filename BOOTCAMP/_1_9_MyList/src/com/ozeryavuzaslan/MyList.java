@@ -8,7 +8,7 @@ public class MyList {
     private static final int MIN_ARRAY_SIZE = 5;
 
     public MyList(){
-        setArrayStr(new String[5]);
+        setArrayStr(new String[MIN_ARRAY_SIZE]);
     }
 
     private void increaseSize(){
