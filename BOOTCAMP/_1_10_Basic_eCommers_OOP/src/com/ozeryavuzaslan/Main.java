@@ -72,7 +72,7 @@ public class Main {
         customerArrayList.add(cem2);
         customerArrayList.add(cem3);
         System.out.println("\nTotal price of all Cem's orders: " + Customer.printConditionalInvoiceList(customerArrayList, "Cem", 25, 30));
-        Customer.getCustomersForSpecificPayment(1500, customerArrayList);
+        Customer.getCustomersForSpecificPayment(1500.0D, customerArrayList);
         System.out.println("Total Customer: " + Customer.getTotalCustomer());
         System.out.println("------------------------------------------------");
     }
