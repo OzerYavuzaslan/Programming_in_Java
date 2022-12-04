@@ -113,7 +113,7 @@ public class Customer {
         }
     }
 
-    private int getCustomersTotalProductNumber(Order order){
+    private int getCustomersTotalProductCount(Order order){
         int tmpTotal = 0;
 
         if (order != null)
@@ -127,7 +127,7 @@ public class Customer {
         Order order = findOrder(orderID);
 
         if(order != null){
-            System.out.println("\n" + getName() + "'s total product count is: " + getCustomersTotalProductNumber(order));
+            System.out.println("\n" + getName() + "'s total product count is: " + getCustomersTotalProductCount(order));
             System.out.println(getName() + "'s total payment is: " + getTotalOrderPrice(orderID));
         }
     }
