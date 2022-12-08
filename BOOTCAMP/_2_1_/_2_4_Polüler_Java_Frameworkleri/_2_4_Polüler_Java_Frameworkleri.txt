@@ -1,0 +1,79 @@
+En popüler ve temel Java freamworkleri yaklaşık 10 tanedir:
+
+1) Spring 
+2) Hibernate
+3) Struts
+4) Google web toolkit [GWT]
+5) JavaServer Faces [JSF]
+6) Grails
+7) Vaadin
+
+---------------------------------
+1) Java ile yazılım ürünlerinin yapımını kolaylaştıran Core Container, AOP, Data Access, Web vb. modüllerden oluşan bir kütüphaneler topluluğudur.
+Spring platformunda yer alan Spring Boot, Spring Data, Spring MVC, Spring Batch, Spring Security gibi projelerin temelinde Spring framework yer alır.
+Spring framework temelinde ise Spring Core modülünde yer alan IoC Container vardır.
+
+---------------------------------
+
+2) Hibernate Java geliştiriciler için geliştirilmiş bir ORM kütüphanesidir.
+Nesne yönelimli modellere göre veritabanı ile olan ilişkiyi sağlayarak, veritabanı üzerinde yapılan işlemleri kolaylaştırmakla birlikte kurulan yapıyı da sağlamlaştırmaktadır.
+Hibernate bir nesne/ilişkisel eşleme (Object/Relational Mapping) aracıdır. Burada nesne/ilişkisel eşleme terimi nesne modelindeki veri tanımlarının ilişkisel veri modeline eşleme (mapping) tekniğini ifade etmektedir.
+Hibernate yalnızca Java sınıflarından veritabanı tablolarına veya Java veri tiplerinde SQL veri tiplerine dönüşümü yapmaz.
+Hibernate veri sorgulama(data query) ve veri çekme(data retriaval) işlemlerini de kullanıcı için sağlar.
+Bu özellikleriyle Hibernate geliştirme kolaylığı ve zamandan kazanç sağlar. 
+Hibernate kullanımı olmadan tüm adı anılan işlemler için SQL ve JDBC’nin olanaklarından faydalanılarak el ile(manual) veri işleme(data handling) gerçekleştirilmesi zaruri olacaktır.
+Hibernate genel anlamda Java sınıflarından veritabanı tablolarına dönüşümü ya da Java veri tiplerinden SQL veri tiplerine dönüşümü gerçekleştirir.
+
+---------------------------------
+
+3) JEE teknolojisinde web teknolojileri gerçekleştirmekte kullanılan bir web framework’üdür.
+Bu framework  MVC mimarisini kullanan bir frameworktür.
+Strutsdaki hiçbir şey modelin nasıl gerçekleştirileceğini belirtmez. Bunun için
+birçok yöntem kullanılır. En çok kullanılan yöntem: veriyi ve işlemler JavaBean ile
+sarmalamaktır. Veri ve işlem aynı veya farklı sınıflarda bulanabilirler.
+İşlemler uygulamanın tanımladığı iş mantığının sunumudur. Bir iş belirli
+özellikte uygulanması gereken kurallar şeklinde düşünülebilir.
+Struts özel bir sunuş teknolojisi içermez. Birçok struts JSP’yi kullanır ki bu
+JSP’ler Struts tag library(Struts and Struts-EL), JSTL (java standart tag library) ve
+JSF (Java server faces) tabanlıdırlar.
+Struts’ın ilk controller sınıfı ActionServlet’tir. Bu sınıf bütün kullanıcı istemlerini
+ele alır. Konfigürasyon dosyasındaki bilgileri kullanarak, ActionServlet sınıfı istemin bir
+parçası olan verileri toplayan “RequestProcessor” sınıfını alır ve “ActionForm” a
+koyar. ActionForm kullanıcıdan gelen ve kullanıcıya giden verileri içeren bir bean’dir.
+Son adımda controller istem türüne göre uygun “handler” a kontrolü
+devreder(delegate). Handler “action” sınıfının alt sınıfıdır. Action sınıfı controller’ın
+çalıştığı asıl yerdir. Kullanıcı istemi burada çalıştırılır ve işlemleri yapılır.
+Gerekli action çalıştırıldıktan sonra action sınıfı uygun view’e geri döner.
+
+---------------------------------
+
+4) Web projeleri geliştirmek için kullanılan, java kodları ile (veya başka bir dil ile) kolayca javascript ve ajax kullanarak
+web projesi yapılmasını sağlayan sağlayan, tarayıcı bağımsız ve açık kaynak kodlu web framework'ü. Google tarafından desteklenmektedir. 
+Google web toolkit javascript bilmeyen ya da uğraşmak istemeyen kişiler için geliştirilmiş bir freamwork.
+Java programlama dilini kullanarak etkileşimli web sayfaları (aslında web uygulamaları) oluşturabilir.
+Ajax'ın sunduklarından yararlanarak nesneye dayalı bir dil olan java ile rahatca bir web uygulaması geliştirilebilir.
+
+---------------------------------
+
+5) JSF veya Java Server Faces sunucu taraflı (back-end) olaya dayalı, bileşen tabanlı web uygulamaları geliştirmek için kullanılan Java EE kütüphanesidir.
+Kütüphanede yer alan bileşenlere ait özellikler kullanılarak sunucuda yer alan veri ve olay arasında bağlantı kurularak işlem yapılır.
+Örnek olarak kullanıcı veri giriş yaptıktan sonra sayfa içerisinde yer alan butona basarak veri girişinin doğrulanması, verinin kayıt edilmesi işlemi verilebilir.
+Java Server Faces bir çatıdır. JSP’den farklı olarak kullanıcı arayüzü sağlanmaktadır. Hazır bileşenler/etiketler ile (tag/annotation) yapmak istediğimiz işlemleri basitçe yapabilmekteyiz. Üst seviyede programlar yapmayı kolay hale getirmektedir.
+
+---------------------------------
+
+6) Grails veri tabanı düzenlemelerinden arayüz tasarımlarına kadar olan katmanları sizin belirlediğiniz bilgilere göre default bir şekilde size sunuyor.
+Bunu çok kısa bir süre , otomatik ve en önemlisi sonradan düzenlemelere açık olarak geliştiriciye sunuyor.
+
+---------------------------------
+
+7) Java Desktop Application gibi kodlarınızı yazıp fakat web application yapabildiğiniz tek web framework'tur.
+Sağlam bir mimariye sahip olmasına rağmen diğer frameworklerden yavaştır ve dizayn konusunda ister istemez kısıtlar.
+Yüzde yüz java tabanlı,
+GWT mimarisi üzerine oturtulmuş, fakat sadece server side çalışan,
+GWT widget’ları ile extend edip add-on geliştirebileceğiniz,
+Tema desteği olan,
+GUI geliştirmesi yapar şekilde uygulama geliştiribileceğiniz, Swing ve SWT gibi olay güdümlü programlama(event-driven programming) mantığıyla çalışan,
+Google App Engine dahil birçok servlet container’da çalışabilen,
+Herhangi bir Java portal’a entegre olabilen ve widget yapısını barındıran,
+Hızlı geliştirmeye, üretkenliğe ve iş mantığına daha çok odaklanabileceğiniz Web framework’üdür.
