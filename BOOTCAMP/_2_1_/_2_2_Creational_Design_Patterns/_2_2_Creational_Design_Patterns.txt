@@ -1,0 +1,68 @@
+1) Fabrika Metodu (Factory Method)
+2) Soyut Fabrika Metodu (Abstract Factory Pattern)
+3) Tekil Kalıp - Yegane (Singleton Design Pattern)
+4) Yapıcı Kalıp (Builder Design Pattern)
+5) İlk örnek Kalıp - Örnek (Prototype Design Pattern)
+
+----------------------------------------
+
+1) Üretimle ilgili tasarımlarda önem kazanmaktadır. 
+Fabrika ve ürün grubu gibi ilişkiler bir kez tanımlanır.
+Bu tasarımda önemli olan yapısal olarak birbirine benzeyen ürünlerin ortak bir ara katman üzerinden yönetilebilmesini sağlamaktır.
+Bu şekilde kurulan yapı daha kolay ve esnek olur.
+Tek ara yüz kullanarak bir nesne ailesinin farklı platformlarda yaratılmasına olanak sağlar.
+Diğer bir deyişle, uygulama davranış değişikliğine uğramadan farklı platformlara taşınabilir.
+
+public class ObjectFactory {
+    public static B getB() {
+        return new B();
+    }
+}
+
+public class A {
+    private B b;
+
+    public A() {
+        b = ObjectFactory.getB();
+    }
+
+    public void calistir() {
+        b.yazdir();
+    }
+
+}
+
+public class B {
+    public void yazdir() {
+        System.out.println("Özer YAVUZASLAN");
+    }
+}
+
+public class App {
+    public static void main(String[] args) {
+        A a = new A();
+        a.calistir();
+    }
+}
+
+Factory tasarım desenini uygulayan sınıf(ObjectFactory) her yeni sınıf (C, D vb.) ihtiyacında düzenlenmesi gerekir.
+
+----------------------------------------
+
+2) Nesnenin nasıl yaratılacağını kalıtım yoluyla alt sınıflara bırakıp nesne yaratımı için tek ara yüz kullanarak, ara yüzle nesne yaratım işlevlerini temelde birbirinden ayırmaya yarayan yaratımsal tasarım kalıbıdır.
+
+----------------------------------------
+
+3) Tek ara yüz kullanarak karmaşık bir nesne grubundan gerektiğince parça yaratılmasını sağlar.
+Nesne grubu kullanıldıkça istenilen şekilde yapılanır ve bu sayede kullanılmayan parçaların gereksiz yere yaratılarak kaynak harcama durumu ortadan kaldırılmış olur.
+
+----------------------------------------
+
+4) Kendi üzerinden yaratılacak nesneler için prototip görevi üstlenen bir yapı sunmaktadır.
+Diğer bir deyişle, sınıflardan nesne yaratırken yeni nesnelerin baştan yaratılmayıp, mevcutlarını örnek kabul ederek yaratılmasını sağlar.
+Bu desen sayesinde kaynaklar gereksiz yere meşgul edilmeden nesneler, yaratılırlar.
+
+----------------------------------------
+
+5) Nesnenin sadece bir defa oluşturulmasını öngören bir mekanizma kurulmak istenildiğinde etkin bir biçimde kullanılabilen bir tasarım desenidir.
+Oluşturulan bir sınıftan sadece bir nesne yaratılacak şekilde bir kısıtlama yapabilme olanağı sağlar ve nesneye ilk kez ihtiyaç duyulana kadar yaratılmayabilir.
