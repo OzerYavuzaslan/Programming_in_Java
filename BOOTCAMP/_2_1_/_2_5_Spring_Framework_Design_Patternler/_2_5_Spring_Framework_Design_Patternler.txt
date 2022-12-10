@@ -1,0 +1,36 @@
+1) Factory Method: BeanFactory bu pattern üzerine bina edilmiştir. Spring managed beanların yaratılması ve bağımlılıkların sağlanmasında kullanılır.
+
+----------------------------------------
+
+2) Singleton: Yaratılan bean’ler default olarak container genelinde tek bir instance’a sahip olmaktadırlar.
+Spring’in Singleton implemantasyonu GOF Singleton pattern’ından scope olarak biraz daha farklıdır.
+
+----------------------------------------
+
+3) Prototype: İstendiği takdirde ApplicationContext herhangi bir bean tanımından her getBean(‘beanName’) ile erişimde yeni bir instance yaratmaktadır.
+Bean tanımı burada tam bir prototype örüntüsüdür.
+
+----------------------------------------
+
+4) Proxy: Spring Application Framework’ün en çok faydalandığı pattern diyebiliriz.
+Scoped bean oluşturmada, Spring AOP kabiliyetinin sunulmasında, TX kabiliyetinin implemantasyonunda hep bu pattern kullanılmaktadır.
+
+----------------------------------------
+
+5) Template Method: Spring’in veri erişim altyapısı bu pattern üzerine kuruldur.
+JdbcTemplate, HibernateTemplate, JpaTemplate, RestTemplate…
+
+----------------------------------------
+
+6) Observer: ApplicationContext’in event yönetimi tam bir publish subscribe örneğidir. ApplicationContext bir event medium rolündedir.
+Bir grup spring managed bean ApplicationContext vasıtası ile ApplicationListener tipindeki diğer bir grup bean’lere event notifikasyonunda bulunabilirler.
+
+----------------------------------------
+
+7) Mediator: Observer patternde Application Context'in event medium rolünde olduğu bilgisini vermiştim.
+Bu sayede birbirleri ile haberleşmek isteyen bean’lar loosely coupled halde kalabilmektedirler. 
+Sadece bildikleri ApplicationContext’in kendisidir, yani mediator.
+
+----------------------------------------
+
+8) Front Controller: Spring MVC Framework’ün iskeletini oluşturan DispatcherServlet bu pattern’ın bire bir karşılığıdır.
