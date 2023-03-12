@@ -1,0 +1,26 @@
+Jan 30, 2023 12:25:37 AM com.biletimcepte.service.UserService registerUser
+INFO: UserService -> createUser : sami@yahoo.com
+Jan 30, 2023 12:59:36 AM com.biletimcepte.service.BookingService create
+INFO: BookingService -> create successful sami@yahoo.com | Mersin --> Balıkesir --> 2023-02-10T13:00
+Jan 30, 2023 1:01:13 AM com.biletimcepte.service.BookingService changePaymentStatus
+INFO: BookingService -> changePaymentStatus successful
+Jan 30, 2023 1:01:13 AM com.biletimcepte.client.PaymentServiceClient processPayment
+INFO: PaymentClientService -> processPayment: null
+Jan 30, 2023 1:03:15 AM com.biletimcepte.service.UserService registerUser
+INFO: UserService -> createUser : akif@yahoo.com
+Jan 30, 2023 3:10:52 AM com.biletimcepte.service.UserService updateUser
+INFO: UserService -> updateUser : ozeryavuzaslan@yahoo.com
+Jan 30, 2023 3:13:43 AM com.biletimcepte.service.UserService updateUser
+INFO: UserService -> updateUser : ozeryavuzaslan@yahoo.com
+Jan 30, 2023 3:14:51 AM com.biletimcepte.service.UserService updateUser
+INFO: UserService -> updateUser : ozeryavuzaslan@yahoo.com
+Jan 30, 2023 3:15:16 AM com.biletimcepte.service.UserService updateUser
+INFO: UserService -> updateUser : ozeryavuzaslan@yahoo.com
+Jan 30, 2023 3:18:52 AM com.biletimcepte.service.BookingService create
+INFO: BookingService -> create successful elifyavuzaslan@yahoo.com | Mersin --> Balıkesir --> 2023-02-10T13:00
+Jan 30, 2023 3:19:27 AM com.biletimcepte.service.BookingService changePaymentStatus
+INFO: BookingService -> changePaymentStatus successful
+Jan 30, 2023 3:19:27 AM com.biletimcepte.client.PaymentServiceClient processPayment
+INFO: PaymentClientService -> processPayment: null
+Jan 30, 2023 6:53:50 PM com.biletimcepte.service.UserService registerUser
+INFO: UserService -> registerUser: bayram@gmail.com

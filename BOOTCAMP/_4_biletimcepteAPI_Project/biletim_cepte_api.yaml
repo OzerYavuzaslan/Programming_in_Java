@@ -1,0 +1,1081 @@
+openapi: 3.0.1
+info:
+  title: Biletim Cepte API
+  description: BiletimcepteServiceApplication API Information
+  version: "1.0"
+servers:
+- url: http://localhost:8090
+  description: Generated server url
+paths:
+  /voyages/{id}:
+    put:
+      tags:
+      - voyage-controller
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoyageRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VoyageResponse'
+    delete:
+      tags:
+      - voyage-controller
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoyageAdminUserRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VoyageResponse'
+  /voyages/setpassive/{id}:
+    put:
+      tags:
+      - voyage-controller
+      operationId: setPassive
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoyageAdminUserRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VoyageResponse'
+  /users:
+    get:
+      tags:
+      - user-controller
+      operationId: listOfUsers
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+    put:
+      tags:
+      - user-controller
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UpdateResponse'
+    post:
+      tags:
+      - user-controller
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /tickets/{ticketId}:
+    put:
+      tags:
+      - ticket-controller
+      operationId: update_2
+      parameters:
+      - name: ticketID
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+    delete:
+      tags:
+      - ticket-controller
+      operationId: delete_1
+      parameters:
+      - name: ticketID
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+  /voyages:
+    get:
+      tags:
+      - voyage-controller
+      operationId: getVoyageList
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VoyageResponse'
+    post:
+      tags:
+      - voyage-controller
+      operationId: addVoyage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoyageRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VoyageResponse'
+  /voyages/totalsoldtickets/{id}:
+    post:
+      tags:
+      - voyage-controller
+      operationId: totalSoldTickets
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoyageAdminUserRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VoyageTotalTicketsResponse'
+  /voyages/findvoyages/{startDateTime}/{endDateTime}/{travelType}/{fromCity}/{toCity}:
+    post:
+      tags:
+      - voyage-controller
+      operationId: findVoyages
+      parameters:
+      - name: startDateTime
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: endDateTime
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: travelType
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: fromCity
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: toCity
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VoyageResponse'
+  /users/login:
+    post:
+      tags:
+      - user-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /tickets/{voyageId}:
+    post:
+      tags:
+      - ticket-controller
+      operationId: create
+      parameters:
+      - name: voyageID
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+  /bookings:
+    post:
+      tags:
+      - booking-controller
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+  /bookings/payment:
+    post:
+      tags:
+      - booking-controller
+      operationId: processPayment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Invoice'
+  /voyages/totalprice/{id}:
+    get:
+      tags:
+      - voyage-controller
+      operationId: getTotalPrice
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VoyageResponse'
+  /tickets/{id}:
+    get:
+      tags:
+      - ticket-controller
+      operationId: getByID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+  /tickets/user/{email}:
+    get:
+      tags:
+      - ticket-controller
+      operationId: getById
+      parameters:
+      - name: eMail
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TicketResponse'
+  /bookings/{id}:
+    get:
+      tags:
+      - booking-controller
+      operationId: getByID_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+  /bookings/bookingList:
+    get:
+      tags:
+      - booking-controller
+      operationId: getList
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                type: string
+        "409":
+          description: Conflict
+          content:
+            '*/*':
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                type: string
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+components:
+  schemas:
+    VoyageRequest:
+      type: object
+      properties:
+        fromCity:
+          type: string
+        toCity:
+          type: string
+        travelType:
+          type: string
+          enum:
+          - PLANE
+          - BUS
+        addUserEmail:
+          type: string
+        pricePerTicket:
+          type: number
+          format: double
+        voyageDateTime:
+          type: string
+          format: date-time
+    VoyageResponse:
+      type: object
+      properties:
+        fromCity:
+          type: string
+        toCity:
+          type: string
+        travelType:
+          type: string
+          enum:
+          - PLANE
+          - BUS
+        availableSeats:
+          type: integer
+          format: int32
+        pricePerTicket:
+          type: number
+          format: double
+        voyageStatus:
+          type: string
+          enum:
+          - ACTIVE
+          - PASSIVE
+        totalTicketPrice:
+          type: number
+          format: double
+        voyageDateTime:
+          type: string
+          format: date-time
+    VoyageAdminUserRequest:
+      type: object
+      properties:
+        addUserEmail:
+          type: string
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        age:
+          type: integer
+          format: int32
+        genderType:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+        userType:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - CORPORATE
+        phoneNumber:
+          type: string
+    UpdateResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        genderType:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+        userType:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - CORPORATE
+        age:
+          type: integer
+          format: int32
+        updateMessage:
+          type: string
+        phoneNumber:
+          type: string
+    TicketRequest:
+      type: object
+      properties:
+        nationalIdentityNumber:
+          type: string
+        passengerName:
+          type: string
+        passengerSurname:
+          type: string
+        passengerAge:
+          type: integer
+          format: int32
+        passengerEmail:
+          type: string
+        genderType:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+    TicketResponse:
+      type: object
+      properties:
+        nationalIdentityNumber:
+          type: string
+        passengerName:
+          type: string
+        passengerSurname:
+          type: string
+        ticketPrice:
+          type: number
+          format: double
+        fromCity:
+          type: string
+        toCity:
+          type: string
+        voyageDateTime:
+          type: string
+          format: date-time
+        genderType:
+          type: string
+          enum:
+          - MALE
+          - FEMALE
+    VoyageTotalTicketsResponse:
+      type: object
+      properties:
+        voyageID:
+          type: integer
+          format: int32
+        totalSoldTickets:
+          type: integer
+          format: int32
+    LoginRequest:
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        username:
+          type: string
+    BookingRequest:
+      type: object
+      properties:
+        passengerEmail:
+          type: string
+        bookingTicketList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRequest'
+        fromCity:
+          type: string
+        toCity:
+          type: string
+        voyageDateTime:
+          type: string
+          format: date-time
+        travelType:
+          type: string
+          enum:
+          - PLANE
+          - BUS
+    BookingResponse:
+      type: object
+      properties:
+        passengerEmail:
+          type: string
+        ticketResponseList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketResponse'
+        bookingTotalPrice:
+          type: number
+          format: double
+        creationDateTime:
+          type: string
+          format: date-time
+    PaymentRequest:
+      type: object
+      properties:
+        bookingid:
+          type: integer
+          format: int32
+        voyageId:
+          type: integer
+          format: int32
+        paymentType:
+          type: string
+          enum:
+          - EFT
+          - TRANSFER
+          - CREDIT_CARD
+    Invoice:
+      type: object
+      properties:
+        paymentType:
+          type: string
+          enum:
+          - EFT
+          - TRANSFER
+          - CREDIT_CARD
+        name:
+          type: string
+        surname:
+          type: string
+        phoneNumber:
+          type: string
+        paymentTotal:
+          type: number
+          format: double
+        bookingid:
+          type: integer
+          format: int32
+        email:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
