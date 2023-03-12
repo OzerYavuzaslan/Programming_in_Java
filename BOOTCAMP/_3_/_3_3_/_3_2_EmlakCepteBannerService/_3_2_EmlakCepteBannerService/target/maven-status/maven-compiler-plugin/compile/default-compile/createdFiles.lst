@@ -1,0 +1,5 @@
+com\emlakcepte\repository\BannerRepository.class
+com\emlakcepte\model\Banner.class
+com\emlakcepte\EmlakcepteBannerServiceApplication.class
+com\emlakcepte\service\BannerService.class
+com\emlakcepte\controller\BannerController.class
