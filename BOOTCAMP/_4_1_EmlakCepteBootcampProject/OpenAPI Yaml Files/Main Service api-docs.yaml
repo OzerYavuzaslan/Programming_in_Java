@@ -1,0 +1,399 @@
+openapi: 3.0.1
+info:
+  title: Emlakcepte API
+  description: Main API Information
+  version: "1.0"
+servers:
+- url: http://localhost:8090
+  description: Generated server url
+paths:
+  /users:
+    get:
+      tags:
+      - user-controller
+      operationId: getAll
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+    put:
+      tags:
+      - user-controller
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+    post:
+      tags:
+      - user-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /realties/{realtyId}:
+    put:
+      tags:
+      - realty-controller
+      operationId: update_1
+      parameters:
+      - name: realtyId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RealtyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RealtyResponse'
+    delete:
+      tags:
+      - realty-controller
+      operationId: delete
+      parameters:
+      - name: realtyId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: integer
+                format: int32
+  /users/process/{cardNo}/{extensionAmount}:
+    post:
+      tags:
+      - user-controller
+      operationId: processPayment
+      parameters:
+      - name: cardNo
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: extensionAmount
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Payment'
+  /realties:
+    get:
+      tags:
+      - realty-controller
+      operationId: getAll_1
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RealtyResponse'
+    post:
+      tags:
+      - realty-controller
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RealtyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RealtyResponse'
+  /users/{email}:
+    get:
+      tags:
+      - user-controller
+      operationId: getByEmail
+      parameters:
+      - name: email
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /realties/{id}:
+    get:
+      tags:
+      - realty-controller
+      operationId: getAllByUserId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RealtyResponse'
+  /realties/status/active:
+    get:
+      tags:
+      - realty-controller
+      operationId: getAllActiveRealtyes
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RealtyResponse'
+  /realties/getRealtyByUserId:
+    get:
+      tags:
+      - realty-controller
+      operationId: getRealtyByUserId
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: realtyId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RealtyResponse'
+  /realties/details/{province}:
+    get:
+      tags:
+      - realty-controller
+      operationId: getAllByProvince
+      parameters:
+      - name: province
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /realties/change/{id}:
+    get:
+      tags:
+      - realty-controller
+      operationId: changeStatusOfRealty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RealtyResponse'
+  /realties/active/{id}:
+    get:
+      tags:
+      - realty-controller
+      operationId: getActiveRealtyByUserName
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RealtyResponse'
+components:
+  schemas:
+    UserUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        type:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - CORPARETE
+        packageExpireDate:
+          type: string
+          format: date-time
+    RealtyRequest:
+      type: object
+      properties:
+        "no":
+          type: integer
+          format: int32
+        title:
+          type: string
+        province:
+          type: string
+        userId:
+          type: integer
+          format: int32
+    RealtyResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        province:
+          type: string
+        userId:
+          type: integer
+          format: int32
+        "no":
+          type: integer
+          format: int32
+        realtyType:
+          type: string
+          enum:
+          - ACTIVE
+          - PASSIVE
+          - DELETED
+          - IN_REVIEW
+        realtyNo:
+          type: integer
+          format: int32
+    UserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - CORPARETE
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+          enum:
+          - INDIVIDUAL
+          - CORPARETE
+        createDate:
+          type: string
+          format: date-time
+        packageExpireDate:
+          type: string
+          format: date-time
+    Payment:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        cardNo:
+          type: string

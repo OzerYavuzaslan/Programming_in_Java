@@ -1,0 +1,54 @@
+openapi: 3.0.1
+info:
+  title: Emlakcepte Banner API
+  description: Banner API Information
+  version: "1.0"
+servers:
+- url: http://localhost:8085
+  description: Generated server url
+paths:
+  /banners:
+    get:
+      tags:
+      - banner-controller
+      operationId: getAll
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Banner'
+    post:
+      tags:
+      - banner-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Banner'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Banner'
+components:
+  schemas:
+    Banner:
+      type: object
+      properties:
+        ilanNo:
+          type: string
+        adet:
+          type: integer
+          format: int32
+        telNo1:
+          type: string
+        telNo2:
+          type: string
