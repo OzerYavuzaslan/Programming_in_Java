@@ -1,12 +1,12 @@
 # Simple Social Media Application Project
 - User & Post (entities)
 - Exception Handling
--- Validation
--- Swagger
--- Content Negotiation (Supports XML Responses)
--- Internationalization (I18N)
--- Actuator
--- Simple HATEOAS
--- PostgreSQL
--- Spring Boot JPA & Hibernate
--- Basic Auth
+- Validation
+- Swagger
+- Content Negotiation (Supports XML Responses)
+- Internationalization (I18N)
+- Actuator
+- Simple HATEOAS
+- PostgreSQL
+- Spring Boot JPA & Hibernate
+- Basic Auth
