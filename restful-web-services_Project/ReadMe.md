@@ -1,4 +1,4 @@
-Simple Social Media Application Project
+# Simple Social Media Application Project
 -- User & Post (entities)
 --- Exception Handling
 --- Validation
