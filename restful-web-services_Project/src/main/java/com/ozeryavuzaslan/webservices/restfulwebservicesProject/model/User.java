@@ -90,8 +90,8 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
+                ", userSurname='" + name + '\'' +
+                ", userSurname='" + surname + '\'' +
                 ", birthDate=" + birthDate +
                 '}';
     }

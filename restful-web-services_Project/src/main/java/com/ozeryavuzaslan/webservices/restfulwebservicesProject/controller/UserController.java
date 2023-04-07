@@ -34,15 +34,16 @@ public class UserController {
                                             .getEmail())).build();
     }
 
-    @PutMapping
-    public ResponseEntity<EntityModel<UserResponse>> updateUser(@Valid @RequestBody UserRequest userRequest){
+    @PutMapping("/updateByEmail/{email}")
+    public ResponseEntity<EntityModel<UserResponse>> updateUser(@RequestParam String email, @Valid @RequestBody UserRequest userRequest){
         return ResponseEntity.ok(customEntityModel
                 .getEntityModelForUsers(userRequest.getEmail(),
                         SPECIFIC_USER,
                         WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder
                                 .methodOn(this.getClass())
                                 .retrieveUserByEmail(userService
-                                        .updateByEmail(userRequest)
+                                        .updateByEmail(userRequest,
+                                                email)
                                         .getEmail()))));
     }
 

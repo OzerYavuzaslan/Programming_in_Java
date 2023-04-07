@@ -11,6 +11,6 @@ public interface UserService {
     UserResponse findOne(int id);
     UserResponse findOneByEmail(String eMail);
     void deleteById(int id);
-    UserResponse updateByEmail(UserRequest userRequest);
+    UserResponse updateByEmail(UserRequest userRequest, String eMail);
     UserResponse updateById(int id, UserRequest userRequest);
 }

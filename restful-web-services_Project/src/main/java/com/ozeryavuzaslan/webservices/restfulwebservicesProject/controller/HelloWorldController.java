@@ -32,7 +32,7 @@ public class HelloWorldController {
         return ResponseEntity.ok(new HelloWorldBeanResponse());
     }
 
-    @GetMapping(path = "/bean/path-variable/{name}")
+    @GetMapping(path = "/bean/path-variable/{userSurname}")
     public ResponseEntity<HelloWorldBeanResponse> helloWorldBeanPathVariable(@PathVariable String name){
         return ResponseEntity.ok(new HelloWorldBeanResponse(String.format("Hello World, %s ", name)));
     }

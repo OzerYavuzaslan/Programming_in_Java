@@ -15,8 +15,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponse {
-    private String author;
-    private String authorEmail;
+    private String userName;
+    private String userSurname;
+    private String userEmail;
     private String title;
     private String post;
 

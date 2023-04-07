@@ -32,12 +32,12 @@ public class PostController {
                                 postService.savePost(userid, postRequest).getTitle())).build();
     }
 
-    @PostMapping("/byAuthorEmail/{authorEmail}")
-    public ResponseEntity<PostResponse> createPost(@PathVariable String authorEmail, @Valid @RequestBody PostRequest postRequest){
+    @PostMapping("/byAuthorEmail/{authoremail}")
+    public ResponseEntity<PostResponse> createPost(@PathVariable String authoremail, @Valid @RequestBody PostRequest postRequest){
         return ResponseEntity
                 .created(customLocation
                         .getURILocation(POST_TITLE_PATH,
-                                postService.savePost(authorEmail, postRequest).getTitle())).build();
+                                postService.savePost(authoremail, postRequest).getTitle())).build();
     }
 
     @GetMapping
