@@ -5,6 +5,9 @@ import com.ozeryavuzaslan.webservices.restfulwebservicesProject.dto.response.Use
 import com.ozeryavuzaslan.webservices.restfulwebservicesProject.service.UserService;
 import com.ozeryavuzaslan.webservices.restfulwebservicesProject.util.CustomEntityModel;
 import com.ozeryavuzaslan.webservices.restfulwebservicesProject.util.CustomLocation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -16,6 +19,10 @@ import java.util.List;
 
 import static com.ozeryavuzaslan.webservices.restfulwebservicesProject.util.Constants.*;
 
+@Tag(
+        name = "CRUD REST APIs for User Resource",
+        description = "..."
+)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -24,6 +31,14 @@ public class UserController {
     private final CustomEntityModel customEntityModel;
     private final CustomLocation customLocation;
 
+    @Operation(
+            summary = "Create User REST API",
+            description = "Create User REST API is used to save user in a database"
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "HTTP Status 201 CREATED"
+    )
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest){
         return ResponseEntity
@@ -63,6 +78,14 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
 
+    @Operation(
+            summary = "Get User By ID REST API",
+            description = "Get User By ID REST API is used to get a single user from the database"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status 200 OK"
+    )
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<UserResponse>> retrieveUser(@PathVariable int id) {
         return ResponseEntity.ok(customEntityModel
