@@ -49,7 +49,7 @@ public class UserController {
                                             .getEmail())).build();
     }
 
-    @PutMapping("/updateByEmail/{email}")
+    @PutMapping("/updateByEmail")
     public ResponseEntity<EntityModel<UserResponse>> updateUser(@RequestParam String email, @Valid @RequestBody UserRequest userRequest){
         return ResponseEntity.ok(customEntityModel
                 .getEntityModelForUsers(userRequest.getEmail(),
