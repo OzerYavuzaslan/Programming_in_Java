@@ -1,0 +1,19 @@
+To upload your local repository to the remote private repository on GitHub, you can use the following steps:
+
+ 
+
+Open the terminal or Git Bash in your local repository directory.
+Initialize a Git repository by running the command: git init.
+Add your files to the repository by running the command: git add .
+Commit the changes with a commit message: git commit -m "Initial Commit".
+Add the remote repository to your local repository: git remote add origin https://github.com/bayramucler/BootcampTicketAppProject.git
+Push the changes to the remote repository: git push -u origin master.
+Make sure to replace "https://github.com/bayramucler/BootcampTicketAppProject.git" with the actual URL of your remote private repository.
+
+ 
+
+
+belirli branchi klonlamak:
+git clone -b branchName remote_repo_url
+-->
+git clone -b development https://uclerbayram@bitbucket.org/solmazgroup/currentcardoperations.git

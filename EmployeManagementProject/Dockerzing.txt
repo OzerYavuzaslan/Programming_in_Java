@@ -1,0 +1,14 @@
+pull a dockerfile from dockerhub or make it yourself for a db
+build an image which has a db
+specify root password (for example MYSQL_ROOT_PASSWORD=root) and run it within a docker network
+
+make a dockerfile
+"spring.profiles.active=docker" should be in application.properties file of the API
+configure "application-docker.properties" in the API
+build the jar
+
+go to API directory and run cmd (in windows cmd)
+build docker (build an image) for example: "docker build -t springboot-restful-webservices ."
+
+then run it within the same network that the db also runs in it ---> 
+db docker run --network NETWORK_NAME --name CONTAINER_NAME_OF_THE_API -p PORT:PORT API_NAME

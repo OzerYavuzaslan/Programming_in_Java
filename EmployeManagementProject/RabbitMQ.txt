@@ -1,0 +1,7 @@
+https://hub.docker.com/_/rabbitmq
+
+docker pull rabbitmq:3.12-rc
+docker pull rabbitmq:3-management
+
+docker run -d -p 15672:15672 -p 5672:5672 --name RabbitMQ_Container rabbitmq:3.12-rc
+docker run -d -p 15672:15672 -p 5672:5672 --name RabbitMQ_Management rabbitmq:3-management
