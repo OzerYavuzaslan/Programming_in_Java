@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.dto;
+package com.ozeryavuzaslan.emailservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.emailservice.configuration;
 
-import com.ozeryavuzaslan.basedomains.dto.EmailDTO;
+import com.ozeryavuzaslan.emailservice.dto.EmailDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

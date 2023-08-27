@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.emailservice.kafka;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.emailservice.dto.OrderEventDTO;
 import com.ozeryavuzaslan.emailservice.util.email.EmailServiceUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.basedomains.dto;
+package com.ozeryavuzaslan.stockservice.dto;
 
-import com.ozeryavuzaslan.basedomains.dto.enums.OrderStatusType;
+import com.ozeryavuzaslan.stockservice.dto.enums.OrderStatusType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

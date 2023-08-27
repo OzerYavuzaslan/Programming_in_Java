@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.orderservice.controller;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
+import com.ozeryavuzaslan.orderservice.dto.OrderDTO;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
