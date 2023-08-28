@@ -20,14 +20,15 @@ import java.util.Objects;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
+    private final ErrorDetailsDTO errorDetails;
+    private final CustomMessageHandler customMessageHandler;
+
     @Value("${total.error.message}")
     private String totalError;
 
     @Value("${first.error.message}")
     private String firstError;
 
-    private final ErrorDetailsDTO errorDetails;
-    private final CustomMessageHandler customMessageHandler;
     @Override
     @ResponseBody
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
