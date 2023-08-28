@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.util.email;
 
-import com.ozeryavuzaslan.emailservice.dto.EmailDTO;
-import com.ozeryavuzaslan.emailservice.dto.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.EmailDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;

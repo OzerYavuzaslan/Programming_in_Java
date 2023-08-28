@@ -1,8 +1,9 @@
 package com.ozeryavuzaslan.orderservice.converter;
 
-import com.ozeryavuzaslan.orderservice.dto.OrderDTO;
-import com.ozeryavuzaslan.orderservice.dto.OrderEventDTO;
-import com.ozeryavuzaslan.orderservice.dto.enums.OrderStatusType;
+
+import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.enums.OrderStatusType;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

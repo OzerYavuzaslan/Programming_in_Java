@@ -1,7 +1,8 @@
 package com.ozeryavuzaslan.orderservice.controller;
 
-import com.ozeryavuzaslan.orderservice.dto.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class OrderController {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderController.class);
 
     @PostMapping
-    public ResponseEntity<String> placeOrder(@RequestBody OrderDTO orderDTO){
+    public ResponseEntity<String> placeOrder(@Valid @RequestBody OrderDTO orderDTO){
         orderProducer.sendMessage(orderDTO);
         LOGGER.info(String.format("Order has been received. Method = placeOrder(@RequestBody OrderDTO orderDTO) --> %s", orderDTO));
         return ResponseEntity.ok("Order has been taken.");

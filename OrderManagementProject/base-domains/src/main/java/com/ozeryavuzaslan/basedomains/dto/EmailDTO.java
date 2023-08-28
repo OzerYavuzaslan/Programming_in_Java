@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.orderservice.dto;
+package com.ozeryavuzaslan.basedomains.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.orderservice.kafka;
 
 import com.ozeryavuzaslan.orderservice.converter.OrderConvert;
-import com.ozeryavuzaslan.orderservice.dto.OrderDTO;
-import com.ozeryavuzaslan.orderservice.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;

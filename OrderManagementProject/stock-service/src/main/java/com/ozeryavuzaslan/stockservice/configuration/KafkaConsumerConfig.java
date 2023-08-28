@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.configuration;
 
-import com.ozeryavuzaslan.stockservice.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

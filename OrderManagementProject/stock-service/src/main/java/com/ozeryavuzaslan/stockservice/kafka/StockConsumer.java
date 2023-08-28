@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.kafka;
 
-import com.ozeryavuzaslan.stockservice.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
