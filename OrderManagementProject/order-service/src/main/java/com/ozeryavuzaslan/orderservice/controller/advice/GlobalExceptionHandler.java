@@ -26,15 +26,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
     @Value("${first.error.message}")
     private String firstError;
 
-    private final CustomMessageHandler customMessageHandler;
     private final ErrorDetailsDTO errorDetails;
+    private final CustomMessageHandler customMessageHandler;
     @Override
     @ResponseBody
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
         errorDetails.setErrorDetailsProperties(LocalDateTime.now(),
                 customMessageHandler.returnProperMessage(totalError, totalError) +
-                        exception.getErrorCount() + " | " +
+                        exception.getErrorCount() + " | " +  //TODO: getAllErrors() ile bütün error mesajları getir.
                         customMessageHandler.returnProperMessage(firstError, firstError)  +
                         customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg),
                 request.getDescription(false));
