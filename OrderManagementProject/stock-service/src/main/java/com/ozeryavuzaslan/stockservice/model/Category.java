@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table(name = "stocks",
+@Table(name = "Category",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"name"})
         },
