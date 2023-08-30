@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
-import com.ozeryavuzaslan.stockservice.converter.StockConverter;
+import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Stock;
@@ -21,7 +21,7 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_NOT_FOUND;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
     private final ModelMapper modelMapper;
-    private final StockConverter stockConverter;
+    private final StockPropertySetter stockPropertySetter;
     private final StockRepository stockRepository;
     private final CategoryRepository categoryRepository;
 
@@ -36,9 +36,9 @@ public class StockServiceImpl implements StockService {
         Optional<Stock> stock = stockRepository.findByProductName(stockDTO.getProductName());
 
         if (stock.isEmpty())
-            stockDTO = stockConverter.convert(stockDTO, true);
+            stockDTO = stockPropertySetter.convert(stockDTO, true);
         else
-            stockDTO = stockConverter.convert(stockDTO, false);
+            stockDTO = stockPropertySetter.convert(stockDTO, false);
 
         return modelMapper
                 .map(stockRepository
