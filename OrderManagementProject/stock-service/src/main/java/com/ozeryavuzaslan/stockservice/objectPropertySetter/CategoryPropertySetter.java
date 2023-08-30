@@ -1,7 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
-import com.ozeryavuzaslan.stockservice.model.Category;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,10 +14,5 @@ public class CategoryPropertySetter {
         categoryDTO.setUpdateDate(LocalDateTime.now());
 
         return categoryDTO;
-    }
-
-    public Category setDates(Category category){
-        category.setUpdateDate(LocalDateTime.now());
-        return category;
     }
 }

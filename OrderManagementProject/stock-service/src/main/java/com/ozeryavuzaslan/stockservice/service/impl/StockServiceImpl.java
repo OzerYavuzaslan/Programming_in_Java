@@ -22,7 +22,8 @@ public class StockServiceImpl implements StockService {
     private final StockRepository stockRepository;
     private final StockPropertySetter stockPropertySetter;
 
-    @Override //TODO:UPDATE YAPARKEN BÜTÜN FIELDLARIN DOLULUĞUNU KONTROL ET! DB'deki ADDDATE verisini alıp DTO'nun adddateine set edip öyle UPDATE ET!!!!
+    // TODO:UPDATE YAPARKEN BÜTÜN FIELDLARIN DOLULUĞUNU KONTROL ET! DB'deki ADDDATE verisini alıp DTO'nun adddateine set edip öyle UPDATE ET!!!!
+    @Override
     public StockDTO saveOrUpdateStock(StockDTO stockDTO) {
         Optional<Stock> stock = stockRepository.findByProductName(stockDTO.getProductName());
 
