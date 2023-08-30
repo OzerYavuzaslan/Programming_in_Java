@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.orderservice.kafka;
 
-import com.ozeryavuzaslan.orderservice.converter.OrderConvert;
+import com.ozeryavuzaslan.orderservice.converter.OrderConverter;
 import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 public class OrderProducer {
     private final NewTopic topic;
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final OrderConvert orderConvert;
+    private final OrderConverter orderConverter;
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderProducer.class);
 
     public void sendMessage(OrderDTO orderDTO){
-        OrderEventDTO orderEventDTO = orderConvert.convert(orderDTO);
+        OrderEventDTO orderEventDTO = orderConverter.convert(orderDTO);
 
         Message<OrderEventDTO> orderEventDTOMessage = MessageBuilder
                 .withPayload(orderEventDTO)

@@ -8,15 +8,17 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "stocks",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"productName"})
+                @UniqueConstraint(columnNames = {"name"})
         },
         indexes = {
-                @Index(name = "product_name_index", columnList = "productName"),
-                @Index(name = "stock_add_date_index", columnList = "addDate"),
-                @Index(name = "stock_update_date_index", columnList = "updateDate")
+                @Index(name = "category_name_index", columnList = "name"),
+                @Index(name = "category_stock_index", columnList = "name, stockList"),
+                @Index(name = "category_add_date_index", columnList = "addDate"),
+                @Index(name = "category_update_date_index", columnList = "updateDate")
         }
 )
 @Entity
@@ -24,24 +26,17 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Stock {
+public class Category {
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String productName;
+    private String name;
 
-    @Column(nullable = false)
-    private int count;
-
-    @Column(nullable = false)
-    private double price;
-
-    @ManyToOne
-    @JoinColumn(nullable = false, name = "category_id", referencedColumnName = "id")
-    private Category category;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Stock> stockList;
 
     @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
