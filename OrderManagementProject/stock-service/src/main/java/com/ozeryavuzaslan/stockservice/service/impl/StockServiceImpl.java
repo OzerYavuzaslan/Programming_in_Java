@@ -17,9 +17,9 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
+    private final ModelMapper modelMapper;
     private final StockRepository stockRepository;
     private final CategoryRepository categoryRepository;
-    private final ModelMapper modelMapper;
 
     @Override
     public StockDTO saveOrUpdateStock(StockDTO stockDTO) {
