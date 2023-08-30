@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ErrorDetailsConfig {
     @Bean
-    public ErrorDetailsDTO getErrorDetail(){
+    public ErrorDetailsDTO getErrorDetailBean(){
         return new ErrorDetailsDTO();
     }
 }
