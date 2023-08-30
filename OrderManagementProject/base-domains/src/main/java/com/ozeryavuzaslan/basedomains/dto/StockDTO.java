@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockDTO {
-    @JsonIgnore
     private Long id;
     private String productName;
-    private int count;
+    private int quantity;
     private double price;
     private CategoryDTO category;
 

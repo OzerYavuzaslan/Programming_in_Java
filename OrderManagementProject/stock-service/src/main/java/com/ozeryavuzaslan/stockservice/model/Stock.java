@@ -34,12 +34,12 @@ public class Stock {
     private String productName;
 
     @Column(nullable = false)
-    private int count;
+    private int quantity;
 
     @Column(nullable = false)
     private double price;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false, name = "category_id", referencedColumnName = "id")
     private Category category;
 

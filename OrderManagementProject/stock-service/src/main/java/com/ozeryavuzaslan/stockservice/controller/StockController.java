@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_ENDPOINT;
 
 @RestController
@@ -27,7 +29,14 @@ public class StockController {
     }
 
     @GetMapping("/stocks/{productName}")
-    public ResponseEntity<StockDTO> getStocks(@PathVariable String productName){
+    public ResponseEntity<StockDTO> getStock(@PathVariable String productName){
         return ResponseEntity.ok(stockService.getByProductName(productName));
     }
+
+    @GetMapping("/stocks")
+    public ResponseEntity<List<StockDTO>> getStocks(){
+        return ResponseEntity.ok(stockService.getStockList());
+    }
+
+
 }
