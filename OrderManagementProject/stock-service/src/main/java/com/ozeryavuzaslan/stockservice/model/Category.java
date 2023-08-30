@@ -16,7 +16,6 @@ import java.util.List;
         },
         indexes = {
                 @Index(name = "category_name_index", columnList = "name"),
-                @Index(name = "category_stock_index", columnList = "name, stockList"),
                 @Index(name = "category_add_date_index", columnList = "addDate"),
                 @Index(name = "category_update_date_index", columnList = "updateDate")
         }
