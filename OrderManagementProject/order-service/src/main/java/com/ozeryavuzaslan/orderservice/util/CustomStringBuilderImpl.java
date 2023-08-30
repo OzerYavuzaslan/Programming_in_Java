@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.orderservice.util.impl;
+package com.ozeryavuzaslan.orderservice.util;
 
-import com.ozeryavuzaslan.orderservice.util.CustomStringBuilder;
+import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;

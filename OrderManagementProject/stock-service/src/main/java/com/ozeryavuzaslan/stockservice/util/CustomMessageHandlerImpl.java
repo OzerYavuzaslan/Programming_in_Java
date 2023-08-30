@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.orderservice.util.impl;
+package com.ozeryavuzaslan.stockservice.util;
 
-import com.ozeryavuzaslan.orderservice.util.CustomMessageHandler;
+import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

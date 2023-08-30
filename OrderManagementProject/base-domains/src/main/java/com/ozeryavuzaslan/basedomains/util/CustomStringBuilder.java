@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.orderservice.util;
+package com.ozeryavuzaslan.basedomains.util;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 

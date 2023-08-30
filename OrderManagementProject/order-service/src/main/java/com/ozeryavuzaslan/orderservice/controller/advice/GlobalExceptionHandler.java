@@ -1,10 +1,9 @@
 package com.ozeryavuzaslan.orderservice.controller.advice;
 
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
-import com.ozeryavuzaslan.orderservice.util.CustomMessageHandler;
-import com.ozeryavuzaslan.orderservice.util.CustomStringBuilder;
+import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
+import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,6 +17,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static com.ozeryavuzaslan.basedomains.util.Constants.FIRST_ERROR;
+import static com.ozeryavuzaslan.basedomains.util.Constants.TOTAL_ERRORS;
+
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
@@ -25,21 +27,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
     private final CustomStringBuilder customStringBuilder;
     private final CustomMessageHandler customMessageHandler;
 
-    @Value("${total.error.message}")
-    private String totalError;
-
-    @Value("${first.error.message}")
-    private String firstError;
-
     @Override
     @ResponseBody
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(firstError, firstError)  +
+                customMessageHandler.returnProperMessage(FIRST_ERROR, FIRST_ERROR)  +
                         customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg) + " | " +
-                        customMessageHandler.returnProperMessage(totalError, totalError) +
+                        customMessageHandler.returnProperMessage(TOTAL_ERRORS, TOTAL_ERRORS) +
                         exception.getErrorCount() + " --> " + customStringBuilder.getDefaultExceptionMessages(exception),
                 request.getDescription(false));
 

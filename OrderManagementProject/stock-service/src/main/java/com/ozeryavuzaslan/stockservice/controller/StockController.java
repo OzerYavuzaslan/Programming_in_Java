@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ozeryavuzaslan.stockservice.util.Constants.STOCK_ENDPOINT;
+import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_ENDPOINT;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class StockController {
                 .build();
     }
 
-    @GetMapping("/stocks")
+    @GetMapping("/stocks/{productName}")
     public ResponseEntity<StockDTO> getStocks(@PathVariable String productName){
         return ResponseEntity.ok(stockService.getByProductName(productName));
     }
