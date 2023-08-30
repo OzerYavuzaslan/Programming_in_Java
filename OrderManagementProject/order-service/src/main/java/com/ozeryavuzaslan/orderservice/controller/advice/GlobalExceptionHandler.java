@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.controller.advice;
 
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.orderservice.util.CustomMessageHandler;
+import com.ozeryavuzaslan.orderservice.util.CustomStringBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,8 @@ import java.util.Objects;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
-    private final ErrorDetailsDTO errorDetails;
+    private final ErrorDetailsDTO errorDetailsDTO;
+    private final CustomStringBuilder customStringBuilder;
     private final CustomMessageHandler customMessageHandler;
 
     @Value("${total.error.message}")
@@ -33,13 +35,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
     @ResponseBody
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-        errorDetails.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(totalError, totalError) +
-                        exception.getErrorCount() + " | " +  //TODO: getAllErrors() ile bütün error mesajları getir.
-                        customMessageHandler.returnProperMessage(firstError, firstError)  +
-                        customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg),
+
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(firstError, firstError)  +
+                        customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg) + " | " +
+                        customMessageHandler.returnProperMessage(totalError, totalError) +
+                        exception.getErrorCount() + " --> " + customStringBuilder.getDefaultExceptionMessages(exception),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.BAD_REQUEST);
     }
 }
