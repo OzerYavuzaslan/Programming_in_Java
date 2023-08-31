@@ -1,11 +1,15 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
+import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
+import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
+import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
 import com.ozeryavuzaslan.stockservice.repository.StockRepository;
 import com.ozeryavuzaslan.stockservice.service.StockService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -20,17 +24,27 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_NOT_FOUND;
 public class StockServiceImpl implements StockService {
     private final ModelMapper modelMapper;
     private final StockRepository stockRepository;
+    private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
 
-    // TODO:UPDATE YAPARKEN BÜTÜN FIELDLARIN DOLULUĞUNU KONTROL ET! DB'deki ADDDATE verisini alıp DTO'nun adddateine set edip öyle UPDATE ET!!!!
     @Override
     public StockDTO saveOrUpdateStock(StockDTO stockDTO) {
         Optional<Stock> stock = stockRepository.findByProductName(stockDTO.getProductName());
 
-        if (stock.isEmpty())
-            stockDTO = stockPropertySetter.setDates(stockDTO, true);
-        else
-            stockDTO = stockPropertySetter.setDates(stockDTO, false);
+        if (stock.isEmpty()) {
+            Optional<Category> category = categoryRepository.findByName(stockDTO.getCategory().getName());
+            boolean isCategoryPresent = category.isPresent();
+            stockPropertySetter.setSomeProperties(stockDTO, true, isCategoryPresent);
+
+            if (isCategoryPresent)
+                stockDTO.setCategory(modelMapper.map(category, CategoryDTO.class));
+            else
+                stockDTO.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockDTO.getCategory(), Category.class)), CategoryDTO.class));
+        }
+        else {
+            stockPropertySetter.setSomeProperties(stockDTO, false, false);
+            stockPropertySetter.setSomeProperties(stock.get(), stockDTO);
+        }
 
         return modelMapper
                 .map(stockRepository
@@ -58,6 +72,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional
     public void deleteStockByProductName(String productName) {
         stockRepository
                 .deleteByProductName(productName)

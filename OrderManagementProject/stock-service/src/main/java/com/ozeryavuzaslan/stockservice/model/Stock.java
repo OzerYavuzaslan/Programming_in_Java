@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Table(name = "stocks",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"productName"})
+                @UniqueConstraint(columnNames = {"productName", "category_id"})
         },
         indexes = {
                 @Index(name = "product_name_index", columnList = "productName"),
@@ -39,8 +39,8 @@ public class Stock {
     @Column(nullable = false)
     private double price;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false, name = "category_id", referencedColumnName = "id")
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(nullable = false, unique = true, name = "category_id", referencedColumnName = "id")
     private Category category;
 
     @Column(nullable = false)

@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter;
 
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
+import com.ozeryavuzaslan.stockservice.model.Stock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,13 +12,17 @@ import java.time.LocalDateTime;
 public class StockPropertySetter {
     private final CategoryPropertySetter categoryPropertySetter;
 
-    public StockDTO setDates(StockDTO stockDTO, boolean isInsert){
+    public void setSomeProperties(StockDTO stockDTO, boolean isInsert, boolean isCategoryPresent){
         if (isInsert)
             stockDTO.setAddDate(LocalDateTime.now());
 
         stockDTO.setUpdateDate(LocalDateTime.now());
-        stockDTO.setCategory(categoryPropertySetter.setDates(stockDTO.getCategory(), isInsert));
+        categoryPropertySetter.setSomeProperties(stockDTO.getCategory(), isInsert, isCategoryPresent);
+    }
 
-        return stockDTO;
+    public void setSomeProperties(Stock stock, StockDTO stockDTO){
+        stockDTO.setAddDate(stock.getAddDate());
+        stockDTO.setId(stock.getId());
+        categoryPropertySetter.setSomeProperties(stock.getCategory(), stockDTO.getCategory());
     }
 }

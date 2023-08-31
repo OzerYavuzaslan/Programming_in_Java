@@ -5,6 +5,7 @@ import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +39,9 @@ public class StockController {
         return ResponseEntity.ok(stockService.getStockList());
     }
 
-
+    @DeleteMapping("stocks")
+    public ResponseEntity<String> deleteStock(@RequestParam String productName){
+        stockService.deleteStockByProductName(productName);
+        return new ResponseEntity<>(productName + " has been deleted.", HttpStatus.NO_CONTENT);
+    }
 }
