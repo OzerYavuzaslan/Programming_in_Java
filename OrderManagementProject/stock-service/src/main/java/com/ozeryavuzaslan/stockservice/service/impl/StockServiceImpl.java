@@ -27,6 +27,7 @@ public class StockServiceImpl implements StockService {
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
 
+    //Such a bad relationship between entities as well as the operations... Do not do what I did here! lol...
     @Override
     public StockDTO saveOrUpdateStock(StockDTO stockDTO) {
         Optional<Stock> stock = stockRepository.findByProductName(stockDTO.getProductName());
