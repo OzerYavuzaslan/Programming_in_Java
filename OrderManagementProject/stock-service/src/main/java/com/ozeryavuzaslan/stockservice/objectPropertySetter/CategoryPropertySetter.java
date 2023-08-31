@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 
 @Component
 public class CategoryPropertySetter {
-    public void setSomeProperties(CategoryDTO categoryDTO, boolean isInsert, boolean isCategoryPresent){
-        if (isInsert && !isCategoryPresent)
+    public void setSomeProperties(CategoryDTO categoryDTO, boolean isInsert, boolean isCategoryNotPresent){
+        if (isInsert && !isCategoryNotPresent)
             categoryDTO.setAddDate(LocalDateTime.now());
 
         categoryDTO.setUpdateDate(LocalDateTime.now());

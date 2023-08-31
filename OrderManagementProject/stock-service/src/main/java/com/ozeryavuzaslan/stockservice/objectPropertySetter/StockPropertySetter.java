@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 public class StockPropertySetter {
     private final CategoryPropertySetter categoryPropertySetter;
 
-    public void setSomeProperties(StockDTO stockDTO, boolean isInsert, boolean isCategoryPresent){
+    public void setSomeProperties(StockDTO stockDTO, boolean isInsert, boolean isCategoryNotPresent){
         if (isInsert)
             stockDTO.setAddDate(LocalDateTime.now());
 
         stockDTO.setUpdateDate(LocalDateTime.now());
-        categoryPropertySetter.setSomeProperties(stockDTO.getCategory(), isInsert, isCategoryPresent);
+        categoryPropertySetter.setSomeProperties(stockDTO.getCategory(), isInsert, isCategoryNotPresent);
     }
 
     public void setSomeProperties(Stock stock, StockDTO stockDTO){
