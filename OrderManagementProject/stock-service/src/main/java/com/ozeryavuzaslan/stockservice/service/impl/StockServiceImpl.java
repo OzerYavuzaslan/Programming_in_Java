@@ -2,7 +2,7 @@ package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
-import com.ozeryavuzaslan.stockservice.exception.QuantityAmountNotEnoughException;
+import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.model.Stock;
@@ -91,7 +91,7 @@ public class StockServiceImpl implements StockService {
         StockDTO stockDTO = getProduct(productName);
 
         if (stockDTO.getQuantity() < quantityAmount)
-            throw new QuantityAmountNotEnoughException(QUANTITY_AMOUNT_NOT_ENOUGH);
+            throw new ProductAmountNotEnoughException(QUANTITY_AMOUNT_NOT_ENOUGH);
 
         stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
 

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class StockDTO {
     @JsonIgnore
     private Long id;
+    private UUID StockCode;
     private String productName;
     private int quantity;
     private double price;

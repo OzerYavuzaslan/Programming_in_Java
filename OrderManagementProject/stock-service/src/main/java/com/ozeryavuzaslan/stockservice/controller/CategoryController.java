@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ozeryavuzaslan.basedomains.util.Constants.CATEGORY_ENDPOINT;
+import static com.ozeryavuzaslan.basedomains.util.Constants.CATEGORY_GET_ENDPOINT;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class CategoryController {
 
     @PostMapping("/categories")
     public ResponseEntity<CategoryDTO> insertCategory(@Valid @RequestBody CategoryDTO categoryDTO){
-        return ResponseEntity.created(customLocation.getURILocation(CATEGORY_ENDPOINT,
+        return ResponseEntity.created(customLocation.getURILocation(CATEGORY_GET_ENDPOINT,
                         categoryService
                                 .saveCategory(categoryDTO)
                                 .getId()))

@@ -9,13 +9,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Table(name = "Category",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"name"})
+                @UniqueConstraint(columnNames = {"categoryCode"})
         },
         indexes = {
-                @Index(name = "category_name_index", columnList = "name"),
+                @Index(name = "category_name_index", columnList = "categoryCode"),
                 @Index(name = "category_add_date_index", columnList = "addDate"),
                 @Index(name = "category_update_date_index", columnList = "updateDate")
         }
@@ -30,6 +31,9 @@ public class Category {
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column(nullable = false)
+    private UUID categoryCode;
 
     @Column(unique = true, nullable = false)
     private String name;

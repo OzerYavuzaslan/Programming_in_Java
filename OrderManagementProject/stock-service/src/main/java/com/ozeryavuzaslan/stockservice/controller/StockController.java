@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_ENDPOINT;
+import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_GET_ENDPOINT;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class StockController {
 
     @PostMapping("/stocks")
     public ResponseEntity<StockDTO> insertOrUpdateStock(@Valid @RequestBody StockDTO stockDTO){
-        return ResponseEntity.created(customLocation.getURILocation(STOCK_ENDPOINT,
+        return ResponseEntity.created(customLocation.getURILocation(STOCK_GET_ENDPOINT,
                         stockService
                                 .saveOrUpdateStock(stockDTO)
                                 .getId()))
@@ -44,13 +44,13 @@ public class StockController {
         return ResponseEntity.ok(stockService.getStockList());
     }
 
-    @DeleteMapping("stocks")
+    @DeleteMapping("/stocks")
     public ResponseEntity<String> deleteStock(@RequestParam String productName){
         stockService.deleteStockByProductName(productName);
         return new ResponseEntity<>(productName + " has been deleted.", HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("stocks")
+    @PutMapping("/stocks/modify")
     public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam String productName,
                                                           @RequestParam int quantityAmount){
         return ResponseEntity.ok(stockService.decreaseStockQuantity(productName, quantityAmount));

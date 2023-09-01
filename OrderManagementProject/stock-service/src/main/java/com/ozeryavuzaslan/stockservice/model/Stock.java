@@ -8,13 +8,14 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Table(name = "stocks",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"productName", "category_id"})
+                @UniqueConstraint(columnNames = {"stockCode", "category_id"})
         },
         indexes = {
-                @Index(name = "product_name_index", columnList = "productName"),
+                @Index(name = "product_name_index", columnList = "stockCode"),
                 @Index(name = "stock_add_date_index", columnList = "addDate"),
                 @Index(name = "stock_update_date_index", columnList = "updateDate")
         }
@@ -29,6 +30,10 @@ public class Stock {
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID stockCode;
 
     @Column(unique = true, nullable = false)
     private String productName;
