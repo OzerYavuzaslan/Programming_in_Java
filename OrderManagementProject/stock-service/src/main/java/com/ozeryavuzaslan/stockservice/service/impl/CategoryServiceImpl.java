@@ -1,7 +1,6 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
-import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
@@ -47,11 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO getByCategoryCode(UUID categoryCode) {
-        return modelMapper
-                .map(categoryRepository
-                                .findByCategoryCode(categoryCode)
-                                .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND)),
-                        CategoryDTO.class);
+        return modelMapper.map(getCategory(categoryCode), CategoryDTO.class);
     }
 
     @Override
