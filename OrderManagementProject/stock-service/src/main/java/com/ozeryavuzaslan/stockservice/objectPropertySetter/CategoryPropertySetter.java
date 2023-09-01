@@ -9,8 +9,8 @@ import java.util.UUID;
 
 @Component
 public class CategoryPropertySetter {
-    public void setSomeProperties(CategoryDTO categoryDTO, boolean isInsert, boolean isCategoryNotPresent){
-        if (isInsert && !isCategoryNotPresent) {
+    public void setSomeProperties(CategoryDTO categoryDTO, boolean isInsert, boolean isCategoryPresent){
+        if (isInsert && !isCategoryPresent) {
             categoryDTO.setAddDate(LocalDateTime.now());
             categoryDTO.setCategoryCode(UUID.randomUUID());
         }

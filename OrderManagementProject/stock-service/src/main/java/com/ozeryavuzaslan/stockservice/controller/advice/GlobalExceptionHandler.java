@@ -7,6 +7,7 @@ import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -22,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.ozeryavuzaslan.basedomains.util.Constants.*;
-import static com.ozeryavuzaslan.basedomains.util.Constants.TOTAL_ERRORS;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -32,8 +32,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final CustomMessageHandler customMessageHandler;
 
     @ResponseBody
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request){
+        errorDetailsDTO
+                .setErrorDetailsProperties(LocalDateTime.now(),
+                        customMessageHandler
+                                .returnProperMessage(ALREADY_IN_DEFINITION, exception.getMessage()),
+                        request.getDescription(false));
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
+    }
+
+    @ResponseBody
     @ExceptionHandler(ProductAmountNotEnoughException.class)
-    public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughExceptions(Exception exception, WebRequest request) {
+    public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughException(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
                 customMessageHandler
                         .returnProperMessage(QUANTITY_AMOUNT_NOT_ENOUGH,

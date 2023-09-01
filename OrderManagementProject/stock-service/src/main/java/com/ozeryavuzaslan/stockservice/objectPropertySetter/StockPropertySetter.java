@@ -13,14 +13,14 @@ import java.util.UUID;
 public class StockPropertySetter {
     private final CategoryPropertySetter categoryPropertySetter;
 
-    public void setSomeProperties(StockDTO stockDTO, boolean isInsert, boolean isCategoryNotPresent){
+    public void setSomeProperties(StockDTO stockDTO, boolean isInsert, boolean isCategoryPresent){
         if (isInsert) {
             stockDTO.setProductCode(UUID.randomUUID());
             stockDTO.setAddDate(LocalDateTime.now());
         }
 
         stockDTO.setUpdateDate(LocalDateTime.now());
-        categoryPropertySetter.setSomeProperties(stockDTO.getCategory(), isInsert, isCategoryNotPresent);
+        categoryPropertySetter.setSomeProperties(stockDTO.getCategory(), isInsert, isCategoryPresent);
     }
 
     public void setSomeProperties(Stock stock, StockDTO stockDTO){
