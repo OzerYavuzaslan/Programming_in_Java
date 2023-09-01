@@ -25,13 +25,18 @@ public class StockController {
         return ResponseEntity.created(customLocation.getURILocation(STOCK_ENDPOINT,
                         stockService
                                 .saveOrUpdateStock(stockDTO)
-                                .getProductName()))
+                                .getId()))
                 .build();
     }
 
     @GetMapping("/stocks/{productName}")
     public ResponseEntity<StockDTO> getStock(@PathVariable String productName){
         return ResponseEntity.ok(stockService.getByProductName(productName));
+    }
+
+    @GetMapping("/stocks/getByProductId/{id}")
+    public ResponseEntity<StockDTO> getStockById(@PathVariable long id){
+        return ResponseEntity.ok(stockService.getByProductID(id));
     }
 
     @GetMapping("/stocks")
@@ -46,7 +51,8 @@ public class StockController {
     }
 
     @PutMapping("stocks")
-    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam String productName, int quantityAmount){
+    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam String productName,
+                                                          @RequestParam int quantityAmount){
         return ResponseEntity.ok(stockService.decreaseStockQuantity(productName, quantityAmount));
     }
 }

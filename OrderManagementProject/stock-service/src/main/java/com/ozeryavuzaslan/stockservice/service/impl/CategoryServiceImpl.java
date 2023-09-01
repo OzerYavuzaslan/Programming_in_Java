@@ -40,6 +40,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public CategoryDTO getByCategoryID(long categoryID) {
+        return null;
+    }
+
+    @Override
     public List<CategoryDTO> getCategoryList() {
         return null;
     }

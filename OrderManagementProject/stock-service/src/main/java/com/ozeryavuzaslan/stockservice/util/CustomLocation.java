@@ -7,11 +7,19 @@ import java.net.URI;
 
 @Component
 public class CustomLocation {
-    public URI getURILocation(String path, String buildStr){
+    public URI getURILocation(String path, String build){
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path(path)
-                .buildAndExpand(buildStr)
+                .buildAndExpand(build)
+                .toUri();
+    }
+
+    public URI getURILocation(String path, long build){
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path(path)
+                .buildAndExpand(build)
                 .toUri();
     }
 }

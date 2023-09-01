@@ -57,6 +57,14 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    public StockDTO getByProductID(long productID) {
+        return modelMapper
+                .map(stockRepository
+                        .findById(productID).orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
+                        StockDTO.class);
+    }
+
+    @Override
     public StockDTO getByProductName(String productName) {
         return getProduct(productName);
     }
