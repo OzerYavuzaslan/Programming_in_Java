@@ -4,6 +4,7 @@ import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
+import com.ozeryavuzaslan.stockservice.exception.QuantityAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +30,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final ErrorDetailsDTO errorDetailsDTO;
     private final CustomStringBuilder customStringBuilder;
     private final CustomMessageHandler customMessageHandler;
+
+    @ResponseBody
+    @ExceptionHandler(QuantityAmountNotEnoughException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughExceptions(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler
+                        .returnProperMessage(QUANTITY_AMOUNT_NOT_ENOUGH,
+                                exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+    }
 
     @ResponseBody
     @ExceptionHandler({CategoryNotFoundException.class, StockNotFoundException.class})

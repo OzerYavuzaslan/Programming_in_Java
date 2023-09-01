@@ -44,4 +44,9 @@ public class StockController {
         stockService.deleteStockByProductName(productName);
         return new ResponseEntity<>(productName + " has been deleted.", HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping("stocks")
+    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam String productName, int quantityAmount){
+        return ResponseEntity.ok(stockService.decreaseStockQuantity(productName, quantityAmount));
+    }
 }

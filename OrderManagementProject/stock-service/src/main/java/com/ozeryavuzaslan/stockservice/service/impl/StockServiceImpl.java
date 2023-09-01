@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
+import com.ozeryavuzaslan.stockservice.exception.QuantityAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.model.Stock;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static com.ozeryavuzaslan.basedomains.util.Constants.QUANTITY_AMOUNT_NOT_ENOUGH;
 import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_NOT_FOUND;
 
 @Service
@@ -56,11 +58,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public StockDTO getByProductName(String productName) {
-        return modelMapper
-                .map(stockRepository
-                        .findByProductName(productName)
-                        .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
-                        StockDTO.class);
+        return getProduct(productName);
     }
 
     @Override
@@ -78,5 +76,25 @@ public class StockServiceImpl implements StockService {
         stockRepository
                 .deleteByProductName(productName)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND));
+    }
+
+    @Override
+    public StockDTO decreaseStockQuantity(String productName, int quantityAmount) {
+        StockDTO stockDTO = getProduct(productName);
+
+        if (stockDTO.getQuantity() < quantityAmount)
+            throw new QuantityAmountNotEnoughException(QUANTITY_AMOUNT_NOT_ENOUGH);
+
+        stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
+
+        return saveOrUpdateStock(stockDTO);
+    }
+
+    private StockDTO getProduct(String productName){
+        return modelMapper
+                .map(stockRepository
+                                .findByProductName(productName)
+                                .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
+                        StockDTO.class);
     }
 }

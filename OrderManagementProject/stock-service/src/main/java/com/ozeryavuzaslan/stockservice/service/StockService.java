@@ -9,4 +9,5 @@ public interface StockService {
     StockDTO getByProductName(String productName);
     List<StockDTO> getStockList();
     void deleteStockByProductName(String productName);
+    StockDTO decreaseStockQuantity(String productName, int quantityAmount);
 }
