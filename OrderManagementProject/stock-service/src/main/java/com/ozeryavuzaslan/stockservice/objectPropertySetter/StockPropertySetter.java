@@ -15,7 +15,7 @@ public class StockPropertySetter {
 
     public void setSomeProperties(StockDTO stockDTO, boolean isInsert, boolean isCategoryNotPresent){
         if (isInsert) {
-            stockDTO.setStockCode(UUID.randomUUID());
+            stockDTO.setProductCode(UUID.randomUUID());
             stockDTO.setAddDate(LocalDateTime.now());
         }
 
@@ -25,7 +25,7 @@ public class StockPropertySetter {
 
     public void setSomeProperties(Stock stock, StockDTO stockDTO){
         stockDTO.setAddDate(stock.getAddDate());
-        stockDTO.setStockCode(stock.getStockCode());
+        stockDTO.setProductCode(stock.getProductCode());
         stockDTO.setId(stock.getId());
         categoryPropertySetter.setSomeProperties(stock.getCategory(), stockDTO.getCategory());
     }

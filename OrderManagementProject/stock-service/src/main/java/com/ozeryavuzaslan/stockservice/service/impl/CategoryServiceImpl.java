@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.ozeryavuzaslan.basedomains.util.Constants.CATEGORY_NOT_FOUND;
 
@@ -31,12 +32,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDTO getByCategoryName(String name) {
+    public CategoryDTO getByCategoryCode(UUID categoryCode) {
         return modelMapper
                 .map(categoryRepository
-                                .findByName(name)
+                                .findByCategoryCode(categoryCode)
                                 .orElseThrow(() -> new CategoryNotFoundException(CATEGORY_NOT_FOUND)),
                         CategoryDTO.class);
+    }
+
+    @Override
+    public CategoryDTO getByCategoryName(String name) {
+        return null;
     }
 
     @Override
@@ -50,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteStockByCategoryName(String name) {
+    public void deleteStockByCategoryName(UUID categoryCode) {
 
     }
 }

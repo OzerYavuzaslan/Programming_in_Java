@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Table(name = "Category",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"categoryCode"})
+                @UniqueConstraint(columnNames = {"categoryCode", "name"})
         },
         indexes = {
                 @Index(name = "category_name_index", columnList = "categoryCode"),
@@ -32,7 +32,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private UUID categoryCode;
 
     @Column(unique = true, nullable = false)

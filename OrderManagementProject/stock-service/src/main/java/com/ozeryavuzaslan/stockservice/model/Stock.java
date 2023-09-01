@@ -12,10 +12,10 @@ import java.util.UUID;
 
 @Table(name = "stocks",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"stockCode", "category_id"})
+                @UniqueConstraint(columnNames = {"productCode", "productName", "category_id"})
         },
         indexes = {
-                @Index(name = "product_name_index", columnList = "stockCode"),
+                @Index(name = "product_name_index", columnList = "productCode"),
                 @Index(name = "stock_add_date_index", columnList = "addDate"),
                 @Index(name = "stock_update_date_index", columnList = "updateDate")
         }
@@ -31,9 +31,8 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID stockCode;
+    @Column(unique = true, nullable = false)
+    private UUID productCode;
 
     @Column(unique = true, nullable = false)
     private String productName;

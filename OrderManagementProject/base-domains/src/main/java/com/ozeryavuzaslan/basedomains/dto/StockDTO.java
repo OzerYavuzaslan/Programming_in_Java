@@ -15,7 +15,7 @@ import java.util.UUID;
 public class StockDTO {
     @JsonIgnore
     private Long id;
-    private UUID StockCode;
+    private UUID productCode;
     private String productName;
     private int quantity;
     private double price;

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_GET_ENDPOINT;
 
@@ -29,7 +30,12 @@ public class StockController {
                 .build();
     }
 
-    @GetMapping("/stocks/{productName}")
+    @GetMapping("/stocks/{productCode}")
+    public ResponseEntity<StockDTO> getStock(@PathVariable UUID productCode){
+        return ResponseEntity.ok(stockService.getByProductCode(productCode));
+    }
+
+    @GetMapping("/stocks/getByProductName/{productName}")
     public ResponseEntity<StockDTO> getStock(@PathVariable String productName){
         return ResponseEntity.ok(stockService.getByProductName(productName));
     }
@@ -45,14 +51,14 @@ public class StockController {
     }
 
     @DeleteMapping("/stocks")
-    public ResponseEntity<String> deleteStock(@RequestParam String productName){
-        stockService.deleteStockByProductName(productName);
-        return new ResponseEntity<>(productName + " has been deleted.", HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> deleteStock(@RequestParam UUID productCode){
+        stockService.deleteStockByProductName(productCode);
+        return new ResponseEntity<>(productCode + " has been deleted.", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/stocks/modify")
-    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam String productName,
+    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
                                                           @RequestParam int quantityAmount){
-        return ResponseEntity.ok(stockService.decreaseStockQuantity(productName, quantityAmount));
+        return ResponseEntity.ok(stockService.decreaseStockQuantity(productCode, quantityAmount));
     }
 }
