@@ -14,14 +14,12 @@ import com.ozeryavuzaslan.stockservice.service.StockService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.ozeryavuzaslan.basedomains.util.Constants.QUANTITY_AMOUNT_NOT_ENOUGH;
-import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +28,12 @@ public class StockServiceImpl implements StockService {
     private final StockRepository stockRepository;
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
+
+    @Value("${stock.amount.not.enough}")
+    private String stockAmountNotEnough;
+
+    @Value("${stock.not.found}")
+    private String stockNotFound;
 
     //Such a bad relationship between entities as well as the operations... Do not do what I did here! lol...
     @Override
@@ -68,7 +72,7 @@ public class StockServiceImpl implements StockService {
     public StockDTO getByProductID(long productID) {
         return modelMapper
                 .map(stockRepository
-                        .findById(productID).orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
+                        .findById(productID).orElseThrow(() -> new StockNotFoundException(stockNotFound)),
                         StockDTO.class);
     }
 
@@ -82,7 +86,7 @@ public class StockServiceImpl implements StockService {
         return modelMapper
                 .map(stockRepository
                                 .findByProductName(productName)
-                                .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
+                                .orElseThrow(() -> new StockNotFoundException(stockNotFound)),
                         StockDTO.class);
     }
 
@@ -100,7 +104,7 @@ public class StockServiceImpl implements StockService {
     public void deleteStockByProductName(UUID productCode) {
         stockRepository
                 .deleteByProductCode(productCode)
-                .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND));
+                .orElseThrow(() -> new StockNotFoundException(stockNotFound));
     }
 
     @Override
@@ -108,7 +112,7 @@ public class StockServiceImpl implements StockService {
         StockDTO stockDTO = getProduct(productCode);
 
         if (stockDTO.getQuantity() < quantityAmount)
-            throw new ProductAmountNotEnoughException(QUANTITY_AMOUNT_NOT_ENOUGH);
+            throw new ProductAmountNotEnoughException(stockAmountNotEnough);
 
         stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
 
@@ -119,7 +123,7 @@ public class StockServiceImpl implements StockService {
         return modelMapper
                 .map(stockRepository
                                 .findByProductCode(productCode)
-                                .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
+                                .orElseThrow(() -> new StockNotFoundException(stockNotFound)),
                         StockDTO.class);
     }
 }

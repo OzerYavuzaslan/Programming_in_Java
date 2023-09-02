@@ -10,13 +10,11 @@ import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-
-import static com.ozeryavuzaslan.basedomains.util.Constants.CATEGORY_NOT_FOUND;
-import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +22,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
     private final CategoryPropertySetter categoryPropertySetter;
+
+    @Value("${category.not.found}")
+    private String categoryNotFound;
 
     @Override
     public CategoryDTO saveCategory(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO) {
@@ -58,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
         return modelMapper
                 .map(categoryRepository
                                 .findByName(name)
-                                .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND)),
+                                .orElseThrow(() -> new CategoryNotFoundException(categoryNotFound)),
                         CategoryDTO.class);
     }
 
@@ -66,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO getByCategoryID(long categoryID) {
         return modelMapper
                 .map(categoryRepository
-                                .findById(categoryID).orElseThrow(() -> new CategoryNotFoundException(STOCK_NOT_FOUND)),
+                                .findById(categoryID).orElseThrow(() -> new CategoryNotFoundException(categoryNotFound)),
                         CategoryDTO.class);
     }
 
@@ -83,14 +84,14 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategoryByCategoryCode(UUID categoryCode) {
         categoryRepository
                 .deleteByCategoryCode(categoryCode)
-                .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND));
+                .orElseThrow(() -> new StockNotFoundException(categoryNotFound));
     }
 
     private CategoryDTO getCategory(UUID categoryCode){
         return modelMapper
                 .map(categoryRepository
                                 .findByCategoryCode(categoryCode)
-                                .orElseThrow(() -> new StockNotFoundException(CATEGORY_NOT_FOUND)),
+                                .orElseThrow(() -> new StockNotFoundException(categoryNotFound)),
                         CategoryDTO.class);
     }
 }

@@ -24,8 +24,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static com.ozeryavuzaslan.basedomains.util.Constants.*;
-
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -38,6 +36,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Value("${unique.constraint.violation.sql.code}")
     private String uniqueConstraintViolationSQLStatusCode;
+
+    @Value("${total.errors}")
+    private String totalErrors;
+
+    @Value("${first.error}")
+    private String firstError;
+
+    @Value("${already.in}")
+    private String alreadyIn;
+
+    @Value("${stock.amount.not.enough}")
+    private String stockAmountNotEnough;
+
+    @Value("${stock.not.found}")
+    private String stockNotFound;
+
+    @Value("${category.not.found}")
+    private String categoryNotFound;
 
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -55,7 +71,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDetailsDTO
                 .setErrorDetailsProperties(LocalDateTime.now(),
                         customMessageHandler
-                                .returnProperMessage(ALREADY_IN_DEFINITION, tmpExceptionMsg),
+                                .returnProperMessage(alreadyIn, tmpExceptionMsg),
                         request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
@@ -66,7 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughException(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
                 customMessageHandler
-                        .returnProperMessage(QUANTITY_AMOUNT_NOT_ENOUGH,
+                        .returnProperMessage(stockAmountNotEnough,
                                 exception.getMessage()),
                 request.getDescription(false));
 
@@ -80,9 +96,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String tmpExceptionMessage;
 
         if (isStockException)
-            tmpExceptionMessage = STOCK_NOT_FOUND;
+            tmpExceptionMessage = stockNotFound;
         else
-            tmpExceptionMessage = CATEGORY_NOT_FOUND;
+            tmpExceptionMessage = categoryNotFound;
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
                 customMessageHandler
@@ -99,9 +115,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(FIRST_ERROR, FIRST_ERROR)  +
+                customMessageHandler.returnProperMessage(firstError, firstError)  +
                         customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg) + " | " +
-                        customMessageHandler.returnProperMessage(TOTAL_ERRORS, TOTAL_ERRORS) +
+                        customMessageHandler.returnProperMessage(totalErrors, totalErrors) +
                         exception.getErrorCount() + " --> " + customStringBuilder.getDefaultExceptionMessages(exception),
                 request.getDescription(false));
 
