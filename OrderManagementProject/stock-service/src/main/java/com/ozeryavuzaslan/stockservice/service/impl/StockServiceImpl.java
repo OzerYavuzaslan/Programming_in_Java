@@ -92,7 +92,7 @@ public class StockServiceImpl implements StockService {
     @Transactional
     public void deleteStockByProductName(UUID productCode) {
         stockRepository
-                .deleteByProductName(productCode)
+                .deleteByProductCode(productCode)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND));
     }
 

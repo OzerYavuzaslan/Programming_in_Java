@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface StockRepository extends JpaRepository<Stock, Long> {
     Optional<Stock> findByProductCode(UUID productCode);
     Optional<Stock> findByProductName(String productName);
-    Optional<Stock> deleteByProductName(UUID productCode);
+    Optional<Stock> deleteByProductCode(UUID productCode);
 }
