@@ -1,12 +1,13 @@
 package com.ozeryavuzaslan.stockservice.service;
 
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface StockService {
-    StockDTO saveOrUpdateStock(StockDTO stockDTO);
+    StockDTO saveOrUpdateStock(StockWithoutUUIDDTO stockWithoutUUIDDTO);
     StockDTO getByProductCode(UUID productCode);
     StockDTO getByProductName(String productName);
     StockDTO getByProductID(long productID);

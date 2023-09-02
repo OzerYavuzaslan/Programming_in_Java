@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
@@ -22,10 +23,10 @@ public class StockController {
     private final StockService stockService;
 
     @PostMapping("/stocks")
-    public ResponseEntity<StockDTO> insertOrUpdateStock(@Valid @RequestBody StockDTO stockDTO){
+    public ResponseEntity<StockDTO> insertOrUpdateStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
         return ResponseEntity.created(customLocation.getURILocation(STOCK_GET_ENDPOINT,
                         stockService
-                                .saveOrUpdateStock(stockDTO)
+                                .saveOrUpdateStock(stockWithoutUUIDDTO)
                                 .getId()))
                 .build();
     }

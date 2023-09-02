@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
@@ -32,28 +33,28 @@ public class StockServiceImpl implements StockService {
 
     //Such a bad relationship between entities as well as the operations... Do not do what I did here! lol...
     @Override
-    public StockDTO saveOrUpdateStock(StockDTO stockDTO) {
-        Optional<Stock> stock = stockRepository.findByProductCode(stockDTO.getProductCode());
+    public StockDTO saveOrUpdateStock(StockWithoutUUIDDTO stockWithoutUUIDDTO) {
+        Optional<Stock> stock = stockRepository.findByProductCode(stockWithoutUUIDDTO.getProductCode());
 
         if (stock.isEmpty()) {
-            Optional<Category> category = categoryRepository.findByCategoryCode(stockDTO.getCategory().getCategoryCode());
+            Optional<Category> category = categoryRepository.findByCategoryCode(stockWithoutUUIDDTO.getCategory().getCategoryCode());
             boolean isCategoryPresent = category.isPresent();
-            stockPropertySetter.setSomeProperties(stockDTO, true, isCategoryPresent);
+            stockPropertySetter.setSomeProperties(modelMapper.map(stockWithoutUUIDDTO, StockDTO.class), true, isCategoryPresent);
 
             if (isCategoryPresent)
-                stockDTO.setCategory(modelMapper.map(category, CategoryDTO.class));
+                stockWithoutUUIDDTO.setCategory(modelMapper.map(category, CategoryDTO.class));
             else
-                stockDTO.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockDTO.getCategory(), Category.class)), CategoryDTO.class));
+                stockWithoutUUIDDTO.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockWithoutUUIDDTO.getCategory(), Category.class)), CategoryDTO.class));
         }
         else {
-            stockPropertySetter.setSomeProperties(stockDTO, false, false);
-            stockPropertySetter.setSomeProperties(stock.get(), stockDTO);
+            stockPropertySetter.setSomeProperties(modelMapper.map(stockWithoutUUIDDTO, StockDTO.class), false, false);
+            stockPropertySetter.setSomeProperties(stock.get(), modelMapper.map(stockWithoutUUIDDTO, StockDTO.class));
         }
 
         return modelMapper
                 .map(stockRepository
                                 .save(modelMapper
-                                        .map(stockDTO, Stock.class)),
+                                        .map(stockWithoutUUIDDTO, Stock.class)),
                         StockDTO.class);
     }
 
