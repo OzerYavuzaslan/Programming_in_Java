@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
+import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
@@ -22,10 +23,10 @@ public class CategoryController {
     private final CustomLocation customLocation;
 
     @PostMapping("/categories")
-    public ResponseEntity<CategoryDTO> insertCategory(@Valid @RequestBody CategoryDTO categoryDTO){
+    public ResponseEntity<CategoryDTO> insertCategory(@Valid @RequestBody CategoryWithoutUUIDDTO categoryWithoutUUIDDTO){
         return ResponseEntity.created(customLocation.getURILocation(CATEGORY_GET_ENDPOINT,
                         categoryService
-                                .saveCategory(categoryDTO)
+                                .saveCategory(categoryWithoutUUIDDTO)
                                 .getId()))
                 .build();
     }

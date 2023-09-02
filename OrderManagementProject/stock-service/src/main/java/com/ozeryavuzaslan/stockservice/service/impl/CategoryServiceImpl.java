@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
+import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
@@ -25,13 +26,13 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryPropertySetter categoryPropertySetter;
 
     @Override
-    public CategoryDTO saveCategory(CategoryDTO categoryDTO) {
-        categoryPropertySetter.setSomeProperties(categoryDTO, true, false);
+    public CategoryDTO saveCategory(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO) {
+        categoryPropertySetter.setSomeProperties(modelMapper.map(categoryWithoutUUIDDTO, CategoryDTO.class), true, false);
 
         return modelMapper
                 .map(categoryRepository
                         .save(modelMapper
-                                .map(categoryDTO, Category.class)),
+                                .map(categoryWithoutUUIDDTO, Category.class)),
                         CategoryDTO.class);
     }
 

@@ -12,16 +12,13 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockWithoutUUIDDTO {
+public class CategoryWithoutUUIDDTO {
     @JsonIgnore
     private Long id;
 
     @JsonIgnore
-    private UUID productCode;
-    private String productName;
-    private int quantity;
-    private double price;
-    private CategoryWithoutUUIDDTO category;
+    private UUID categoryCode;
+    private String name;
 
     @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

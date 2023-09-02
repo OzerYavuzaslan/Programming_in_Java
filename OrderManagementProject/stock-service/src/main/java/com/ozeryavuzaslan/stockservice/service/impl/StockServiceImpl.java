@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
+import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
@@ -39,16 +39,16 @@ public class StockServiceImpl implements StockService {
         if (stock.isEmpty()) {
             Optional<Category> category = categoryRepository.findByCategoryCode(stockWithoutUUIDDTO.getCategory().getCategoryCode());
             boolean isCategoryPresent = category.isPresent();
-            stockPropertySetter.setSomeProperties(modelMapper.map(stockWithoutUUIDDTO, StockDTO.class), true, isCategoryPresent);
+            stockPropertySetter.setSomeProperties(stockWithoutUUIDDTO, true, isCategoryPresent);
 
             if (isCategoryPresent)
-                stockWithoutUUIDDTO.setCategory(modelMapper.map(category, CategoryDTO.class));
+                stockWithoutUUIDDTO.setCategory(modelMapper.map(category, CategoryWithoutUUIDDTO.class));
             else
-                stockWithoutUUIDDTO.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockWithoutUUIDDTO.getCategory(), Category.class)), CategoryDTO.class));
+                stockWithoutUUIDDTO.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockWithoutUUIDDTO.getCategory(), Category.class)), CategoryWithoutUUIDDTO.class));
         }
         else {
-            stockPropertySetter.setSomeProperties(modelMapper.map(stockWithoutUUIDDTO, StockDTO.class), false, false);
-            stockPropertySetter.setSomeProperties(stock.get(), modelMapper.map(stockWithoutUUIDDTO, StockDTO.class));
+            stockPropertySetter.setSomeProperties(stockWithoutUUIDDTO, false, false);
+            stockPropertySetter.setSomeProperties(stock.get(), stockWithoutUUIDDTO);
         }
 
         return modelMapper
