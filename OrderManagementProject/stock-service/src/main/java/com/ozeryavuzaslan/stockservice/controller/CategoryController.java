@@ -6,14 +6,13 @@ import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
-import static com.ozeryavuzaslan.basedomains.util.Constants.CATEGORY_GET_ENDPOINT;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,9 +21,12 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final CustomLocation customLocation;
 
+    @Value("${category.get.endpoint}")
+    private String categoryGetEndpoint;
+
     @PostMapping("/categories")
     public ResponseEntity<CategoryDTO> insertCategory(@Valid @RequestBody CategoryWithoutUUIDDTO categoryWithoutUUIDDTO){
-        return ResponseEntity.created(customLocation.getURILocation(CATEGORY_GET_ENDPOINT,
+        return ResponseEntity.created(customLocation.getURILocation(categoryGetEndpoint,
                         categoryService
                                 .saveCategory(categoryWithoutUUIDDTO)
                                 .getId()))

@@ -1,8 +1,6 @@
 package com.ozeryavuzaslan.basedomains.util;
 
 public final class Constants {
-    public static final String STOCK_GET_ENDPOINT = "/getByProductId/{id}";
-    public static final String CATEGORY_GET_ENDPOINT = "/getByCategoryId/{id}";
     public static final String TOTAL_ERRORS = "Total Error(s): ";
     public static final String FIRST_ERROR = "First Error: ";
     public static final String STOCK_NOT_FOUND = "The requested stock is not found! Consider add new stock.";

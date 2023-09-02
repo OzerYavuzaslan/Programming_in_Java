@@ -37,7 +37,13 @@ public class StockServiceImpl implements StockService {
         Optional<Stock> stock = stockRepository.findByProductCode(stockWithoutUUIDDTO.getProductCode());
 
         if (stock.isEmpty()) {
-            Optional<Category> category = categoryRepository.findByCategoryCode(stockWithoutUUIDDTO.getCategory().getCategoryCode());
+            Optional<Category> category;
+
+            if (stockWithoutUUIDDTO.getCategory().getCategoryCode() == null)
+                category = categoryRepository.findByName(stockWithoutUUIDDTO.getCategory().getName());
+            else
+                category = categoryRepository.findByCategoryCode(stockWithoutUUIDDTO.getCategory().getCategoryCode());
+
             boolean isCategoryPresent = category.isPresent();
             stockPropertySetter.setSomeProperties(stockWithoutUUIDDTO, true, isCategoryPresent);
 

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Table(name = "stocks",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"productCode", "productName", "category_id"})
+                @UniqueConstraint(columnNames = {"productCode", "productName"})
         },
         indexes = {
                 @Index(name = "product_name_index", columnList = "productCode"),
@@ -44,7 +44,7 @@ public class Stock {
     private double price;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(nullable = false, unique = true, name = "category_id", referencedColumnName = "id")
+    @JoinColumn(nullable = false, name = "category_id", referencedColumnName = "id")
     private Category category;
 
     @Column(nullable = false)

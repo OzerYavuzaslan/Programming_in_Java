@@ -6,7 +6,7 @@ import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_GET_ENDPOINT;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class StockController {
-    private final ModelMapper modelMapper;
     private final StockService stockService;
     private final CustomLocation customLocation;
 
+    @Value("${stock.get.endpoint}")
+    private String stockGetEndpoint;
+
     @PostMapping("/stocks")
     public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        return ResponseEntity.created(customLocation.getURILocation(STOCK_GET_ENDPOINT,
+        return ResponseEntity.created(customLocation.getURILocation(stockGetEndpoint,
                         stockService
                                 .saveOrUpdateStock(stockWithoutUUIDDTO)
                                 .getId()))

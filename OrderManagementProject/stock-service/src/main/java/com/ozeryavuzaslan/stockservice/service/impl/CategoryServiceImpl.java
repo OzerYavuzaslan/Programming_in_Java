@@ -43,19 +43,14 @@ public class CategoryServiceImpl implements CategoryService {
         return modelMapper
                 .map(categoryRepository
                         .save(modelMapper
-                                .map(categoryDTO, Category.class)),
+                                .map(getCategory(categoryDTO.getCategoryCode()),
+                                        Category.class)),
                         CategoryDTO.class);
     }
 
     @Override
     public CategoryDTO getByCategoryCode(UUID categoryCode) {
-        return modelMapper
-                .map(modelMapper
-                        .map(categoryRepository
-                                        .findByCategoryCode(categoryCode)
-                                        .orElseThrow(() -> new StockNotFoundException(CATEGORY_NOT_FOUND)),
-                                CategoryDTO.class),
-                        CategoryDTO.class);
+        return modelMapper.map(getCategory(categoryCode), CategoryDTO.class);
     }
 
     @Override
@@ -89,5 +84,13 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository
                 .deleteByCategoryCode(categoryCode)
                 .orElseThrow(() -> new StockNotFoundException(STOCK_NOT_FOUND));
+    }
+
+    private CategoryDTO getCategory(UUID categoryCode){
+        return modelMapper
+                .map(categoryRepository
+                                .findByCategoryCode(categoryCode)
+                                .orElseThrow(() -> new StockNotFoundException(CATEGORY_NOT_FOUND)),
+                        CategoryDTO.class);
     }
 }
