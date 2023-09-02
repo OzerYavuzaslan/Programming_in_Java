@@ -106,7 +106,7 @@ public class StockServiceImpl implements StockService {
 
         stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
 
-        return saveOrUpdateStock(stockDTO);
+        return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
     }
 
     private StockDTO getProduct(UUID productCode){
