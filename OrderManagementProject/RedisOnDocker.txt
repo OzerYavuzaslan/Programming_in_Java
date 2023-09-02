@@ -1,0 +1,9 @@
+Download redis as an image 	 	    : docker pull redis
+Run Redis on Docker        	 	    : docker run -it --name redis-container -d redis
+Connect to redis container 	 	    : docker exec -it redis_container bash
+After connection should be seen 	    : root@64163c8ed78d:/data#
+connect to the Redis command-line interface : root@64163c8ed78d:/data# redis-cli
+Check Redis if it is pinging		    : 127.0.0.1:6379> ping
+If everything is fine you should be seeing  : PONG
+To Exit					    : 127.0.0.1:6379> exit
+					      root@64163c8ed78d:/data# exit
