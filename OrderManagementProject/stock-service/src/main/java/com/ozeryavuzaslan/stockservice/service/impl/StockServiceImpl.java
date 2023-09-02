@@ -15,6 +15,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,6 +31,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
     private final ModelMapper modelMapper;
+    private final CacheManager cacheManager;
     private final StockRepository stockRepository;
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
@@ -65,6 +68,8 @@ public class StockServiceImpl implements StockService {
             stockPropertySetter.setSomeProperties(stockWithoutUUIDDTO, false, false);
             stockPropertySetter.setSomeProperties(stock.get(), stockWithoutUUIDDTO);
         }
+
+        clearCache("stocks");
 
         return modelMapper
                 .map(stockRepository
@@ -119,9 +124,9 @@ public class StockServiceImpl implements StockService {
     @Transactional
     @CacheEvict(value = "stocks", key = "#productCode")
     public void deleteStockByProductCode(UUID productCode) {
-        stockRepository
-                .deleteByProductCode(productCode)
-                .orElseThrow(() -> new StockNotFoundException(stockNotFound));
+        StockDTO stockDTO = getProduct(productCode);
+        stockRepository.delete(modelMapper.map(stockDTO, Stock.class));
+        clearCache("stocks");
     }
 
     @Override
@@ -149,5 +154,12 @@ public class StockServiceImpl implements StockService {
                                 .findByProductCode(productCode)
                                 .orElseThrow(() -> new StockNotFoundException(stockNotFound)),
                         StockDTO.class);
+    }
+
+    private void clearCache(String cacheName){
+        Cache cache = cacheManager.getCache(cacheName);
+
+        if (cache != null)
+            cache.clear();
     }
 }
