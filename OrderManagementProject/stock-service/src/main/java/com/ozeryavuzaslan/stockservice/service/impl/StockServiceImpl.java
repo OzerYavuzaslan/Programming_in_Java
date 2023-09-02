@@ -73,7 +73,18 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @Cacheable(value = "Stock", key = "#Stock.productID")
+    public StockDTO updateStock(UUID productCode, StockWithoutUUIDDTO stockWithoutUUIDDTO){
+        stockWithoutUUIDDTO.setProductCode(productCode);
+        return saveOrUpdateStock(stockWithoutUUIDDTO);
+    }
+
+    @Override
+    public StockDTO getByProductCode(UUID productCode) {
+        return getProduct(productCode);
+    }
+
+    @Override
+    @Cacheable(value = "Stock", key = "#productID")
     public StockDTO getByProductID(long productID) {
         return modelMapper
                 .map(stockRepository
@@ -82,13 +93,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @Cacheable(value = "Stock", key = "#Stock.productCode")
-    public StockDTO getByProductCode(UUID productCode) {
-        return getProduct(productCode);
-    }
-
-    @Override
-    @Cacheable(value = "Stock", key = "#Stock.productName")
+    @Cacheable(value = "Stock", key = "#productName")
     public StockDTO getByProductName(String productName) {
         return modelMapper
                 .map(stockRepository
@@ -109,18 +114,17 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "Stock", key = "#Stock.productCode")
-    public void deleteStockByProductName(UUID productCode) {
-        stockRepository
-                .deleteByProductCode(productCode)
-                .orElseThrow(() -> new StockNotFoundException(stockNotFound));
+    public void deleteStockByProductCode(UUID productCode) {
+        deleteStockByProductCode(getProduct(productCode));
     }
 
     @Override
-    @CacheEvict(value = "Stock", key = "#Stock.productCode")
     public StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount) {
-        StockDTO stockDTO = getProduct(productCode);
+        return decreaseStockQuantity(getProduct(productCode), quantityAmount);
+    }
 
+    @CacheEvict(value = "Stock", key = "#Stock.productCode")
+    private StockDTO decreaseStockQuantity(StockDTO stockDTO, int quantityAmount){
         if (stockDTO.getQuantity() < quantityAmount)
             throw new ProductAmountNotEnoughException(stockAmountNotEnough);
 
@@ -129,12 +133,15 @@ public class StockServiceImpl implements StockService {
         return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
     }
 
-    @Override
-    public StockDTO updateStock(UUID productCode, StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        stockWithoutUUIDDTO.setProductCode(productCode);
-        return saveOrUpdateStock(stockWithoutUUIDDTO);
+
+    @CacheEvict(value = "Stock", key = "#Stock.productCode")
+    private void deleteStockByProductCode(StockDTO stockDTO){
+        stockRepository
+                .deleteByProductCode(stockDTO.getProductCode())
+                .orElseThrow(() -> new StockNotFoundException(stockNotFound));
     }
 
+    @Cacheable(value = "Stock", key = "#Stock.productCode")
     private StockDTO getProduct(UUID productCode){
         return modelMapper
                 .map(stockRepository

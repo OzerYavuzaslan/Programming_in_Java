@@ -13,6 +13,6 @@ public interface StockService {
     StockDTO getByProductName(String productName);
     StockDTO getByProductID(long productID);
     List<StockDTO> getStockList();
-    void deleteStockByProductName(UUID productCode);
+    void deleteStockByProductCode(UUID productCode);
     StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount);
 }

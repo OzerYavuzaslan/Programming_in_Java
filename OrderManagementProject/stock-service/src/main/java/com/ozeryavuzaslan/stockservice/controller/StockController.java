@@ -61,7 +61,7 @@ public class StockController {
 
     @DeleteMapping("/stocks")
     public ResponseEntity<String> deleteStock(@RequestParam UUID productCode){
-        stockService.deleteStockByProductName(productCode);
+        stockService.deleteStockByProductCode(productCode);
         return new ResponseEntity<>(productCode + " has been deleted.", HttpStatus.NO_CONTENT);
     }
 
