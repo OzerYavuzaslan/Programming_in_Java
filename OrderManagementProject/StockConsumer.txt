@@ -9,7 +9,7 @@ spring.kafka.consumer.properties.spring.deserializer.value.delegate.class=org.sp
 
 package com.ozeryavuzaslan.stockservice.configuration;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,7 +65,7 @@ public class KafkaConsumerConfig {
 
 package com.ozeryavuzaslan.stockservice.kafka;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

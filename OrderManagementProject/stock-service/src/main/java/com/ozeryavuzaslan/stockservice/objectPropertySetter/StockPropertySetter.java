@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter;
 
-import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.model.Stock;
 
 public interface StockPropertySetter {

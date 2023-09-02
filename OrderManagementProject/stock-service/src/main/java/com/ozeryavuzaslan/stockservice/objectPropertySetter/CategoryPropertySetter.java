@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.model.Category;
 
 public interface CategoryPropertySetter {

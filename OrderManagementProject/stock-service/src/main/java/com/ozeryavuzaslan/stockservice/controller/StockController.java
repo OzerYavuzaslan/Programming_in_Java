@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.stockservice.controller;
 
-import com.ozeryavuzaslan.basedomains.dto.StockDTO;
-import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;

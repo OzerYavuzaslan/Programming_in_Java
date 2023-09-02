@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.orderservice.configuration;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
-import com.ozeryavuzaslan.basedomains.dto.StockDTO;
-import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;

@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.orderservice.converter;
 
 
-import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import com.ozeryavuzaslan.basedomains.dto.enums.OrderStatusType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

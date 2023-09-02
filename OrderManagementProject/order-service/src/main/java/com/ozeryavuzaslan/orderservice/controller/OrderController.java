@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.orderservice.controller;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

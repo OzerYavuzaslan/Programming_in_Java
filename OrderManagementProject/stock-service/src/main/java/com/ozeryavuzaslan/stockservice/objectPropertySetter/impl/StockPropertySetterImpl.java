@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;

@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.dto;
+package com.ozeryavuzaslan.basedomains.dto.orders;
 
 import com.ozeryavuzaslan.basedomains.dto.enums.OrderStatusType;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import org.springframework.stereotype.Component;

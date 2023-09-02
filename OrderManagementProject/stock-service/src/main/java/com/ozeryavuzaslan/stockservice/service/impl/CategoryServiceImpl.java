@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
-import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;

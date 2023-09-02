@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.dto;
+package com.ozeryavuzaslan.basedomains.dto.stocks;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -13,11 +13,14 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDTO implements Serializable {
+public class StockDTO implements Serializable {
     @JsonIgnore
     private Long id;
-    private UUID categoryCode;
-    private String name;
+    private UUID productCode;
+    private String productName;
+    private int quantity;
+    private double price;
+    private CategoryDTO category;
 
     @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

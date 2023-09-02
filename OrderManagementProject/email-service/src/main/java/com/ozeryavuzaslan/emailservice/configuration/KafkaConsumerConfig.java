@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.emailservice.configuration;
 
-import com.ozeryavuzaslan.basedomains.dto.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +37,7 @@ public class KafkaConsumerConfig {
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         config.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         config.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
-        config.put(JsonDeserializer.TYPE_MAPPINGS, "OrderEventDTO : com.ozeryavuzaslan.basedomains.dto.OrderEventDTO");
+        config.put(JsonDeserializer.TYPE_MAPPINGS, "OrderEventDTO : com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO");
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         return new DefaultKafkaConsumerFactory<>(config);
