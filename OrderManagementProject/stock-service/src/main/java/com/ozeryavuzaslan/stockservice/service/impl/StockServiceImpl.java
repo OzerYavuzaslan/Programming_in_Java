@@ -10,17 +10,15 @@ import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
 import com.ozeryavuzaslan.stockservice.repository.StockRepository;
+import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,10 +29,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
     private final ModelMapper modelMapper;
-    private final CacheManager cacheManager;
     private final StockRepository stockRepository;
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
+    private final CacheManagementService cacheManagementService;
 
     @Value("${stock.amount.not.enough}")
     private String stockAmountNotEnough;
@@ -69,13 +67,8 @@ public class StockServiceImpl implements StockService {
             stockPropertySetter.setSomeProperties(stock.get(), stockWithoutUUIDDTO);
         }
 
-        clearCache("stocks");
-
-        return modelMapper
-                .map(stockRepository
-                                .save(modelMapper
-                                        .map(stockWithoutUUIDDTO, Stock.class)),
-                        StockDTO.class);
+        cacheManagementService.clearCache("stocks");
+        return modelMapper.map(stockRepository.save(modelMapper.map(stockWithoutUUIDDTO, Stock.class)), StockDTO.class);
     }
 
     @Override
@@ -94,20 +87,13 @@ public class StockServiceImpl implements StockService {
     @Override
     @Cacheable(value = "stocks", key = "#productID")
     public StockDTO getByProductID(long productID) {
-        return modelMapper
-                .map(stockRepository
-                        .findById(productID).orElseThrow(() -> new StockNotFoundException(stockNotFound)),
-                        StockDTO.class);
+        return modelMapper.map(stockRepository.findById(productID).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
     }
 
     @Override
     @Cacheable(value = "stocks", key = "#productName")
     public StockDTO getByProductName(String productName) {
-        return modelMapper
-                .map(stockRepository
-                                .findByProductName(productName)
-                                .orElseThrow(() -> new StockNotFoundException(stockNotFound)),
-                        StockDTO.class);
+        return modelMapper.map(stockRepository.findByProductName(productName).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
     }
 
     @Override
@@ -126,7 +112,7 @@ public class StockServiceImpl implements StockService {
     public void deleteStockByProductCode(UUID productCode) {
         StockDTO stockDTO = getProduct(productCode);
         stockRepository.delete(modelMapper.map(stockDTO, Stock.class));
-        clearCache("stocks");
+        cacheManagementService.clearCache("stocks");
     }
 
     @Override
@@ -138,28 +124,10 @@ public class StockServiceImpl implements StockService {
             throw new ProductAmountNotEnoughException(stockAmountNotEnough);
 
         stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
-
         return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
     }
 
-    @Override
-    @CacheEvict(value = "stocks", allEntries = true)
-    public HttpStatus clearCache(){
-        return HttpStatus.OK;
-    }
-
     private StockDTO getProduct(UUID productCode){
-        return modelMapper
-                .map(stockRepository
-                                .findByProductCode(productCode)
-                                .orElseThrow(() -> new StockNotFoundException(stockNotFound)),
-                        StockDTO.class);
-    }
-
-    private void clearCache(String cacheName){
-        Cache cache = cacheManager.getCache(cacheName);
-
-        if (cache != null)
-            cache.clear();
+        return modelMapper.map(stockRepository.findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
     }
 }

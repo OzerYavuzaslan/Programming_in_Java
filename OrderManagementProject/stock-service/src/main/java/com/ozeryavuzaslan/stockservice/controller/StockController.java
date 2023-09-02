@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class StockController {
     private final StockService stockService;
     private final CustomLocation customLocation;
+    private final CacheManagementService cacheManagementService;
 
     @Value("${stock.get.endpoint}")
     private String stockGetEndpoint;
@@ -72,7 +74,8 @@ public class StockController {
     }
 
     @PatchMapping("/stocks/clearCache")
-    public ResponseEntity<HttpStatus> clearCache(){
-        return new ResponseEntity<>(stockService.clearCache(), HttpStatus.OK);
+    public ResponseEntity<String> clearCache(){
+        cacheManagementService.clearCache();
+        return new ResponseEntity<>("Cache has been refreshed.", HttpStatus.OK);
     }
 }

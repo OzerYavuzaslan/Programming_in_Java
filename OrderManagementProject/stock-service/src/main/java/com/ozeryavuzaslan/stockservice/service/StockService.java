@@ -2,7 +2,6 @@ package com.ozeryavuzaslan.stockservice.service;
 
 import com.ozeryavuzaslan.basedomains.dto.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,5 +15,4 @@ public interface StockService {
     List<StockDTO> getStockList();
     void deleteStockByProductCode(UUID productCode);
     StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount);
-    HttpStatus clearCache();
 }
