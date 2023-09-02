@@ -12,5 +12,5 @@ public interface CategoryService {
     CategoryDTO getByCategoryName(String name);
     CategoryDTO getByCategoryID(long categoryID);
     List<CategoryDTO> getCategoryList();
-    void deleteStockByCategoryName(UUID categoryCode);
+    void deleteCategoryByCategoryCode(UUID categoryCode);
 }
