@@ -58,15 +58,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request, PSQLException psqlException){
-        String tmpExceptionMsg;
+        String tmpExceptionMsg = exception.getMessage();
 
-        if (psqlException != null)
-            if (psqlException.getSQLState().equals(uniqueConstraintViolationSQLStatusCode))
-                tmpExceptionMsg = uniqueConstraintViolationExceptionMsg;
-            else
-                tmpExceptionMsg = exception.getMessage();
-        else
-            tmpExceptionMsg = exception.getMessage();
+        if (psqlException != null && psqlException.getSQLState().equals(uniqueConstraintViolationSQLStatusCode))
+            tmpExceptionMsg = uniqueConstraintViolationExceptionMsg;
 
         errorDetailsDTO
                 .setErrorDetailsProperties(LocalDateTime.now(),
