@@ -70,4 +70,9 @@ public class StockController {
                                                           @RequestParam int quantityAmount){
         return ResponseEntity.ok(stockService.decreaseStockQuantity(productCode, quantityAmount));
     }
+
+    @PatchMapping("/stocks/clearCache")
+    public ResponseEntity<HttpStatus> clearCache(){
+        return new ResponseEntity<>(stockService.clearCache(), HttpStatus.OK);
+    }
 }
