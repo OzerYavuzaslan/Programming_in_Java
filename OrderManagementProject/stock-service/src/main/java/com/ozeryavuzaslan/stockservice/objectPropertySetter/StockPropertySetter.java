@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.model.Stock;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +22,13 @@ public class StockPropertySetter {
         }
 
         stockWithoutUUIDDTO.setUpdateDate(LocalDateTime.now());
-        categoryPropertySetter.setSomeProperties(modelMapper.map(stockWithoutUUIDDTO.getCategory(), CategoryDTO.class), isInsert, isCategoryPresent);
+        categoryPropertySetter.setSomeProperties(stockWithoutUUIDDTO.getCategory(), isInsert, isCategoryPresent);
     }
 
     public void setSomeProperties(Stock stock, StockWithoutUUIDDTO stockWithoutUUIDDTO){
         stockWithoutUUIDDTO.setAddDate(stock.getAddDate());
         stockWithoutUUIDDTO.setProductCode(stock.getProductCode());
         stockWithoutUUIDDTO.setId(stock.getId());
-        categoryPropertySetter.setSomeProperties(stock.getCategory(), modelMapper.map(stockWithoutUUIDDTO.getCategory(), CategoryDTO.class));
+        categoryPropertySetter.setSomeProperties(stock.getCategory(), stockWithoutUUIDDTO.getCategory());
     }
 }

@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO saveCategory(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO) {
-        categoryPropertySetter.setSomeProperties(modelMapper.map(categoryWithoutUUIDDTO, CategoryDTO.class), true, false);
+        categoryPropertySetter.setSomeProperties(categoryWithoutUUIDDTO, true, false);
 
         return modelMapper
                 .map(categoryRepository
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO) {
-        categoryPropertySetter.setSomeProperties(categoryDTO, false, true);
+        categoryPropertySetter.setSomeProperties(modelMapper.map(categoryDTO, CategoryWithoutUUIDDTO.class), false, true);
 
         return modelMapper
                 .map(categoryRepository

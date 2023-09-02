@@ -6,6 +6,7 @@ import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +20,23 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.STOCK_GET_ENDPOINT;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class StockController {
-    private final CustomLocation customLocation;
+    private final ModelMapper modelMapper;
     private final StockService stockService;
+    private final CustomLocation customLocation;
 
     @PostMapping("/stocks")
-    public ResponseEntity<StockDTO> insertOrUpdateStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
+    public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
         return ResponseEntity.created(customLocation.getURILocation(STOCK_GET_ENDPOINT,
                         stockService
                                 .saveOrUpdateStock(stockWithoutUUIDDTO)
                                 .getId()))
                 .build();
+    }
+
+    @PutMapping("/stocks/updateStocks")
+    public ResponseEntity<StockDTO> updateStock(@RequestParam UUID productCode,
+                                                @Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
+        return ResponseEntity.ok(stockService.saveOrUpdateStock(stockWithoutUUIDDTO));
     }
 
     @GetMapping("/stocks/{productCode}")

@@ -7,6 +7,8 @@ import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.postgresql.util.PSQLException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,14 +33,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final CustomStringBuilder customStringBuilder;
     private final CustomMessageHandler customMessageHandler;
 
+    @Value("${unique.constraint.violation}")
+    private String uniqueConstraintViolationExceptionMsg;
+
+    @Value("${unique.constraint.violation.sql.code}")
+    private String uniqueConstraintViolationSQLStatusCode;
+
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request){
+    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request, PSQLException psqlException){
+        String tmpExceptionMsg;
+
+        if (psqlException != null)
+            if (psqlException.getSQLState().equals(uniqueConstraintViolationSQLStatusCode))
+                tmpExceptionMsg = uniqueConstraintViolationExceptionMsg;
+            else
+                tmpExceptionMsg = exception.getMessage();
+        else
+            tmpExceptionMsg = exception.getMessage();
+
         errorDetailsDTO
                 .setErrorDetailsProperties(LocalDateTime.now(),
                         customMessageHandler
-                                .returnProperMessage(ALREADY_IN_DEFINITION, exception.getMessage()),
+                                .returnProperMessage(ALREADY_IN_DEFINITION, tmpExceptionMsg),
                         request.getDescription(false));
+
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
     }
 

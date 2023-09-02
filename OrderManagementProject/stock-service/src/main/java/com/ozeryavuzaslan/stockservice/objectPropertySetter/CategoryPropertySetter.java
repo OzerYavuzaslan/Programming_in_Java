@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter;
 
-import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
+import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import org.springframework.stereotype.Component;
 
@@ -9,18 +9,18 @@ import java.util.UUID;
 
 @Component
 public class CategoryPropertySetter {
-    public void setSomeProperties(CategoryDTO categoryDTO, boolean isInsert, boolean isCategoryPresent){
+    public void setSomeProperties(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO, boolean isInsert, boolean isCategoryPresent){
         if (isInsert && !isCategoryPresent) {
-            categoryDTO.setAddDate(LocalDateTime.now());
-            categoryDTO.setCategoryCode(UUID.randomUUID());
+            categoryWithoutUUIDDTO.setAddDate(LocalDateTime.now());
+            categoryWithoutUUIDDTO.setCategoryCode(UUID.randomUUID());
         }
 
-        categoryDTO.setUpdateDate(LocalDateTime.now());
+        categoryWithoutUUIDDTO.setUpdateDate(LocalDateTime.now());
     }
 
-    public void setSomeProperties(Category category, CategoryDTO categoryDTO){
-        categoryDTO.setId(category.getId());
-        categoryDTO.setCategoryCode(category.getCategoryCode());
-        categoryDTO.setAddDate(category.getAddDate());
+    public void setSomeProperties(Category category, CategoryWithoutUUIDDTO categoryWithoutUUIDDTO){
+        categoryWithoutUUIDDTO.setId(category.getId());
+        categoryWithoutUUIDDTO.setCategoryCode(category.getCategoryCode());
+        categoryWithoutUUIDDTO.setAddDate(category.getAddDate());
     }
 }
