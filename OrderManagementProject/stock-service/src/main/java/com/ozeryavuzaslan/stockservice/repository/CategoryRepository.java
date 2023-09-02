@@ -9,5 +9,4 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByName(String name);
     Optional<Category> findByCategoryCode(UUID categoryCode);
-    Optional<Category> deleteByCategoryCode(UUID categoryCode);
 }
