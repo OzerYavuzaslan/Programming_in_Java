@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
@@ -18,8 +19,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class CategoryController {
-    private final CategoryService categoryService;
     private final CustomLocation customLocation;
+    private final CategoryService categoryService;
+    private final CacheManagementService cacheManagementService;
 
     @Value("${category.get.endpoint}")
     private String categoryGetEndpoint;
@@ -62,5 +64,11 @@ public class CategoryController {
     public ResponseEntity<String> deleteStock(@RequestParam UUID categoryCode){
         categoryService.deleteCategoryByCategoryCode(categoryCode);
         return new ResponseEntity<>(categoryCode + " has been deleted.", HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/categories/clearCache")
+    public ResponseEntity<String> clearCache(){
+        cacheManagementService.clearCache();
+        return new ResponseEntity<>("Category cache has been refreshed.", HttpStatus.OK);
     }
 }

@@ -40,6 +40,9 @@ public class StockServiceImpl implements StockService {
     @Value("${stock.not.found}")
     private String stockNotFound;
 
+    @Value("${stock.cache.name}")
+    private String stockCacheName;
+
     //Such a bad relationship between entities as well as the operations... Do not do what I did here! lol...
     @Override
     @CachePut(value = "stocks", key = "#stockWithoutUUIDDTO.productName")
@@ -98,7 +101,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Cacheable(value = "stocks")
-    public List<StockDTO> getStockList() {
+    public List<StockDTO> getStockList(){
         return stockRepository
                 .findAll()
                 .stream()

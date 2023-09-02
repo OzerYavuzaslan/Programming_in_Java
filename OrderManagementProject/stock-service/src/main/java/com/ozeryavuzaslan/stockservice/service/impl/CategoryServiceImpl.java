@@ -7,6 +7,7 @@ import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
+import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,66 +22,54 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl implements CategoryService{
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
     private final CategoryPropertySetter categoryPropertySetter;
+    private final CacheManagementService cacheManagementService;
 
     @Value("${category.not.found}")
     private String categoryNotFound;
 
+    @Value("${category.cache.name}")
+    private String categoryCacheName;
+
     @Override
-    @CachePut(value = "Category", key = "#Category.name")
+    @CachePut(value = "categories", key = "#categoryWithoutUUIDDTO.name")
     public CategoryDTO saveCategory(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO) {
         categoryPropertySetter.setSomeProperties(categoryWithoutUUIDDTO, true, false);
-
-        return modelMapper
-                .map(categoryRepository
-                        .save(modelMapper
-                                .map(categoryWithoutUUIDDTO, Category.class)),
-                        CategoryDTO.class);
+        cacheManagementService.clearCache(categoryCacheName);
+        return modelMapper.map(categoryRepository.save(modelMapper.map(categoryWithoutUUIDDTO, Category.class)), CategoryDTO.class);
     }
 
     @Override
-    @CachePut(value = "Category", key = "#Category.categoryCode")
+    @CachePut(value = "categories", key = "#categoryDTO.categoryCode")
     public CategoryDTO updateCategory(CategoryDTO categoryDTO) {
         categoryPropertySetter.setSomeProperties(modelMapper.map(categoryDTO, CategoryWithoutUUIDDTO.class), false, true);
-
-        return modelMapper
-                .map(categoryRepository
-                        .save(modelMapper
-                                .map(getCategory(categoryDTO.getCategoryCode()),
-                                        Category.class)),
-                        CategoryDTO.class);
+        cacheManagementService.clearCache(categoryCacheName);
+        return modelMapper.map(categoryRepository.save(modelMapper.map(getCategory(categoryDTO.getCategoryCode()), Category.class)), CategoryDTO.class);
     }
 
     @Override
-    @Cacheable(value = "Category", key = "#categoryCode")
+    @Cacheable(value = "categories", key = "#categoryCode")
     public CategoryDTO getByCategoryCode(UUID categoryCode) {
         return modelMapper.map(getCategory(categoryCode), CategoryDTO.class);
     }
 
     @Override
-    @Cacheable(value = "Category", key = "#name")
+    @Cacheable(value = "categories", key = "#name")
     public CategoryDTO getByCategoryName(String name) {
-        return modelMapper
-                .map(categoryRepository
-                                .findByName(name)
-                                .orElseThrow(() -> new CategoryNotFoundException(categoryNotFound)),
-                        CategoryDTO.class);
+        return modelMapper.map(categoryRepository.findByName(name).orElseThrow(() -> new CategoryNotFoundException(categoryNotFound)), CategoryDTO.class);
     }
 
     @Override
-    @Cacheable(value = "Category", key = "#categoryID")
+    @Cacheable(value = "categories", key = "#categoryID")
     public CategoryDTO getByCategoryID(long categoryID) {
-        return modelMapper
-                .map(categoryRepository
-                                .findById(categoryID).orElseThrow(() -> new CategoryNotFoundException(categoryNotFound)),
-                        CategoryDTO.class);
+        return modelMapper.map(categoryRepository.findById(categoryID).orElseThrow(() -> new CategoryNotFoundException(categoryNotFound)), CategoryDTO.class);
     }
 
     @Override
-    @Cacheable(value = "Category")
+    @Cacheable(value = "categories")
     public List<CategoryDTO> getCategoryList() {
         return categoryRepository
                 .findAll()
@@ -90,18 +79,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @CacheEvict(value = "Category", key = "#categoryCode")
+    @CacheEvict(value = "categories", key = "#categoryCode")
     public void deleteCategoryByCategoryCode(UUID categoryCode) {
-        categoryRepository
-                .deleteByCategoryCode(categoryCode)
-                .orElseThrow(() -> new StockNotFoundException(categoryNotFound));
+        categoryRepository.deleteByCategoryCode(categoryCode).orElseThrow(() -> new StockNotFoundException(categoryNotFound));
+        cacheManagementService.clearCache(categoryCacheName);
     }
 
     private CategoryDTO getCategory(UUID categoryCode){
-        return modelMapper
-                .map(categoryRepository
-                                .findByCategoryCode(categoryCode)
-                                .orElseThrow(() -> new StockNotFoundException(categoryNotFound)),
-                        CategoryDTO.class);
+        return modelMapper.map(categoryRepository.findByCategoryCode(categoryCode).orElseThrow(() -> new StockNotFoundException(categoryNotFound)), CategoryDTO.class);
     }
 }

@@ -76,6 +76,6 @@ public class StockController {
     @PatchMapping("/stocks/clearCache")
     public ResponseEntity<String> clearCache(){
         cacheManagementService.clearCache();
-        return new ResponseEntity<>("Cache has been refreshed.", HttpStatus.OK);
+        return new ResponseEntity<>("Stock cache has been refreshed.", HttpStatus.OK);
     }
 }
