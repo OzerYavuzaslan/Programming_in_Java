@@ -81,7 +81,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     @CacheEvict(value = "categories", key = "#categoryCode")
     public void deleteCategoryByCategoryCode(UUID categoryCode) {
-        categoryRepository.deleteByCategoryCode(categoryCode).orElseThrow(() -> new StockNotFoundException(categoryNotFound));
+        categoryRepository.delete(modelMapper.map(getCategory(categoryCode), Category.class));
         cacheManagementService.clearCache(categoryCacheName);
     }
 

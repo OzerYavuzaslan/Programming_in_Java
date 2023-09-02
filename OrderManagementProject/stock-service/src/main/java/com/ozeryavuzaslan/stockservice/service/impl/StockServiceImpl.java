@@ -113,8 +113,7 @@ public class StockServiceImpl implements StockService {
     @Transactional
     @CacheEvict(value = "stocks", key = "#productCode")
     public void deleteStockByProductCode(UUID productCode) {
-        StockDTO stockDTO = getProduct(productCode);
-        stockRepository.delete(modelMapper.map(stockDTO, Stock.class));
+        stockRepository.delete(modelMapper.map(getProduct(productCode), Stock.class));
         cacheManagementService.clearCache("stocks");
     }
 
