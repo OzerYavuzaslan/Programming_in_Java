@@ -15,6 +15,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +40,7 @@ public class StockServiceImpl implements StockService {
 
     //Such a bad relationship between entities as well as the operations... Do not do what I did here! lol...
     @Override
+    @CachePut(value = "Stock", key = "#Stock.productCode")
     public StockDTO saveOrUpdateStock(StockWithoutUUIDDTO stockWithoutUUIDDTO) {
         Optional<Stock> stock = stockRepository.findByProductCode(stockWithoutUUIDDTO.getProductCode());
 
@@ -69,6 +73,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Cacheable(value = "Stock", key = "#Stock.productID")
     public StockDTO getByProductID(long productID) {
         return modelMapper
                 .map(stockRepository
@@ -77,11 +82,13 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Cacheable(value = "Stock", key = "#Stock.productCode")
     public StockDTO getByProductCode(UUID productCode) {
         return getProduct(productCode);
     }
 
     @Override
+    @Cacheable(value = "Stock", key = "#Stock.productName")
     public StockDTO getByProductName(String productName) {
         return modelMapper
                 .map(stockRepository
@@ -91,6 +98,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Cacheable(value = "Stock")
     public List<StockDTO> getStockList() {
         return stockRepository
                 .findAll()
@@ -101,6 +109,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "Stock", key = "#Stock.productCode")
     public void deleteStockByProductName(UUID productCode) {
         stockRepository
                 .deleteByProductCode(productCode)
@@ -108,6 +117,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @CacheEvict(value = "Stock", key = "#Stock.productCode")
     public StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount) {
         StockDTO stockDTO = getProduct(productCode);
 
@@ -117,6 +127,12 @@ public class StockServiceImpl implements StockService {
         stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
 
         return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
+    }
+
+    @Override
+    public StockDTO updateStock(UUID productCode, StockWithoutUUIDDTO stockWithoutUUIDDTO){
+        stockWithoutUUIDDTO.setProductCode(productCode);
+        return saveOrUpdateStock(stockWithoutUUIDDTO);
     }
 
     private StockDTO getProduct(UUID productCode){

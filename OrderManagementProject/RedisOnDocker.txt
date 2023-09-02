@@ -1,5 +1,5 @@
 Download redis as an image 	 	    : docker pull redis
-Run Redis on Docker        	 	    : docker run -it --name redis-container -d redis
+Run Redis on Docker        	 	    : docker run -p 6379:6379 -it --name redis_container -d redis
 Connect to redis container 	 	    : docker exec -it redis_container bash
 After connection should be seen 	    : root@64163c8ed78d:/data#
 connect to the Redis command-line interface : root@64163c8ed78d:/data# redis-cli

@@ -36,7 +36,7 @@ public class StockController {
     @PutMapping("/stocks/updateStocks")
     public ResponseEntity<StockDTO> updateStock(@RequestParam UUID productCode,
                                                 @Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        return ResponseEntity.ok(stockService.saveOrUpdateStock(stockWithoutUUIDDTO));
+        return ResponseEntity.ok(stockService.updateStock(productCode, stockWithoutUUIDDTO));
     }
 
     @GetMapping("/stocks/{productCode}")
