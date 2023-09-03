@@ -43,9 +43,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${first.error}")
     private String firstError;
 
-    @Value("${already.in}")
-    private String alreadyIn;
-
     @Value("${stock.amount.not.enough}")
     private String stockAmountNotEnough;
 
@@ -66,7 +63,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorDetailsDTO
                 .setErrorDetailsProperties(LocalDateTime.now(),
                         customMessageHandler
-                                .returnProperMessage(alreadyIn, tmpExceptionMsg),
+                                .returnProperMessage(uniqueConstraintViolationExceptionMsg, tmpExceptionMsg),
                         request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
