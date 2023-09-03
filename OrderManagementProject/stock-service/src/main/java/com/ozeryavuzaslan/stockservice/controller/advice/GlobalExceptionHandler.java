@@ -53,6 +53,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private String categoryNotFound;
 
     @ResponseBody
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleUUIDException(Exception exception, WebRequest request) {
+        System.err.println("Exception: " + exception);
+        System.err.println("WebRequest: " + request);
+
+        errorDetailsDTO
+                .setErrorDetailsProperties(LocalDateTime.now(),
+                        exception.getMessage(),
+                        request.getDescription(false));
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request, PSQLException psqlException){
         String tmpExceptionMsg = exception.getMessage();
