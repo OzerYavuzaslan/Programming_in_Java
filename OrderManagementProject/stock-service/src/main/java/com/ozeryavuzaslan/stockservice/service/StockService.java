@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface StockService {
     StockDTO saveOrUpdateStock(StockWithoutUUIDDTO stockWithoutUUIDDTO);
-    StockDTO updateStock(UUID productCode, StockWithoutUUIDDTO stockWithoutUUIDDTO);
+    StockDTO updateStock(StockDTO stockDTO);
     StockDTO getByProductCode(UUID productCode);
     StockDTO getByProductName(String productName);
     StockDTO getByProductID(long productID);

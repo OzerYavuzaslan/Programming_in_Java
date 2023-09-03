@@ -75,10 +75,9 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    @CachePut(value = "stocks", key = "#productCode")
-    public StockDTO updateStock(UUID productCode, StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        stockWithoutUUIDDTO.setProductCode(productCode);
-        return saveOrUpdateStock(stockWithoutUUIDDTO);
+    @CachePut(value = "stocks", key = "#stockDTO.productCode")
+    public StockDTO updateStock(StockDTO stockDTO){
+        return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
     }
 
     @Override

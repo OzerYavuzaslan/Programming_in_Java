@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.controller.advice;
 
-import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
+import com.ozeryavuzaslan.basedomains.dto.emails.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
@@ -93,10 +93,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             tmpExceptionMessage = categoryNotFound;
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler
-                        .returnProperMessage(tmpExceptionMessage,
-                                exception.getMessage()),
-                request.getDescription(false));
+                customMessageHandler.returnProperMessage(tmpExceptionMessage, exception.getMessage()), request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
     }

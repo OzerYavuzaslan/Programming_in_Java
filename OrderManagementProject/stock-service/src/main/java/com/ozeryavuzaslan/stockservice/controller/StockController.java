@@ -36,9 +36,14 @@ public class StockController {
     }
 
     @PutMapping("/stocks/updateStocks")
-    public ResponseEntity<StockDTO> updateStock(@RequestParam UUID productCode,
-                                                @Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        return ResponseEntity.ok(stockService.updateStock(productCode, stockWithoutUUIDDTO));
+    public ResponseEntity<StockDTO> updateStock(@Valid @RequestBody StockDTO stockDTO){
+        return ResponseEntity.ok(stockService.updateStock(stockDTO));
+    }
+
+    @PutMapping("/stocks/modify")
+    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
+                                                          @RequestParam int quantityAmount){
+        return ResponseEntity.ok(stockService.decreaseStockQuantity(productCode, quantityAmount));
     }
 
     @GetMapping("/stocks/{productCode}")
@@ -65,12 +70,6 @@ public class StockController {
     public ResponseEntity<String> deleteStock(@RequestParam UUID productCode){
         stockService.deleteStockByProductCode(productCode);
         return new ResponseEntity<>(productCode + " has been deleted.", HttpStatus.NO_CONTENT);
-    }
-
-    @PutMapping("/stocks/modify")
-    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
-                                                          @RequestParam int quantityAmount){
-        return ResponseEntity.ok(stockService.decreaseStockQuantity(productCode, quantityAmount));
     }
 
     @PatchMapping("/stocks/clearCache")
