@@ -11,6 +11,7 @@ public final class Constants {
     public final static String CATEGORY_NULL_MSG = "Category object cannot be null!";
     public final static String QUANTITY_NEGATIVE_MSG = "Quantity cannot be negative and zero!";
     public final static String PRICE_NEGATIVE_MSG = "Price cannot be negative and zero!";
+    public final static String PRICE_OR_QUANTITY_NULL_MSG = "Price or quantity cannot be null!";
 
 
     private Constants(){
