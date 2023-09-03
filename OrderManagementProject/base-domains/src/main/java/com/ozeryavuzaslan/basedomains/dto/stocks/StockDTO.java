@@ -26,7 +26,7 @@ public class StockDTO implements Serializable {
     @NotNull(message = PRODUCT_NAME_NULL_MSG)
     @NotBlank(message = PRODUCT_NAME_BLANK_MSG)
     @NotEmpty(message = PRODUCT_NAME_EMPTY_MSG)
-    @Size(min = PRODUCT_NAME_MIN_SIZE, max = PRODUCT_NAME_MAX_SIZE, message = PRODUCT_NAME_SIZE_MSG)
+    @Size(min = NAME_MIN_SIZE, max = NAME_MAX_SIZE, message = PRODUCT_NAME_SIZE_MSG)
     private String productName;
 
     @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
