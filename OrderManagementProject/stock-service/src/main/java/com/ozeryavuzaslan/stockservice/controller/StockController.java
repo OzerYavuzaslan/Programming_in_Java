@@ -2,7 +2,7 @@ package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
-import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
@@ -74,7 +74,7 @@ public class StockController {
 
     @PatchMapping("/stocks/clearCache")
     public ResponseEntity<String> clearCache(){
-        cacheManagementService.clearCache();
+        cacheManagementService.clearStockCache();
         return new ResponseEntity<>("Stock cache has been refreshed.", HttpStatus.OK);
     }
 }

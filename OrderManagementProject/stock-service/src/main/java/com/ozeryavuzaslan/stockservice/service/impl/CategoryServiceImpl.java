@@ -7,7 +7,7 @@ import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
-import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService{
     @CachePut(value = "categories", key = "#categoryWithoutUUIDDTO.name")
     public CategoryDTO saveCategory(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO) {
         categoryPropertySetter.setSomeProperties(categoryWithoutUUIDDTO, true, false);
-        cacheManagementService.clearCache(categoryCacheName);
+        cacheManagementService.clearStockCache(categoryCacheName);
         return modelMapper.map(categoryRepository.save(modelMapper.map(categoryWithoutUUIDDTO, Category.class)), CategoryDTO.class);
     }
 
@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService{
     @CachePut(value = "categories", key = "#categoryDTO.categoryCode")
     public CategoryDTO updateCategory(CategoryDTO categoryDTO) {
         categoryPropertySetter.setSomeProperties(modelMapper.map(categoryDTO, CategoryWithoutUUIDDTO.class), false, true);
-        cacheManagementService.clearCache(categoryCacheName);
+        cacheManagementService.clearStockCache(categoryCacheName);
         return modelMapper.map(categoryRepository.save(modelMapper.map(getCategory(categoryDTO.getCategoryCode()), Category.class)), CategoryDTO.class);
     }
 
@@ -82,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService{
     @CacheEvict(value = "categories", key = "#categoryCode")
     public void deleteCategoryByCategoryCode(UUID categoryCode) {
         categoryRepository.delete(modelMapper.map(getCategory(categoryCode), Category.class));
-        cacheManagementService.clearCache(categoryCacheName);
+        cacheManagementService.clearStockCache(categoryCacheName);
     }
 
     private CategoryDTO getCategory(UUID categoryCode){

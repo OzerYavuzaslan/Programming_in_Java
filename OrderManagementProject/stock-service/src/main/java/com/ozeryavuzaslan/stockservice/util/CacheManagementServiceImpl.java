@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.stockservice.service.impl;
+package com.ozeryavuzaslan.stockservice.util;
 
-import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -14,11 +14,16 @@ public class CacheManagementServiceImpl implements CacheManagementService {
 
     @Override
     @CacheEvict(value = "stocks", allEntries = true)
-    public void clearCache(){
+    public void clearStockCache(){
     }
 
     @Override
-    public void clearCache(String cacheName){
+    @CacheEvict(value = "categories", allEntries = true)
+    public void clearCategoryCache() {
+    }
+
+    @Override
+    public void clearStockCache(String cacheName){
         Cache cache = cacheManager.getCache(cacheName);
 
         if (cache != null)

@@ -10,7 +10,7 @@ import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
 import com.ozeryavuzaslan.stockservice.repository.StockRepository;
-import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +70,7 @@ public class StockServiceImpl implements StockService {
             stockPropertySetter.setSomeProperties(stock.get(), stockWithoutUUIDDTO);
         }
 
-        cacheManagementService.clearCache("stocks");
+        cacheManagementService.clearStockCache("stocks");
         return modelMapper.map(stockRepository.save(modelMapper.map(stockWithoutUUIDDTO, Stock.class)), StockDTO.class);
     }
 
@@ -113,7 +113,7 @@ public class StockServiceImpl implements StockService {
     @CacheEvict(value = "stocks", key = "#productCode")
     public void deleteStockByProductCode(UUID productCode) {
         stockRepository.delete(modelMapper.map(getProduct(productCode), Stock.class));
-        cacheManagementService.clearCache("stocks");
+        cacheManagementService.clearStockCache("stocks");
     }
 
     @Override

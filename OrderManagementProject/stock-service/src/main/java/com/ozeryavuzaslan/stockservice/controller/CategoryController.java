@@ -2,7 +2,7 @@ package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
-import com.ozeryavuzaslan.stockservice.service.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
@@ -68,7 +68,7 @@ public class CategoryController {
 
     @PatchMapping("/categories/clearCache")
     public ResponseEntity<String> clearCache(){
-        cacheManagementService.clearCache();
+        cacheManagementService.clearCategoryCache();
         return new ResponseEntity<>("Category cache has been refreshed.", HttpStatus.OK);
     }
 }
