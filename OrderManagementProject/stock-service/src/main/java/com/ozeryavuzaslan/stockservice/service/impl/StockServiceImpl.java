@@ -121,6 +121,9 @@ public class StockServiceImpl implements StockService {
     public StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount) {
         StockDTO stockDTO = getProduct(productCode);
 
+        //TODO:STOK BİTİNCE ÜRÜN SAHİBİNE MAİL ÜRÜN BİTTİ DİYE, ASENKRON MESAJ İLETEREK EMAIL SERVICE
+        //TODO: ÜRÜN SAHİBİ İLE İLİŞKİLENDİRMEK İÇİN YA YENİ BİR TABLO AÇILACAK YA DA STOK TABLOSUNA ÜRÜN SAHİBİ FİRMA MAILI EKLENECEK
+
         if (stockDTO.getQuantity() < quantityAmount)
             throw new ProductAmountNotEnoughException(stockAmountNotEnough);
 
