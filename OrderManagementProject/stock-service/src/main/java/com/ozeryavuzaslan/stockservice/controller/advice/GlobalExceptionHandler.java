@@ -54,7 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorDetailsDTO> handleUUIDException(Exception exception, WebRequest request) {
+    public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
         System.err.println("Exception: " + exception);
         System.err.println("WebRequest: " + request);
 
