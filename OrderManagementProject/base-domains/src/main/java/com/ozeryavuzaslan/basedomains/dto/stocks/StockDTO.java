@@ -30,11 +30,11 @@ public class StockDTO implements Serializable {
     private String productName;
 
     @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
-    @NegativeOrZero(message = QUANTITY_NEGATIVE_MSG)
+    @Positive(message = QUANTITY_NEGATIVE_MSG)
     private int quantity;
 
     @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
-    @NegativeOrZero(message = PRICE_NEGATIVE_MSG)
+    @Positive(message = PRICE_NEGATIVE_MSG)
     private double price;
 
     @NotNull(message = CATEGORY_NULL_MSG)
