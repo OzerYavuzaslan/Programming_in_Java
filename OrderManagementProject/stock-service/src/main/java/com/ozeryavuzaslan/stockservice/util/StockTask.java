@@ -13,8 +13,8 @@ import java.util.TimerTask;
 @Component
 @RequiredArgsConstructor
 public class StockTask extends TimerTask {
-    private final RabbitTemplate rabbitTemplate;
     private final StockService stockService;
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${rabbit.stock.email.queue.name}")
     private String emailServiceQueueName;
@@ -27,7 +27,8 @@ public class StockTask extends TimerTask {
                 .toList();
 
         if (!stockDTOList.isEmpty()) {
-            stockDTOList.forEach(stock -> rabbitTemplate.convertAndSend(emailServiceQueueName, stockDTOList));
+            stockDTOList
+                    .forEach(stock -> rabbitTemplate.convertAndSend(emailServiceQueueName, stockDTOList));
             System.err.println("GONDERILDI!");
         }
     }

@@ -38,6 +38,12 @@ public class Stock {
     private String productName;
 
     @Column(nullable = false)
+    private String brandName;
+
+    @Column(nullable = false)
+    private String brandCompanyEmail;
+
+    @Column(nullable = false)
     private int quantity;
 
     @Column(nullable = false)

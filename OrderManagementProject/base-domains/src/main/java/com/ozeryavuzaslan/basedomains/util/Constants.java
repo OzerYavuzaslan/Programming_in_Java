@@ -16,6 +16,8 @@ public final class Constants {
     public final static String CATEGORY_NAME_BLANK_MSG = "Category name cannot be blank!";
     public final static String CATEGORY_NAME_EMPTY_MSG = "Category name cannot be empty!";
     public final static String CATEGORY_NAME_SIZE_MSG = "Category name characters must be in between 3 and 25";
+    public final static String EMAIL_NOT_VALID = "Given email is not valid!";
+    public final static String BRAND_NAME_NOT_VALID = "Brand name can't be null, empty or blank! Brand name characters must be in between 3 and 25";
 
 
     private Constants(){
