@@ -21,10 +21,10 @@ public class EmailServiceUtil {
 
     public void sendEmail(OrderEventDTO orderEventDTO){
         Session session = Session.getInstance(emailProperties.getEmailProperties(), new jakarta.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(emailDTO.getUsername(), emailDTO.getPassword());
-                    }
-                });
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(emailDTO.getUsername(), emailDTO.getPassword());
+            }
+        });
         try {
             Transport.send(emailMessage.getMessage(session, emailDTO, orderEventDTO.getOrderDTO()));
             LOGGER.info(String.format("Email Message Sent Successfully --> %s", orderEventDTO.getOrderDTO().getOwnerEmail()));

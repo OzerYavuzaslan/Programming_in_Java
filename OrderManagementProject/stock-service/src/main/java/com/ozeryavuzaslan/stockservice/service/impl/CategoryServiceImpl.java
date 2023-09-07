@@ -2,12 +2,12 @@ package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
-import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
