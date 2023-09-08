@@ -27,9 +27,7 @@ public class StockTask extends TimerTask {
                 .toList();
 
         if (!stockDTOList.isEmpty()) {
-            stockDTOList
-                    .forEach(stock -> rabbitTemplate.convertAndSend(emailServiceQueueName, stock));
-            System.err.println("GONDERILDI!");
+            stockDTOList.forEach(stock -> rabbitTemplate.convertAndSend(emailServiceQueueName, stock));
         }
     }
 }
