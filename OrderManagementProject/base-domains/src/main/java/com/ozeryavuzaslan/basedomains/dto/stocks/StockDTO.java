@@ -41,12 +41,12 @@ public class StockDTO implements Serializable {
     @NotEmpty(message = EMAIL_NOT_VALID)
     private String brandCompanyEmail;
 
-    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     @Positive(message = QUANTITY_NEGATIVE_MSG)
+    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     private int quantity;
 
-    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     @Positive(message = PRICE_NEGATIVE_MSG)
+    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     private double price;
 
     @NotNull(message = CATEGORY_NULL_MSG)
