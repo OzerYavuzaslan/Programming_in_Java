@@ -28,5 +28,5 @@ public abstract class PaymentResponseDTO {
     private LocalDateTime paymentDate;
 
     @Builder.Default
-    private String someText = "someText";
+    private String tmpStr = "STRRRRRRRR";
 }
