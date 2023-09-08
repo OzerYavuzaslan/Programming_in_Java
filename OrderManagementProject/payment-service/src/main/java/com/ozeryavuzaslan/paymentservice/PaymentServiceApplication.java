@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.paymentservice.paymentservice;
+package com.ozeryavuzaslan.paymentservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
