@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @ControllerAdvice
 @RequiredArgsConstructor
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final ErrorDetailsDTO errorDetailsDTO;
     private final CustomStringBuilder customStringBuilder;
     private final CustomMessageHandler customMessageHandler;

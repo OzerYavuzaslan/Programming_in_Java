@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/stocks")
 public class StockController {
     private final StockService stockService;
     private final CustomLocation customLocation;
@@ -26,7 +26,7 @@ public class StockController {
     @Value("${stock.get.endpoint}")
     private String stockGetEndpoint;
 
-    @PostMapping("/stocks")
+    @PostMapping
     public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
         return ResponseEntity.created(customLocation.getURILocation(stockGetEndpoint,
                         stockService
@@ -35,44 +35,44 @@ public class StockController {
                 .build();
     }
 
-    @PutMapping("/stocks/updateStocks")
+    @PutMapping("/updateStocks")
     public ResponseEntity<StockDTO> updateStock(@Valid @RequestBody StockDTO stockDTO){
         return ResponseEntity.ok(stockService.updateStock(stockDTO));
     }
 
-    @PutMapping("/stocks/modify")
+    @PutMapping("/modify")
     public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
                                                           @RequestParam int quantityAmount){
         return ResponseEntity.ok(stockService.decreaseStockQuantity(productCode, quantityAmount));
     }
 
-    @GetMapping("/stocks/{productCode}")
+    @GetMapping("/{productCode}")
     public ResponseEntity<StockDTO> getStock(@PathVariable UUID productCode){
         return ResponseEntity.ok(stockService.getByProductCode(productCode));
     }
 
-    @GetMapping("/stocks/getByProductName/{productName}")
+    @GetMapping("/getByProductName/{productName}")
     public ResponseEntity<StockDTO> getStock(@PathVariable String productName){
         return ResponseEntity.ok(stockService.getByProductName(productName));
     }
 
-    @GetMapping("/stocks/getByProductId/{id}")
+    @GetMapping("/getByProductId/{id}")
     public ResponseEntity<StockDTO> getStockById(@PathVariable long id){
         return ResponseEntity.ok(stockService.getByProductID(id));
     }
 
-    @GetMapping("/stocks")
+    @GetMapping
     public ResponseEntity<List<StockDTO>> getStocks(){
         return ResponseEntity.ok(stockService.getStockList());
     }
 
-    @DeleteMapping("/stocks")
+    @DeleteMapping
     public ResponseEntity<String> deleteStock(@RequestParam UUID productCode){
         stockService.deleteStockByProductCode(productCode);
         return new ResponseEntity<>(productCode + " has been deleted.", HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/stocks/clearCache")
+    @PatchMapping("/clearCache")
     public ResponseEntity<String> clearCache(){
         cacheManagementService.clearStockCache();
         return new ResponseEntity<>("Stock cache has been refreshed.", HttpStatus.OK);
