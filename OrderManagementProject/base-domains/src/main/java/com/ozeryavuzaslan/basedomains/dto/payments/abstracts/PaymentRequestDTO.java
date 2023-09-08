@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.basedomains.dto.payments;
+package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 
-import com.ozeryavuzaslan.basedomains.dto.enums.PaymentType;
+import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,9 +10,9 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentRequestDTO {
+public abstract class PaymentRequestDTO {
     private long orderId;
-    private PaymentType paymentType;
+    private PaymentProviderType paymentProviderType;
     private String name;
     private String surname;
     private String phoneNumber;
@@ -20,4 +20,6 @@ public class PaymentRequestDTO {
     private double taxRate;
     private double totalPrice;
     private double totalPriceWithoutTax;
+
+    public abstract PaymentProviderType getPaymentProviderType();
 }
