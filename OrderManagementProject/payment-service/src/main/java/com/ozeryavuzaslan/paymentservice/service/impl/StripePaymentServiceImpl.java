@@ -38,11 +38,8 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     public StripePaymentResponseDTO pay(StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception{
         Charge charge = stripePayment(stripePaymentRequestDTO);
 
-        System.err.println(charge);
-
         StripePaymentResponseDTO stripePaymentResponseDTO = setSomePaymentProperties.setSomeProperties(charge, stripePaymentRequestDTO);
         modelMapper.map(paymentRepository.save(modelMapper.map(stripePaymentResponseDTO, PaymentInvoice.class)), stripePaymentResponseDTO);
-
         return stripePaymentResponseDTO;
     }
 

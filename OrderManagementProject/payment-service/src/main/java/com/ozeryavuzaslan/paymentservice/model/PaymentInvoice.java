@@ -73,7 +73,7 @@ public class PaymentInvoice {
     @Column(nullable = false)
     private String paymentStatus;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String receiptUrl;
 
     @Column(nullable = false)

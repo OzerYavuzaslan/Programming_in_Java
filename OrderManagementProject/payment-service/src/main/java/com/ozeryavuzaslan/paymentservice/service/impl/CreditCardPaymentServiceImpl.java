@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class CreditCardPaymentServiceImpl implements PaymentService<CreditCardPaymentRequestDTO, CreditCardPaymentResponseDTO> {
     @Override
     public CreditCardPaymentResponseDTO pay(CreditCardPaymentRequestDTO request) {
-        //TODO: Sadece DB'YE YAZ
+        //TODO: Örnek olması açısından var. StripePaymentServiceImpl classında ödeme yapılıyor.
         return new CreditCardPaymentResponseDTO();
     }
 }

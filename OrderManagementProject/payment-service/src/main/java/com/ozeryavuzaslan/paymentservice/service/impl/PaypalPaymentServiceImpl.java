@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class PaypalPaymentServiceImpl implements PaymentService<PaypalPaymentRequestDTO, PaypalPaymentResponseDTO> {
     @Override
     public PaypalPaymentResponseDTO pay(PaypalPaymentRequestDTO request) {
-        //TODO:PAYPAL SERVISI
+        //TODO:TODO: Örnek olması açısından var. StripePaymentServiceImpl classında ödeme yapılıyor.
 
         return new PaypalPaymentResponseDTO();
     }
