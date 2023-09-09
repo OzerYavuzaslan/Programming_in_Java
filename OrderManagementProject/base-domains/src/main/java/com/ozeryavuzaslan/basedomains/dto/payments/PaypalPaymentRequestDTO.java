@@ -7,7 +7,6 @@ import lombok.*;
 @Data
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class PaypalPaymentRequestDTO extends PaymentRequestDTO {
     @Override

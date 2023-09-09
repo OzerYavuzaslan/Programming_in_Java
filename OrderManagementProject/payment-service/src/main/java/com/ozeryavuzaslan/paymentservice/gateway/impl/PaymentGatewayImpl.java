@@ -14,7 +14,7 @@ public class PaymentGatewayImpl implements PaymentGateway<PaymentResponseDTO, Pa
     private final PaymentProvider<PaymentService<PaymentRequestDTO, PaymentResponseDTO>> paymentProvider;
 
     @Override
-    public PaymentResponseDTO makePayment(PaymentRequestDTO paymentRequestDTO) {
+    public PaymentResponseDTO makePayment(PaymentRequestDTO paymentRequestDTO) throws Exception{
         return paymentProvider.getProvider(paymentRequestDTO.getPaymentProviderType()).pay(paymentRequestDTO);
     }
 }

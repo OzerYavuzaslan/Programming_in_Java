@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 
+import com.ozeryavuzaslan.basedomains.dto.enums.Currency;
 import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public abstract class PaymentRequestDTO {
     private double taxRate;
     private double totalPrice;
     private double totalPriceWithoutTax;
+    private Currency currency;
 
     public abstract PaymentProviderType getPaymentProviderType();
 }
