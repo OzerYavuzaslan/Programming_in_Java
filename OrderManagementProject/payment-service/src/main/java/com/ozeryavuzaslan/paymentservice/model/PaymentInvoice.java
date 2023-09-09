@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.paymentservice.model;
 import com.ozeryavuzaslan.basedomains.dto.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -70,15 +71,16 @@ public class PaymentInvoice {
     @Column(nullable = false)
     private double totalPriceWithoutTax;
 
-    @Column(nullable = false)
-    private String paymentStatus;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String receiptUrl;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

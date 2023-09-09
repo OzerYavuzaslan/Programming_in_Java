@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 import com.ozeryavuzaslan.basedomains.dto.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public abstract class PaymentResponseDTO {
     private double taxRate;
     private double totalPrice;
     private double totalPriceWithoutTax;
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
     private CurrencyType currencyType;
     private MonetaryUnitType monetaryUnitType;
 
