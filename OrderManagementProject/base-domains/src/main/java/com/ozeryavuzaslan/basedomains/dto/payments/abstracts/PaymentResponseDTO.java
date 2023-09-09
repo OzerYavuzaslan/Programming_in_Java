@@ -1,10 +1,12 @@
 package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ozeryavuzaslan.basedomains.dto.enums.Currency;
+import com.ozeryavuzaslan.basedomains.dto.enums.CurrencyType;
+import com.ozeryavuzaslan.basedomains.dto.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
-import com.ozeryavuzaslan.basedomains.dto.enums.PaymentStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public abstract class PaymentResponseDTO {
     private long id;
-    private long orderId;
+    private long orderid;
     private PaymentProviderType paymentProviderType;
     private String name;
     private String surname;
@@ -24,11 +26,9 @@ public abstract class PaymentResponseDTO {
     private double taxRate;
     private double totalPrice;
     private double totalPriceWithoutTax;
-    private PaymentStatus paymentStatus;
-    private Currency currency;
-
-    @JsonIgnore
-    private String token;
+    private String paymentStatus;
+    private CurrencyType currencyType;
+    private MonetaryUnitType monetaryUnitType;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;

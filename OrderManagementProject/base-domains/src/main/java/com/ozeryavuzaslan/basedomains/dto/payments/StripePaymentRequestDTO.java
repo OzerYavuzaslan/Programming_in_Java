@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class StripePaymentRequestDTO extends PaymentRequestDTO {
-    private String userID;
+    private String userid;
 
     @Override
     public PaymentProviderType getPaymentProviderType() {

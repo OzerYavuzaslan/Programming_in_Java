@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.basedomains.dto.enums;
 
-public enum PaymentStatus {
-    SUCCESS,
-    FAIL
+public enum MonetaryUnitType {
+    CENT,
+    KURUS
 }

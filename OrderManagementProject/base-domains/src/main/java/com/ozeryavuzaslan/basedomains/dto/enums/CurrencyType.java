@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.basedomains.dto.enums;
 
-public enum Currency {
+public enum CurrencyType {
     USD,
-    EUR
+    EUR,
+    TL
 }
