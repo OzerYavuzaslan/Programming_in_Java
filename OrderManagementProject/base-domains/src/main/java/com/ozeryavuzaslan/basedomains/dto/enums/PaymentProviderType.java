@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum PaymentProviderType {
     PAYPAL,
-    ADYEN,
+    STRIPE,
     CREDIT_CARD,
     PAY_AT_HOME;
 

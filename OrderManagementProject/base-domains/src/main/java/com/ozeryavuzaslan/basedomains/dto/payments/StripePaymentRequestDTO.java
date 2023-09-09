@@ -9,9 +9,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AdyenPaymentRequestDTO extends PaymentRequestDTO {
+public class StripePaymentRequestDTO extends PaymentRequestDTO {
     @Override
     public PaymentProviderType getPaymentProviderType() {
-        return PaymentProviderType.ADYEN;
+        return PaymentProviderType.STRIPE;
     }
 }

@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AdyenPaymentResponseDTO extends PaymentResponseDTO {
+public class StripePaymentResponseDTO extends PaymentResponseDTO {
 }
