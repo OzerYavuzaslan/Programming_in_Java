@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.paymentservice.gateway;
+package com.ozeryavuzaslan.paymentservice.paymentGateway;
 
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;

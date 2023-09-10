@@ -3,7 +3,7 @@ package com.ozeryavuzaslan.paymentservice.controller;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
-import com.ozeryavuzaslan.paymentservice.gateway.PaymentGateway;
+import com.ozeryavuzaslan.paymentservice.paymentGateway.PaymentGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

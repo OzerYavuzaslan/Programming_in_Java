@@ -1,8 +1,8 @@
-package com.ozeryavuzaslan.paymentservice.gateway.impl;
+package com.ozeryavuzaslan.paymentservice.paymentGateway.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
-import com.ozeryavuzaslan.paymentservice.gateway.PaymentGateway;
+import com.ozeryavuzaslan.paymentservice.paymentGateway.PaymentGateway;
 import com.ozeryavuzaslan.paymentservice.provider.PaymentProvider;
 import com.ozeryavuzaslan.paymentservice.service.PaymentService;
 import lombok.RequiredArgsConstructor;
