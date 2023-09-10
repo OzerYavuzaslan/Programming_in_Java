@@ -4,6 +4,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
 import com.ozeryavuzaslan.paymentservice.paymentGateway.PaymentGateway;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class PaymentController {
     private final PaymentGateway<PaymentResponseDTO, PaymentRequestDTO> paymentGateway;
 
     @PostMapping("/stripe/pay")
-    public ResponseEntity<PaymentResponseDTO> processPayment(@RequestBody StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception {
+    public ResponseEntity<PaymentResponseDTO> processPayment(@Valid @RequestBody StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception {
         return ResponseEntity.ok(paymentGateway.makePayment(stripePaymentRequestDTO));
     }
 }

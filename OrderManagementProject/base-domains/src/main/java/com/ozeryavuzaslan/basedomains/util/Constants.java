@@ -17,8 +17,19 @@ public final class Constants {
     public final static String CATEGORY_NAME_EMPTY_MSG = "Category name cannot be empty!";
     public final static String CATEGORY_NAME_SIZE_MSG = "Category name characters must be in between 3 and 25";
     public final static String EMAIL_NOT_VALID = "Given email is not valid!";
-    public final static String BRAND_NAME_NOT_VALID = "Brand name can't be null, empty or blank! Brand name characters must be in between 3 and 25";
-
+    public final static String BRAND_NAME_NOT_VALID = "Brand name can't be null, empty and blank! Brand name characters must be in between 3 and 25";
+    public final static String PERSON_NAME_NOT_VALID = "Name and surname characters must be in between 3 and 25";
+    public final static String NAME_SURNAME_NOT_VALID = "Name and surname can't be null, blank and empty!";
+    public final static String PHONE_NUMBER_NOT_VALID = "Phone number can't be null, blank and empty!";
+    public final static String ORDER_ID_NOT_VALID = "OrderId must be positive and can't be null!";
+    public final static String PAYMENT_AMOUNT_INFO_NOT_VALID = "Tax rate, total price and total price without tax info must be positive! They also can't be null";
+    public final static String USER_ID_NOT_VALID = "UserId cannot be null, empty and blank!";
+    public final static String CURRENCY_VALIDATION_LIST = "USD|EUR|TL";
+    public final static String MONETARY_UNIT_VALIDATION_LIST = "CENT|KURUS";
+    public final static String PAYMENT_PROVIDER_TYPE_VALIDATION_LIST = "STRIPE|PAYPAL|CREDIT_CARD";
+    public final static String CURRENCY_NOT_VALID = "Currency is not valid!";
+    public final static String MONETARY_UNIT_NOT_VALID = "Monetary unit is not valid!";
+    public final static String PAYMENT_PROVIDER_NOT_VALID = "Payment provider is not valid!";
 
     private Constants(){
     }
