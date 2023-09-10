@@ -15,7 +15,7 @@ public class EmailMessage {
         Message message = new MimeMessage(session);
 
         message.setFrom(new InternetAddress(emailDTO.getFrom()));
-        message.setRecipient(Message.RecipientType.TO, new InternetAddress(orderDTO.getOwnerEmail()));
+        message.setRecipient(Message.RecipientType.TO, new InternetAddress(orderDTO.getEmail()));
         message.setSubject(emailDTO.getSubject());
         message.setText(emailDTO.getBody());
 

@@ -15,7 +15,7 @@ public class OrderConverter {
     private OrderEventDTO orderEventDTO;
 
     public OrderEventDTO convert(OrderDTO orderDTO){
-        orderDTO.setOrderID(UUID.randomUUID().toString());
+        orderDTO.setOrderid(UUID.randomUUID().toString());
 
         orderEventDTO.setOrderDTO(orderDTO);
         orderEventDTO.setMessage("Order status is pending state");

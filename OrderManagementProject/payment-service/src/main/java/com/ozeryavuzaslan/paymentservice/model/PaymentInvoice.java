@@ -91,10 +91,12 @@ public class PaymentInvoice {
     private PaymentProviderType paymentProviderType;
 
     @CreationTimestamp
+    @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;
 
     @CreationTimestamp
+    @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addDate;
 }

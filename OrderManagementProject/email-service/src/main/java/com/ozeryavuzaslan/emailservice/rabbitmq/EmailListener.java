@@ -15,6 +15,7 @@ public class EmailListener {
 
     @RabbitListener(queues = "${rabbit.stock.email.queue.name}")
     public void paymentListener(StockDTO stockDTO) {
+        //TODO:Stock ile ilgili mail at
         System.err.println("STOCK: " + stockDTO);
     }
 }

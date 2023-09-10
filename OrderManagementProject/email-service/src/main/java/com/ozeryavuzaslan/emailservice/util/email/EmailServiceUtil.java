@@ -27,7 +27,7 @@ public class EmailServiceUtil {
         });
         try {
             Transport.send(emailMessage.getMessage(session, emailDTO, orderEventDTO.getOrderDTO()));
-            LOGGER.info(String.format("Email Message Sent Successfully --> %s", orderEventDTO.getOrderDTO().getOwnerEmail()));
+            LOGGER.info(String.format("Email Message Sent Successfully --> %s", orderEventDTO.getOrderDTO().getEmail()));
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }

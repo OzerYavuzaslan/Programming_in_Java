@@ -22,4 +22,9 @@ public class PaymentController {
     public ResponseEntity<PaymentResponseDTO> processPayment(@Valid @RequestBody StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception {
         return ResponseEntity.ok(paymentGateway.makePayment(stripePaymentRequestDTO));
     }
+
+    @PostMapping("/stripe/refund")
+    public ResponseEntity<PaymentResponseDTO> processRefund(@Valid @RequestBody StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception {
+        return ResponseEntity.ok(paymentGateway.makePayment(stripePaymentRequestDTO));
+    }
 }
