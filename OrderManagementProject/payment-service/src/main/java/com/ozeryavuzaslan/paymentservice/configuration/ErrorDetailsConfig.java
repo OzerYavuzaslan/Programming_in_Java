@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.paymentservice.configuration;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.ErrorDetailsDTO;
+import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

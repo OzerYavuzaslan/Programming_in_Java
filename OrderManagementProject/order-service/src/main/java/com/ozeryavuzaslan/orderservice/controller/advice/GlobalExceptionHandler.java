@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.orderservice.controller.advice;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.ErrorDetailsDTO;
+import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import lombok.RequiredArgsConstructor;
