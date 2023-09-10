@@ -20,9 +20,7 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
     @Override
     public StripePaymentResponseDTO setSomeProperties(Charge charge, StripePaymentRequestDTO stripePaymentRequestDTO) {
-        StripePaymentResponseDTO stripePaymentResponseDTO = new StripePaymentResponseDTO();
-
-        stripePaymentResponseDTO = modelMapper.map(stripePaymentRequestDTO, StripePaymentResponseDTO.class);
+        StripePaymentResponseDTO stripePaymentResponseDTO = modelMapper.map(stripePaymentRequestDTO, StripePaymentResponseDTO.class);
         stripePaymentResponseDTO.setReceiptUrl(charge.getReceiptUrl());
         stripePaymentResponseDTO.setBalanceTransactionId(charge.getBalanceTransaction());
         stripePaymentResponseDTO.setPaymentid(charge.getId());
