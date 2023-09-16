@@ -8,7 +8,9 @@ import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +50,9 @@ public class StockController {
     }
 
     @PutMapping("/modify/productList")
-    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList){
-        return ResponseEntity.ok(stockService.decreaseStockQuantity(decreaseStockQuantityDTOList));
+    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
+                                                                    @ParameterObject Pageable pageable){
+        return ResponseEntity.ok(stockService.decreaseStockQuantity(decreaseStockQuantityDTOList, pageable));
     }
 
     @GetMapping("/{productCode}")
@@ -68,8 +71,8 @@ public class StockController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StockDTO>> getStocks(){
-        return ResponseEntity.ok(stockService.getStockList());
+    public ResponseEntity<List<StockDTO>> getStocks(@ParameterObject Pageable pageable){
+        return ResponseEntity.ok(stockService.getStockList(pageable));
     }
 
     @DeleteMapping

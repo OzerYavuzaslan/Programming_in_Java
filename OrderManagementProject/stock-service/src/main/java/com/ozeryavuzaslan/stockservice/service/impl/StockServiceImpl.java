@@ -20,12 +20,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -88,7 +87,7 @@ public class StockServiceImpl implements StockService {
     @Override
     @Cacheable(value = "stocks", key = "#productCode")
     public StockDTO getByProductCode(UUID productCode) {
-        return findNotEnoughStock(productCode);
+        return getStockByProductCode(productCode);
     }
 
     @Override
@@ -105,26 +104,34 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Cacheable(value = "stocks")
-    public List<StockDTO> getStockList(){
+    @SuppressWarnings("ConstantConditions")
+    public List<StockDTO> getStockList(Pageable pageable){
         return stockRepository
-                .findAll()
+                .findAll(pageable)
                 .stream()
                 .map(stock -> modelMapper.map(stock, StockDTO.class))
                 .toList();
     }
 
     @Override
+    @Cacheable(value = "stocks")
+    public List<StockDTO> getStockList() {
+        Pageable pageable = PageRequest.of(0, 10);
+        return getStockList(pageable);
+    }
+
+    @Override
     @Transactional
     @CacheEvict(value = "stocks", key = "#productCode")
     public void deleteStockByProductCode(UUID productCode) {
-        stockRepository.delete(modelMapper.map(findNotEnoughStock(productCode), Stock.class));
+        stockRepository.delete(modelMapper.map(getStockByProductCode(productCode), Stock.class));
         cacheManagementService.clearStockCache("stocks");
     }
 
     @Override
     @CachePut(value = "stocks", key = "#productCode")
     public StockDTO decreaseStockQuantity(UUID productCode, int quantity) {
-        StockDTO stockDTO = findNotEnoughStock(productCode);
+        StockDTO stockDTO = getStockByProductCode(productCode);
 
         if (stockDTO.getQuantity() < quantity)
             throw new ProductAmountNotEnoughException(stockAmountNotEnough);
@@ -134,8 +141,8 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList) {
-        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList());
+    public List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList, Pageable pageable) {
+        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList(), pageable);
 
         if (optionalStockList.isEmpty())
             throw new StockNotFoundException(stocksNotFound);
@@ -145,8 +152,15 @@ public class StockServiceImpl implements StockService {
         if (stockList.size() != decreaseStockQuantityDTOList.size())
             stockList.forEach(this::findNotEnoughStock);
 
-        Collections.sort(stockList);
-        Collections.sort(decreaseStockQuantityDTOList);
+/*
+        Collections.sort(decreaseStockQuantityDTOList, new Comparator<DecreaseStockQuantityDTO>() {
+            @Override
+            public int compare(DecreaseStockQuantityDTO o1, DecreaseStockQuantityDTO o2) {
+                return o1.getProductCode().toString().compareTo(o2.getProductCode().toString());
+            }
+        });
+*/
+        decreaseStockQuantityDTOList.sort(Comparator.comparing(o -> o.getProductCode().toString()));
 
         for (int i = 0; i < decreaseStockQuantityDTOList.size(); i++) {
             int stockQuantity = stockList.get(i).getQuantity();
@@ -166,7 +180,7 @@ public class StockServiceImpl implements StockService {
                 .toList();
     }
 
-    private StockDTO findNotEnoughStock(UUID productCode){
+    private StockDTO getStockByProductCode(UUID productCode){
         return modelMapper.map(stockRepository.findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
     }
 

@@ -25,6 +25,7 @@ public class EmailServiceUtil {
                 return new PasswordAuthentication(emailDTO.getUsername(), emailDTO.getPassword());
             }
         });
+
         try {
             Transport.send(emailMessage.getMessage(session, emailDTO, orderEventDTO.getOrderDTO()));
             LOGGER.info(String.format("Email Message Sent Successfully --> %s", orderEventDTO.getOrderDTO().getEmail()));
