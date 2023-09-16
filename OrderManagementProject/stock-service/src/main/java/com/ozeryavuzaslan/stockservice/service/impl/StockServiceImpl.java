@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
@@ -21,6 +22,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +41,9 @@ public class StockServiceImpl implements StockService {
 
     @Value("${stock.not.found}")
     private String stockNotFound;
+
+    @Value("${stock.list.not.found}")
+    private String stocksNotFound;
 
     @Value("${stock.cache.name}")
     private String stockCacheName;
@@ -83,7 +88,7 @@ public class StockServiceImpl implements StockService {
     @Override
     @Cacheable(value = "stocks", key = "#productCode")
     public StockDTO getByProductCode(UUID productCode) {
-        return getProduct(productCode);
+        return findNotEnoughStock(productCode);
     }
 
     @Override
@@ -112,25 +117,63 @@ public class StockServiceImpl implements StockService {
     @Transactional
     @CacheEvict(value = "stocks", key = "#productCode")
     public void deleteStockByProductCode(UUID productCode) {
-        stockRepository.delete(modelMapper.map(getProduct(productCode), Stock.class));
+        stockRepository.delete(modelMapper.map(findNotEnoughStock(productCode), Stock.class));
         cacheManagementService.clearStockCache("stocks");
     }
 
     @Override
     @CachePut(value = "stocks", key = "#productCode")
-    public StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount) {
-        StockDTO stockDTO = getProduct(productCode);
+    public StockDTO decreaseStockQuantity(UUID productCode, int quantity) {
+        StockDTO stockDTO = findNotEnoughStock(productCode);
 
-        //TODO: PAYMENT SERVICE: KAPIDA ÖDEME, PAYPAL, ADYEN ÖDEME SEÇENEKLERİ
-
-        if (stockDTO.getQuantity() < quantityAmount)
+        if (stockDTO.getQuantity() < quantity)
             throw new ProductAmountNotEnoughException(stockAmountNotEnough);
 
-        stockDTO.setQuantity(stockDTO.getQuantity() - quantityAmount);
+        stockDTO.setQuantity(stockDTO.getQuantity() - quantity);
         return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
     }
 
-    private StockDTO getProduct(UUID productCode){
+    @Override
+    public List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList) {
+        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList());
+
+        if (optionalStockList.isEmpty())
+            throw new StockNotFoundException(stocksNotFound);
+
+        List<Stock> stockList = optionalStockList.get();
+
+        if (stockList.size() != decreaseStockQuantityDTOList.size())
+            stockList.forEach(this::findNotEnoughStock);
+
+        Collections.sort(stockList);
+        Collections.sort(decreaseStockQuantityDTOList);
+
+        for (int i = 0; i < decreaseStockQuantityDTOList.size(); i++) {
+            int stockQuantity = stockList.get(i).getQuantity();
+            int requestedStockQuantity = decreaseStockQuantityDTOList.get(i).getQuantity();
+
+            if (stockQuantity < requestedStockQuantity)
+                throw new ProductAmountNotEnoughException(stockAmountNotEnough + " (" + stockList.get(i).getQuantity() + ")");
+
+            stockList.get(i).setQuantity(stockQuantity - requestedStockQuantity);
+        }
+
+        cacheManagementService.clearStockCache(stockCacheName);
+        return stockRepository
+                .saveAll(stockList)
+                .stream()
+                .map(stock -> modelMapper.map(stock, StockDTO.class))
+                .toList();
+    }
+
+    private StockDTO findNotEnoughStock(UUID productCode){
         return modelMapper.map(stockRepository.findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
+    }
+
+    private void findNotEnoughStock(Stock stock){
+        stockRepository
+                .findByProductCode(stock
+                        .getProductCode())
+                .orElseThrow(() -> new StockNotFoundException(stockNotFound + " (" + stock.getProductName() + ")"));
     }
 }

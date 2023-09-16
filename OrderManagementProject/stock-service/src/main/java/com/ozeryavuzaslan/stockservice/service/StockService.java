@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.stockservice.service;
 
+import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 
@@ -14,5 +15,6 @@ public interface StockService {
     StockDTO getByProductID(long productID);
     List<StockDTO> getStockList();
     void deleteStockByProductCode(UUID productCode);
-    StockDTO decreaseStockQuantity(UUID productCode, int quantityAmount);
+    StockDTO decreaseStockQuantity(UUID productCode, int quantity);
+    List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList);
 }
