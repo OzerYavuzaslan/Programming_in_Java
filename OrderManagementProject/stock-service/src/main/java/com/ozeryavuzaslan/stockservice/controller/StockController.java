@@ -65,6 +65,7 @@ public class StockController {
         return ResponseEntity.ok(stockService.getByProductName(productName));
     }
 
+
     @GetMapping("/getByProductId/{id}")
     public ResponseEntity<StockDTO> getStockById(@PathVariable long id){
         return ResponseEntity.ok(stockService.getByProductID(id));
