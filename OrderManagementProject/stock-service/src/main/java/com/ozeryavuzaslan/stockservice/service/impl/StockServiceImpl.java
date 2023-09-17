@@ -167,7 +167,7 @@ public class StockServiceImpl implements StockService {
             int requestedStockQuantity = decreaseStockQuantityDTOList.get(i).getQuantity();
 
             if (stockQuantity < requestedStockQuantity)
-                throw new ProductAmountNotEnoughException(stockAmountNotEnough + " (" + stockList.get(i).getQuantity() + ")");
+                throw new ProductAmountNotEnoughException(stockAmountNotEnough + " (" + stockList.get(i).getProductName() + ")");
 
             stockList.get(i).setQuantity(stockQuantity - requestedStockQuantity);
         }
@@ -181,7 +181,9 @@ public class StockServiceImpl implements StockService {
     }
 
     private StockDTO getStockByProductCode(UUID productCode){
-        return modelMapper.map(stockRepository.findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
+        return modelMapper
+                .map(stockRepository
+                        .findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
     }
 
     private void findNotEnoughStock(Stock stock){

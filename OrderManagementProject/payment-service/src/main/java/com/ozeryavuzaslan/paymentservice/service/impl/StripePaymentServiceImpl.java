@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.paymentservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
+import com.ozeryavuzaslan.basedomains.util.DoubleToIntConversion;
 import com.ozeryavuzaslan.paymentservice.model.PaymentInvoice;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
 import com.ozeryavuzaslan.paymentservice.repository.PaymentRepository;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class StripePaymentServiceImpl implements PaymentService<StripePaymentRequestDTO, StripePaymentResponseDTO> {
     private final ModelMapper modelMapper;
     private final PaymentRepository paymentRepository;
+    private final DoubleToIntConversion doubleToIntConversion;
     private final SetSomePaymentProperties setSomePaymentProperties;
 
     @Value("${stripe.secret.key}")
@@ -46,7 +48,7 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     private Charge stripePayment(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException {
         Map<String, Object> chargeParams = new HashMap<>();
 
-        chargeParams.put("amount", (int) stripePaymentRequestDTO.getTotalPrice());
+        chargeParams.put("amount", doubleToIntConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
         chargeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
 
         Customer customer = Customer.retrieve(stripePaymentRequestDTO.getUserid());

@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.paymentservice.objectPropertySetter.impl;
 import com.ozeryavuzaslan.basedomains.dto.enums.PaymentStatus;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
+import com.ozeryavuzaslan.basedomains.util.DoubleToIntConversion;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
 import com.stripe.model.Charge;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
     private final ModelMapper modelMapper;
+    private final DoubleToIntConversion doubleToIntConversion;
 
     @Value("${stripe.status}")
     private String stripePaymentStatus;
@@ -21,10 +23,12 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
     @Override
     public StripePaymentResponseDTO setSomeProperties(Charge charge, StripePaymentRequestDTO stripePaymentRequestDTO) {
         StripePaymentResponseDTO stripePaymentResponseDTO = modelMapper.map(stripePaymentRequestDTO, StripePaymentResponseDTO.class);
-        stripePaymentResponseDTO.setReceiptUrl(charge.getReceiptUrl());
-        stripePaymentResponseDTO.setBalanceTransactionId(charge.getBalanceTransaction());
         stripePaymentResponseDTO.setPaymentid(charge.getId());
+        stripePaymentResponseDTO.setReceiptUrl(charge.getReceiptUrl());
         stripePaymentResponseDTO.setPaymentStatus(getPaymentStatus(charge.getStatus()));
+        stripePaymentResponseDTO.setBalanceTransactionId(charge.getBalanceTransaction());
+        stripePaymentResponseDTO.setTotalPrice(doubleToIntConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice()));
+        stripePaymentResponseDTO.setTotalPriceWithoutTax(doubleToIntConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax()));
 
         return stripePaymentResponseDTO;
     }
