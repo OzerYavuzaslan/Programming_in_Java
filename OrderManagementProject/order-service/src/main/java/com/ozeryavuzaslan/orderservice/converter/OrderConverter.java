@@ -7,15 +7,13 @@ import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Component
 @AllArgsConstructor
 public class OrderConverter {
     private OrderEventDTO orderEventDTO;
 
     public OrderEventDTO convert(OrderDTO orderDTO){
-        orderDTO.setOrderid(UUID.randomUUID().toString());
+     //   orderDTO.setOrderid(UUID.randomUUID());
 
         orderEventDTO.setOrderDTO(orderDTO);
         orderEventDTO.setMessage("Order status is pending state");
