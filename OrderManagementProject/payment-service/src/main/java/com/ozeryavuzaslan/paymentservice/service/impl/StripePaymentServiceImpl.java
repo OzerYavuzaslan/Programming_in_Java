@@ -14,6 +14,7 @@ import com.stripe.model.Customer;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StripePaymentServiceImpl implements PaymentService<StripePaymentRequestDTO, StripePaymentResponseDTO> {
     private final ModelMapper modelMapper;
+    private final RabbitTemplate rabbitTemplate;
     private final PaymentRepository paymentRepository;
     private final DoubleToIntConversion doubleToIntConversion;
     private final SetSomePaymentProperties setSomePaymentProperties;
 
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
+
+    @Value("${rabbit.payment.email.queue.name}")
+    private String paymentServiceQueueName;
 
     @PostConstruct
     private void init(){
@@ -39,20 +44,17 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     @Override
     public StripePaymentResponseDTO pay(StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception{
         Charge charge = stripePayment(stripePaymentRequestDTO);
-
         StripePaymentResponseDTO stripePaymentResponseDTO = setSomePaymentProperties.setSomeProperties(charge, stripePaymentRequestDTO);
         modelMapper.map(paymentRepository.save(modelMapper.map(stripePaymentResponseDTO, PaymentInvoice.class)), stripePaymentResponseDTO);
+        rabbitTemplate.convertAndSend(paymentServiceQueueName, stripePaymentResponseDTO);
         return stripePaymentResponseDTO;
     }
 
     private Charge stripePayment(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException {
         Map<String, Object> chargeParams = new HashMap<>();
-
         chargeParams.put("amount", doubleToIntConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
         chargeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
-
         Customer customer = Customer.retrieve(stripePaymentRequestDTO.getUserid());
-
         chargeParams.put("customer", customer.getId());
         return Charge.create(chargeParams);
     }
