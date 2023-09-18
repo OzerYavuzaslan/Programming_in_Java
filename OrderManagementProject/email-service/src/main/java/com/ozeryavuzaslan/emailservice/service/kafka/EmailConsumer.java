@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.emailservice.kafka;
+package com.ozeryavuzaslan.emailservice.service.kafka;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import com.ozeryavuzaslan.emailservice.util.email.EmailServiceUtil;

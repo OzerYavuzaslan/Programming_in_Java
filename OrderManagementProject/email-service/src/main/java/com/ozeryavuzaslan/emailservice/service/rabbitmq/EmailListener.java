@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.emailservice.rabbitmq;
+package com.ozeryavuzaslan.emailservice.service.rabbitmq;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.emailservice.util.email.EmailServiceUtil;

@@ -20,4 +20,13 @@ public final class DoubleToIntConversionImpl implements DoubleToIntConversion {
 
         return Integer.parseInt(concataneOfBeforeAndAfterValuesOfThePoint);
     }
+
+    /*
+        public static int convertDoubleToIntWithoutLosingPrecision(double doubleValue) {
+        while ((doubleValue * 10) % 10 != 0)
+            doubleValue *= 10;
+
+        return (int) doubleValue;
+    }
+     */
 }
