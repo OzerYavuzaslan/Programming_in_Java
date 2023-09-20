@@ -16,6 +16,6 @@ public class StockTaskConfig{
     public Timer getTimerBean(){
         Timer timer = new Timer();
         timer.schedule(stockTask, 0, 3000000);
-        return new Timer();
+        return timer;
     }
 }

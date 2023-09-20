@@ -64,7 +64,7 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
                 tmpSubject = emailOrderSubject;
                 tmpBody = emailPaymentBody;
             }
-        };
+        }
 
         emailDTO.setBody(tmpBody);
         emailDTO.setSubject(tmpSubject);
