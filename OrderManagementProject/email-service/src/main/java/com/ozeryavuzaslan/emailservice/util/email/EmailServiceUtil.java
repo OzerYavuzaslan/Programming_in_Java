@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.util.email;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.util.EmailManagementService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class EmailServiceUtil {
-    private final EmailDTO emailDTO;
+public class EmailServiceUtil implements EmailManagementService{
     private final EmailMessage emailMessage;
     private final EmailProperties emailProperties;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceUtil.class);
 
-    public void sendEmail(OrderEventDTO orderEventDTO){
+    @Override
+    public void sendEmail(EmailDTO emailDTO) {
         Session session = Session.getInstance(emailProperties.getEmailProperties(), new jakarta.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(emailDTO.getUsername(), emailDTO.getPassword());
@@ -27,10 +27,10 @@ public class EmailServiceUtil {
         });
 
         try {
-            Transport.send(emailMessage.getMessage(session, emailDTO, orderEventDTO.getOrderDTO()));
-            LOGGER.info(String.format("Email Message Sent Successfully --> %s", orderEventDTO.getOrderDTO().getEmail()));
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            Transport.send(emailMessage.getMessage(session, emailDTO));
+            LOGGER.info(String.format("Email Message Sent Successfully --> %s", emailDTO.getEmailType()));
+        } catch (MessagingException exception) {
+            throw new RuntimeException(exception);
         }
     }
 }

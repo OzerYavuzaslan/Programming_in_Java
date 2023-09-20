@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.emailservice.model;
 
+import com.ozeryavuzaslan.basedomains.dto.enums.EmailStatus;
 import com.ozeryavuzaslan.basedomains.dto.enums.EmailType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,6 +45,10 @@ public class Email {
 
     private String subject;
     private String mailCc;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EmailStatus emailStatus;
 
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
