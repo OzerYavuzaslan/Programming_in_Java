@@ -14,16 +14,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailDTO {
-    private transient long id;
+    private long id;
     private String body;
     private String mailTo;
     private String mailCc;
     private String subject;
     private String mailFrom;
-    private String username;
-    private String password;
-    private String fromMail;
     private EmailType emailType;
     private LocalDateTime sendDate;
     private EmailStatus emailStatus;
+    private transient String username;
+    private transient String password;
+    private String emailExceptionMessage;
 }

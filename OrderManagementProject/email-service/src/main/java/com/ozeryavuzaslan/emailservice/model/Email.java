@@ -43,8 +43,9 @@ public class Email {
     @Column(columnDefinition = "TEXT")
     private String body;
 
-    private String subject;
     private String mailCc;
+    private String subject;
+    private String emailExceptionMessage;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

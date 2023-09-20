@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailConsumer {
-  //  private final EmailServiceUtil emailServiceUtil;
+  //  private final EmailServiceUtilImpl emailServiceUtil;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailConsumer.class);
 
     @KafkaListener(topics = "${kafka.order.topic}", groupId = "${kafka.email.group}", containerFactory = "emailListenerFactory")

@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.emailservice.configuration;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
+import com.ozeryavuzaslan.basedomains.dto.enums.EmailStatus;
 import com.ozeryavuzaslan.basedomains.dto.enums.EmailType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,21 +16,16 @@ public class EmailDTOConfig {
     private String password;
 
     @Value("${email.from}")
-    private String toMail;
+    private String mailFrom;
 
     @Bean
     private EmailDTO getBaseEmailDTO(EmailType emailType){
         return EmailDTO
                 .builder()
-                .mailFrom(toMail)
+                .mailFrom(mailFrom)
                 .username(username)
                 .password(password)
-                .subject(null)
-                .body(null)
-                .mailCc(null)
-                .emailType(null)
-                .sendDate(null)
-                .mailTo(null)
+                .emailStatus(EmailStatus.NOT_SENT)
                 .build();
     }
 }
