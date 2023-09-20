@@ -11,28 +11,28 @@ import java.util.Properties;
 public class EmailProperties {
     private final Properties properties;
 
-    @Value("{email.smtp.auth.property.name}")
+    @Value("${email.smtp.auth.property.name}")
     private String emailSmtpAuthPropertyName;
 
-    @Value("{email.smtp.auth.property.value}")
+    @Value("${email.smtp.auth.property.value}")
     private String emailSmtpAuthPropertyValue;
 
-    @Value("{email.smtp.starttls.enable.property.name}")
+    @Value("${email.smtp.starttls.enable.property.name}")
     private String emailSmtpStartTtlsEnablePropertyName;
 
-    @Value("{email.smtp.starttls.enable.property.value}")
+    @Value("${email.smtp.starttls.enable.property.value}")
     private String emailSmtpStartTtlsEnablePropertyValue;
 
-    @Value("{email.smtp.host.property.name}")
+    @Value("${email.smtp.host.property.name}")
     private String emailSmtpHostPropertyName;
 
-    @Value("{email.smtp.host.property.value}")
+    @Value("${email.smtp.host.property.value}")
     private String emailSmtpHostPropertyValue;
 
-    @Value("{email.smtp.port.property.name}")
+    @Value("${email.smtp.port.property.name}")
     private String emailSmtpPortPropertyName;
 
-    @Value("{email.smtp.port.property.value}")
+    @Value("${email.smtp.port.property.value}")
     private String emailSmtpPortPropertyValue;
 
     public Properties getEmailProperties(){

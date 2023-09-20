@@ -8,6 +8,8 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+
 @Component
 public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${email.stock.subject}")
@@ -28,10 +30,22 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${email.order.body}")
     private String emailOrderBody;
 
-    @Override //TODO: partOfTheBodyMessage ArrayList yap.
-    public void setSomeProperties(EmailDTO emailDTO, String mailTo, String mailCc, String partOfTheBodyMessage, EmailType emailType) {
-        emailDTO.setMailTo(mailTo);
-        emailDTO.setMailCc(mailCc);
+    @Value("${hash.map.product.code.key}")
+    private String productCodeKey;
+
+    @Value("${hash.map.product.name.key}")
+    private String productNameKey;
+
+    @Value("${hash.map.mail.to.key}")
+    private String mailToKey;
+
+    @Value("${hash.map.mail.cc.key}")
+    private String mailCcKey;
+
+    @Override
+    public void setSomeProperties(EmailDTO emailDTO, HashMap<String, String> emailInfoMap, EmailType emailType) {
+        emailDTO.setMailTo(emailInfoMap.get(mailToKey));
+        emailDTO.setMailCc(emailInfoMap.get(mailCcKey));
         emailDTO.setEmailType(emailType);
 
         String tmpSubject = null;
@@ -40,7 +54,7 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
         switch (emailType) {
             case STOCK -> {
                 tmpSubject = emailStockSubject;
-                tmpBody = partOfTheBodyMessage + " " + emailStockBody;
+                tmpBody = emailInfoMap.get(productCodeKey) + " " + emailInfoMap.get(productNameKey) + " " + emailStockBody;
             }
             case ORDER -> {
                 tmpSubject = emailPaymentSubject;

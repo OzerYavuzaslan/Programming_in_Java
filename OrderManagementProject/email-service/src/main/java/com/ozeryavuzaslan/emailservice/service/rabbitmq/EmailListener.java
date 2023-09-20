@@ -11,7 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 
 @Service
 @EnableRabbit
@@ -23,9 +26,27 @@ public class EmailListener {
     private final EmailPropertySetter emailPropertySetter;
     private final EmailServiceUtilImpl emailServiceUtilImpl;
 
+    @Value("${hash.map.product.code.key}")
+    private String productCodeKey;
+
+    @Value("${hash.map.product.name.key}")
+    private String productNameKey;
+
+    @Value("${hash.map.mail.to.key}")
+    private String mailToKey;
+
+    @Value("${hash.map.mail.cc.key}")
+    private String mailCcKey;
+
     @RabbitListener(queues = "${rabbit.stock.email.queue.name}")
     public void paymentListener(StockDTO stockDTO) {
-        emailPropertySetter.setSomeProperties(emailDTO, stockDTO.getBrandCompanyEmail(), null, stockDTO.getProductCode() + " " + stockDTO.getBrandName(), EmailType.STOCK);
+        HashMap<String, String> stockDTOMap = new HashMap<>();
+        stockDTOMap.put(productCodeKey, stockDTO.getProductCode().toString());
+        stockDTOMap.put(productNameKey, stockDTO.getProductName());
+        stockDTOMap.put(mailToKey, stockDTO.getBrandCompanyEmail());
+        stockDTOMap.put(mailCcKey, null);
+
+        emailPropertySetter.setSomeProperties(emailDTO, stockDTOMap, EmailType.STOCK);
         emailServiceUtilImpl.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));

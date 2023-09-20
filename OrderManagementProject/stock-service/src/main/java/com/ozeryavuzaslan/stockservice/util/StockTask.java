@@ -26,7 +26,9 @@ public class StockTask extends TimerTask {
                 .filter(stockDTO -> stockDTO.getQuantity() == 0)
                 .toList();
 
-        if (!stockDTOList.isEmpty())
+        if (!stockDTOList.isEmpty()) {
             stockDTOList.forEach(stock -> rabbitTemplate.convertAndSend(emailServiceQueueName, stock));
+            System.err.println("STOCK LIST --> " + stockDTOList);
+        }
     }
 }

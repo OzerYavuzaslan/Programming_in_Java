@@ -13,7 +13,7 @@ public class EmailMessage{
     public Message getMessage(Session session, EmailDTO emailDTO) throws MessagingException {
         Message message = new MimeMessage(session);
 
-        message.setFrom(new InternetAddress(emailDTO.getFromMail()));
+        message.setFrom(new InternetAddress(emailDTO.getMailFrom()));
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(emailDTO.getMailTo()));
 
         if (emailDTO.getMailCc() != null)

@@ -2,7 +2,6 @@ package com.ozeryavuzaslan.emailservice.configuration;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.enums.EmailStatus;
-import com.ozeryavuzaslan.basedomains.dto.enums.EmailType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,7 @@ public class EmailDTOConfig {
     private String mailFrom;
 
     @Bean
-    private EmailDTO getBaseEmailDTO(EmailType emailType){
+    public EmailDTO getEmailDTO(){
         return EmailDTO
                 .builder()
                 .mailFrom(mailFrom)

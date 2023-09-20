@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceUtilImpl implements EmailManagementService{
-    private final EmailMessage emailMessage;
     private final ModelMapper modelMapper;
+    private final EmailMessage emailMessage;
     private final EmailRepository emailRepository;
     private final EmailProperties emailProperties;
     private final EmailPropertySetter emailPropertySetter;
