@@ -55,6 +55,7 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
             case STOCK -> {
                 tmpSubject = emailStockSubject;
                 tmpBody = emailInfoMap.get(productCodeKey) + " " + emailInfoMap.get(productNameKey) + " " + emailStockBody;
+
             }
             case ORDER -> {
                 tmpSubject = emailPaymentSubject;

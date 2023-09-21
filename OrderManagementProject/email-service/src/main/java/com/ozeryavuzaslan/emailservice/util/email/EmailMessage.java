@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailMessage{
     public Message getMessage(Session session, EmailDTO emailDTO) throws MessagingException {
-        Message message = new MimeMessage(session);
+        MimeMessage message = new MimeMessage(session);
 
         message.setFrom(new InternetAddress(emailDTO.getMailFrom()));
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(emailDTO.getMailTo()));
@@ -20,7 +20,7 @@ public class EmailMessage{
             message.setRecipient(Message.RecipientType.CC, new InternetAddress(emailDTO.getMailCc()));
 
         message.setSubject(emailDTO.getSubject());
-        message.setText(emailDTO.getBody());
+        message.setText(emailDTO.getBody(), "UTF-8", "html");
 
         return message;
     }
