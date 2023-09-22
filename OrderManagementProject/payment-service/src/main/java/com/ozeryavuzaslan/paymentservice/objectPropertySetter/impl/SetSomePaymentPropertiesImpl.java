@@ -1,8 +1,10 @@
 package com.ozeryavuzaslan.paymentservice.objectPropertySetter.impl;
 
+import com.ozeryavuzaslan.basedomains.dto.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.enums.PaymentStatus;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
+import com.ozeryavuzaslan.basedomains.util.DoubleToIntConversion;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
 import com.stripe.model.Charge;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
     private final ModelMapper modelMapper;
+    private final DoubleToIntConversion doubleToIntConversion;
 
     @Value("${stripe.status}")
     private String stripePaymentStatus;
@@ -25,6 +28,11 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
         stripePaymentResponseDTO.setReceiptUrl(charge.getReceiptUrl());
         stripePaymentResponseDTO.setPaymentStatus(getPaymentStatus(charge.getStatus()));
         stripePaymentResponseDTO.setBalanceTransactionId(charge.getBalanceTransaction());
+
+        if (stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.USD)) {
+            stripePaymentResponseDTO.setTotalPrice(doubleToIntConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice()));
+            stripePaymentResponseDTO.setTotalPriceWithoutTax(doubleToIntConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax()));
+        }
 
         return stripePaymentResponseDTO;
     }
