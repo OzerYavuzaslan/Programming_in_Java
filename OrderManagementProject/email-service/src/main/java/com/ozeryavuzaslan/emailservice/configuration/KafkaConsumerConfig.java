@@ -37,7 +37,7 @@ public class KafkaConsumerConfig {
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         config.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         config.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
-        config.put(JsonDeserializer.TYPE_MAPPINGS, "OrderEventDTO : com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO");
+        config.put(JsonDeserializer.TYPE_MAPPINGS, "OrderEventDTO : com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO"); //TODO: Yeni classa göre burayı düzenle
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         return new DefaultKafkaConsumerFactory<>(config);

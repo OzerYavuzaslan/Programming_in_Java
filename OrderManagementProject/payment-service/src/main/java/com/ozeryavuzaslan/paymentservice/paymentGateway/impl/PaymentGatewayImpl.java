@@ -1,10 +1,12 @@
 package com.ozeryavuzaslan.paymentservice.paymentGateway.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
 import com.ozeryavuzaslan.paymentservice.paymentGateway.PaymentGateway;
 import com.ozeryavuzaslan.paymentservice.provider.PaymentProvider;
 import com.ozeryavuzaslan.paymentservice.service.PaymentService;
+import com.stripe.exception.StripeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,7 @@ public class PaymentGatewayImpl implements PaymentGateway<PaymentResponseDTO, Pa
     private final PaymentProvider<PaymentService<PaymentRequestDTO, PaymentResponseDTO>> paymentProvider;
 
     @Override
-    public PaymentResponseDTO makePayment(PaymentRequestDTO paymentRequestDTO) throws Exception{
+    public PaymentResponseDTO makePayment(PaymentRequestDTO paymentRequestDTO) throws StripeException, JsonProcessingException {
         return paymentProvider.getProvider(paymentRequestDTO.getPaymentProviderType()).pay(paymentRequestDTO);
     }
 }

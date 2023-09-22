@@ -10,26 +10,27 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class PaymentResponseDTO {
+public abstract class PaymentResponseDTO implements Serializable {
     private long id;
-    private long orderid;
-    private PaymentProviderType paymentProviderType;
     private String name;
-    private String surname;
-    private String phoneNumber;
     private String email;
+    private long orderid;
     private double taxRate;
+    private String surname;
     private double totalPrice;
+    private String phoneNumber;
+    private CurrencyType currencyType;
     private double totalPriceWithoutTax;
     private PaymentStatus paymentStatus;
-    private CurrencyType currencyType;
     private MonetaryUnitType monetaryUnitType;
+    private PaymentProviderType paymentProviderType;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;

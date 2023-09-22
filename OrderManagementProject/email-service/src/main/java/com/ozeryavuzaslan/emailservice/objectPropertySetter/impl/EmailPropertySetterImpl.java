@@ -36,11 +36,29 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${hash.map.product.name.key}")
     private String productNameKey;
 
-    @Value("${hash.map.mail.to.key}")
+    @Value("${hash.map.email.to.key}")
     private String mailToKey;
 
-    @Value("${hash.map.mail.cc.key}")
+    @Value("${hash.map.email.cc.key}")
     private String mailCcKey;
+
+    @Value("${hash.map.email.body.stripe.payment.receipt.url}")
+    private String receiptUrl;
+
+    @Value("${hash.map.email.body.payment.full.name}")
+    private String fullName;
+
+    @Value("${hash.map.email.body.payment.total.price}")
+    private String totalPrice;
+
+    @Value("${hash.map.email.body.payment.currency.type}")
+    private String currencyType;
+
+    @Value("${hash.map.email.body.payment.date}")
+    private String paymentDate;
+
+    @Value("${email.body.stripe.payment}")
+    private String stripePaymentBody;
 
     @Override
     public void setSomeProperties(EmailDTO emailDTO, HashMap<String, String> emailInfoMap, EmailType emailType) {
@@ -55,15 +73,15 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
             case STOCK -> {
                 tmpSubject = emailStockSubject;
                 tmpBody = emailInfoMap.get(productCodeKey) + " " + emailInfoMap.get(productNameKey) + " " + emailStockBody;
-
             }
             case ORDER -> {
-                tmpSubject = emailPaymentSubject;
+                tmpSubject = emailOrderSubject;
                 tmpBody = emailOrderBody;
             }
             case PAYMENT -> {
-                tmpSubject = emailOrderSubject;
-                tmpBody = emailPaymentBody;
+                tmpSubject = emailPaymentSubject;
+                tmpBody = String.format(emailPaymentBody, emailInfoMap.get(fullName));
+                tmpBody += String.format(stripePaymentBody, emailInfoMap.get(totalPrice), emailInfoMap.get(currencyType), emailInfoMap.get(paymentDate), emailInfoMap.get(receiptUrl));
             }
         }
 

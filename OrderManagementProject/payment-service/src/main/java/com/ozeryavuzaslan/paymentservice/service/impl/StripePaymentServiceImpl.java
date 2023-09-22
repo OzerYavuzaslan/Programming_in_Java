@@ -1,5 +1,7 @@
 package com.ozeryavuzaslan.paymentservice.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ozeryavuzaslan.basedomains.dto.payments.PaymentResponseForAsyncMsgDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.util.DoubleToIntConversion;
@@ -42,11 +44,11 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     }
 
     @Override
-    public StripePaymentResponseDTO pay(StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception{
+    public StripePaymentResponseDTO pay(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException, JsonProcessingException {
         Charge charge = stripePayment(stripePaymentRequestDTO);
         StripePaymentResponseDTO stripePaymentResponseDTO = setSomePaymentProperties.setSomeProperties(charge, stripePaymentRequestDTO);
         modelMapper.map(paymentRepository.save(modelMapper.map(stripePaymentResponseDTO, PaymentInvoice.class)), stripePaymentResponseDTO);
-        rabbitTemplate.convertAndSend(paymentServiceQueueName, stripePaymentResponseDTO);
+        rabbitTemplate.convertAndSend(paymentServiceQueueName, modelMapper.map(stripePaymentResponseDTO, PaymentResponseForAsyncMsgDTO.class));
         return stripePaymentResponseDTO;
     }
 

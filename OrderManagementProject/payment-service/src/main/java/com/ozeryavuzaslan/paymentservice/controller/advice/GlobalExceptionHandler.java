@@ -5,7 +5,9 @@ import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.stripe.exception.StripeException;
 import lombok.RequiredArgsConstructor;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -33,6 +35,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${first.error}")
     private String firstError;
 
+    @Value("${unique.constraint.violation}")
+    private String uniqueConstraintViolationExceptionMsg;
+
+    @Value("${unique.constraint.violation.sql.code}")
+    private String uniqueConstraintViolationSQLStatusCode;
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
@@ -44,6 +52,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         exception.getMessage(),
                         request.getDescription(false));
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request, PSQLException psqlException){
+        String tmpExceptionMsg = exception.getMessage();
+
+        if (psqlException != null && psqlException.getSQLState().equals(uniqueConstraintViolationSQLStatusCode))
+            tmpExceptionMsg = uniqueConstraintViolationExceptionMsg;
+
+        errorDetailsDTO
+                .setErrorDetailsProperties(LocalDateTime.now(),
+                        customMessageHandler
+                                .returnProperMessage(uniqueConstraintViolationExceptionMsg, tmpExceptionMsg),
+                        request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
     }
 
     @ResponseBody

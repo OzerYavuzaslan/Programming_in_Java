@@ -19,7 +19,7 @@ import java.util.HashMap;
 @Service
 @EnableRabbit
 @RequiredArgsConstructor
-public class EmailListener {
+public class EmailStockListener {
     private final EmailDTO emailDTO;
     private final ModelMapper modelMapper;
     private final EmailRepository emailRepository;
@@ -32,10 +32,10 @@ public class EmailListener {
     @Value("${hash.map.product.name.key}")
     private String productNameKey;
 
-    @Value("${hash.map.mail.to.key}")
+    @Value("${hash.map.email.to.key}")
     private String mailToKey;
 
-    @Value("${hash.map.mail.cc.key}")
+    @Value("${hash.map.email.cc.key}")
     private String mailCcKey;
 
     @RabbitListener(queues = "${rabbit.stock.email.queue.name}")

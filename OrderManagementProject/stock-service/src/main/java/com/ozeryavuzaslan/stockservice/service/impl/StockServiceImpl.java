@@ -34,6 +34,7 @@ public class StockServiceImpl implements StockService {
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
     private final CacheManagementService cacheManagementService;
+    private static boolean isCacheRefresh = true;
 
     @Value("${stock.amount.not.enough}")
     private String stockAmountNotEnough;
@@ -74,7 +75,7 @@ public class StockServiceImpl implements StockService {
             stockPropertySetter.setSomeProperties(stock.get(), stockWithoutUUIDDTO);
         }
 
-        cacheManagementService.clearStockCache("stocks");
+        isCacheRefresh = false;
         return modelMapper.map(stockRepository.save(modelMapper.map(stockWithoutUUIDDTO, Stock.class)), StockDTO.class);
     }
 
@@ -106,6 +107,7 @@ public class StockServiceImpl implements StockService {
     @Cacheable(value = "stocks")
     @SuppressWarnings("ConstantConditions")
     public List<StockDTO> getStockList(Pageable pageable){
+        isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
         return stockRepository
                 .findAll(pageable)
                 .stream()
@@ -116,7 +118,8 @@ public class StockServiceImpl implements StockService {
     @Override
     @Cacheable(value = "stocks")
     public List<StockDTO> getStockList() {
-        Pageable pageable = PageRequest.of(0, 10);
+        isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
+        Pageable pageable = PageRequest.of(0, 10); //TODO: Burayı dinamik yap
         return getStockList(pageable);
     }
 
@@ -125,7 +128,7 @@ public class StockServiceImpl implements StockService {
     @CacheEvict(value = "stocks", key = "#productCode")
     public void deleteStockByProductCode(UUID productCode) {
         stockRepository.delete(modelMapper.map(getStockByProductCode(productCode), Stock.class));
-        cacheManagementService.clearStockCache("stocks");
+        isCacheRefresh = false;
     }
 
     @Override
@@ -172,7 +175,7 @@ public class StockServiceImpl implements StockService {
             stockList.get(i).setQuantity(stockQuantity - requestedStockQuantity);
         }
 
-        cacheManagementService.clearStockCache(stockCacheName);
+        isCacheRefresh = false;
         return stockRepository
                 .saveAll(stockList)
                 .stream()
