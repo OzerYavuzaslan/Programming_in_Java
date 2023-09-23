@@ -18,5 +18,5 @@ public interface StockService {
     List<StockDTO> getStockList();
     void deleteStockByProductCode(UUID productCode);
     StockDTO decreaseStockQuantity(UUID productCode, int quantity);
-    List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList, Pageable pageable);
+    List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList);
 }

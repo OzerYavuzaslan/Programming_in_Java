@@ -119,7 +119,7 @@ public class StockServiceImpl implements StockService {
     @Cacheable(value = "stocks")
     public List<StockDTO> getStockList() {
         isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
-        Pageable pageable = PageRequest.of(0, 10); //TODO: Burayı dinamik yap
+        Pageable pageable = PageRequest.of(0, 1000);
         return getStockList(pageable);
     }
 
@@ -144,8 +144,8 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList, Pageable pageable) {
-        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList(), pageable);
+    public List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList) {
+        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList());
 
         if (optionalStockList.isEmpty())
             throw new StockNotFoundException(stocksNotFound);
@@ -163,7 +163,7 @@ public class StockServiceImpl implements StockService {
             }
         });
 */
-        decreaseStockQuantityDTOList.sort(Comparator.comparing(o -> o.getProductCode().toString()));
+        decreaseStockQuantityDTOList.sort(Comparator.comparing(stockQuantityDTO -> stockQuantityDTO.getProductCode().toString()));
 
         for (int i = 0; i < decreaseStockQuantityDTOList.size(); i++) {
             int stockQuantity = stockList.get(i).getQuantity();

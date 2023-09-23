@@ -50,9 +50,8 @@ public class StockController {
     }
 
     @PutMapping("/modify/productList")
-    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
-                                                                    @ParameterObject Pageable pageable){
-        return ResponseEntity.ok(stockService.decreaseStockQuantity(decreaseStockQuantityDTOList, pageable));
+    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList){
+        return ResponseEntity.ok(stockService.decreaseStockQuantity(decreaseStockQuantityDTOList));
     }
 
     @GetMapping("/{productCode}")
@@ -64,7 +63,6 @@ public class StockController {
     public ResponseEntity<StockDTO> getStock(@PathVariable String productName){
         return ResponseEntity.ok(stockService.getByProductName(productName));
     }
-
 
     @GetMapping("/getByProductId/{id}")
     public ResponseEntity<StockDTO> getStockById(@PathVariable long id){
