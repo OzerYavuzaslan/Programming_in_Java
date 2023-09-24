@@ -60,8 +60,6 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
 
     @Override
     public StripeRefundResponseDTO refund(StripeRefundRequestDTO stripeRefundRequestDTO) throws StripeException {
-        //TODO: Eğer ödeme USD ile yapılmış EUR olarak geri ödeme isteniyorsa ya da tam tersi, ona göre o günün kurunu bulup ve kur dönüşümü yapıp ona göre request yapmalı
-
         StripePaymentResponseDTO stripePaymentResponseDTO = paymentFinderService.getPayment(stripeRefundRequestDTO.getOrderid());
         double tmpRefundRequestAmount = numericalTypeConversion.convertIntToProperDouble(numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
 
