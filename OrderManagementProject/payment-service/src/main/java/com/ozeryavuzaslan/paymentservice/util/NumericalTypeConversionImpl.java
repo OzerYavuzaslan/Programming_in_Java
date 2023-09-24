@@ -10,12 +10,12 @@ public final class NumericalTypeConversionImpl implements NumericalTypeConversio
     }
 
     @Override
-    public int convertDoubleToIntWithoutLosingPrecision(double doubleValue) {
+    public long convertDoubleToLongWithoutLosingPrecision(double doubleValue) {
         String localDecimalSeparator = "[" + LocalSeparator.getLocalSeparator() + "]";
         String[] strValue = String.valueOf(doubleValue).split(localDecimalSeparator);
 
         if (strValue.length == 2 && Integer.parseInt(strValue[1]) == 0)
-            return (int) doubleValue;
+            return (long) doubleValue;
 
         String concataneOfBeforeAndAfterValuesOfThePoint = strValue[0] + strValue[1]; // 5.5 --> 55
 
@@ -26,7 +26,7 @@ public final class NumericalTypeConversionImpl implements NumericalTypeConversio
     }
 
     @Override
-    public double convertIntToProperDouble(int intValue){
+    public double convertLongToProperDouble(long intValue){
         return ((double) intValue) / 100;
     }
 

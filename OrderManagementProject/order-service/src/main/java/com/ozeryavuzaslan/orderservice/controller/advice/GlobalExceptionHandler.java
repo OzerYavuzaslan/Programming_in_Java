@@ -4,6 +4,7 @@ import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     @ResponseBody
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                                  @NotNull HttpHeaders headers,
+                                                                  @NotNull HttpStatusCode status,
+                                                                  WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),

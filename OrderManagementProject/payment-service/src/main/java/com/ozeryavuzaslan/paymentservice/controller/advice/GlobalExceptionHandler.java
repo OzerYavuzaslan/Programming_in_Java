@@ -7,6 +7,7 @@ import com.ozeryavuzaslan.paymentservice.exception.PaymentNotFoundException;
 import com.ozeryavuzaslan.paymentservice.exception.RefundNotFoundException;
 import com.stripe.exception.StripeException;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -111,7 +112,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     @ResponseBody
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                                  @NotNull HttpHeaders headers,
+                                                                  @NotNull HttpStatusCode status,
+                                                                  WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),

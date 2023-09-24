@@ -7,6 +7,7 @@ import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -113,7 +114,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     @ResponseBody
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                                  @NotNull HttpHeaders headers,
+                                                                  @NotNull HttpStatusCode status,
+                                                                  WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),

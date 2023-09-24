@@ -19,6 +19,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     @Override
     public StripeRefundResponseDTO refund(StripeRefundRequestDTO stripeRefundRequestDTO) throws StripeException {
         StripePaymentResponseDTO stripePaymentResponseDTO = paymentFinderService.getPayment(stripeRefundRequestDTO.getOrderid());
-        double tmpRefundRequestAmount = numericalTypeConversion.convertIntToProperDouble(numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
+        double tmpRefundRequestAmount = numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
 
         //TODO: Aşamalı refundlar için daha önce ne kadar refund aldığını hesaplayıp ona göre burada istenilen refund ile ödenebilecek refund arasındaki farkı kontrol et.
         if (tmpRefundRequestAmount > stripePaymentResponseDTO.getTotalPrice())
@@ -69,14 +70,18 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
 
         Refund refund = stripeRefund(stripeRefundRequestDTO, stripePaymentResponseDTO);
         StripeRefundResponseDTO stripeRefundResponseDTO = setSomePaymentProperties.setSomeProperties(refund, stripeRefundRequestDTO);
-        modelMapper.map(paymentRepository.save(modelMapper.map(stripeRefundResponseDTO, PaymentInvoice.class)), stripeRefundResponseDTO);
+
+        paymentRepository.updatePaymentInvoice(stripeRefundResponseDTO.getOrderid(), stripeRefundResponseDTO.getRefundid(),
+                stripeRefundResponseDTO.getRefundedAmount(), stripeRefundResponseDTO.getRefundRequestAmount(),
+                stripeRefundResponseDTO.getPaymentType(), LocalDateTime.now());
+
         rabbitTemplate.convertAndSend(refundRequestExceedsTheActualPayment, modelMapper.map(stripeRefundResponseDTO, RefundResponseForAsyncMsgDTO.class));
         return stripeRefundResponseDTO;
     }
 
     private Charge stripePayment(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException {
         Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put("amount", numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
+        chargeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
         chargeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
         chargeParams.put("customer", stripePaymentRequestDTO.getUserid());
         return Charge.create(chargeParams);
@@ -84,11 +89,8 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
 
     private Refund stripeRefund(StripeRefundRequestDTO stripeRefundRequestDTO, StripePaymentResponseDTO stripePaymentResponseDTO) throws StripeException {
         Map<String, Object> refundParams = new HashMap<>();
-        refundParams.put("amount", numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
-        refundParams.put("currency", stripeRefundRequestDTO.getCurrencyType());
-        refundParams.put("customer", stripeRefundRequestDTO.getUserid());
+        refundParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
         refundParams.put("charge", stripePaymentResponseDTO.getPaymentid());
-        refundParams.put("balance_transaction", stripePaymentResponseDTO.getBalanceTransactionId());
         return Refund.create(refundParams);
     }
 }

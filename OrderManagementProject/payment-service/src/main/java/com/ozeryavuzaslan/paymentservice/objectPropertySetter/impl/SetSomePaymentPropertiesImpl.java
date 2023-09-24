@@ -39,8 +39,8 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
         if (stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
-            stripePaymentResponseDTO.setTotalPrice(numericalTypeConversion.convertIntToProperDouble(numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice())));
-            stripePaymentResponseDTO.setTotalPriceWithoutTax(numericalTypeConversion.convertIntToProperDouble(numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax())));
+            stripePaymentResponseDTO.setTotalPrice(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice())));
+            stripePaymentResponseDTO.setTotalPriceWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax())));
         }
 
         return stripePaymentResponseDTO;
@@ -58,8 +58,8 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
         if (stripeRefundRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripeRefundRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
-            stripeRefundResponseDTO.setRefundRequestAmount(numericalTypeConversion.convertIntToProperDouble(numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripeRefundResponseDTO.getRefundRequestAmount())));
-            stripeRefundResponseDTO.setRefundedAmount(numericalTypeConversion.convertIntToProperDouble(numericalTypeConversion.convertDoubleToIntWithoutLosingPrecision(stripeRefundResponseDTO.getRefundedAmount())));
+            stripeRefundResponseDTO.setRefundRequestAmount(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundResponseDTO.getRefundRequestAmount())));
+            stripeRefundResponseDTO.setRefundedAmount(numericalTypeConversion.convertLongToProperDouble(refund.getAmount()));
         }
 
         return stripeRefundResponseDTO;

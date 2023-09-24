@@ -100,9 +100,6 @@ public class PaymentInvoice {
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
-    @Column(columnDefinition = "TEXT")
-    private String exceptionMessage;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;
 
