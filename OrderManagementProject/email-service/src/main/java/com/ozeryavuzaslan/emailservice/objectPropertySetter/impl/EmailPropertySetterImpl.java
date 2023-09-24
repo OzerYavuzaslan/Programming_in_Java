@@ -98,13 +98,13 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
                 tmpBody = emailOrderBody;
             }
             case PAYMENT -> {
-                tmpBody = String.format(emailRefundBody, emailInfoMap.get(fullName));
-
                 if (paymentType.equals(PaymentType.PAYMENT)) {
                     tmpSubject = emailPaymentSubject;
+                    tmpBody = String.format(emailPaymentBody, emailInfoMap.get(fullName));
                     tmpBody += String.format(stripePaymentBody, emailInfoMap.get(totalPrice), emailInfoMap.get(currencyType), emailInfoMap.get(paymentDate), emailInfoMap.get(receiptUrl));
                 } else {
                     tmpSubject = emailRefundSubject;
+                    tmpBody = String.format(emailRefundBody, emailInfoMap.get(fullName));
                     tmpBody += String.format(stripeRefundBody, emailInfoMap.get(refundedAmount), emailInfoMap.get(currencyType), emailInfoMap.get(refundRequestAmount), emailInfoMap.get(currencyType), emailInfoMap.get(refundDate));
                 }
             }
