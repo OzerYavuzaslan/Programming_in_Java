@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.emailservice.objectPropertySetter.impl;
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailStatus;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentType;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,8 +61,26 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${email.body.stripe.payment}")
     private String stripePaymentBody;
 
+    @Value("${hash.map.email.body.refund.date}")
+    private String refundDate;
+
+    @Value("${hash.map.email.body.refund.refunded.amount}")
+    private String refundedAmount;
+
+    @Value("${hash.map.email.body.refund.refunded.amount}")
+    private String refundRequestAmount;
+
+    @Value("${email.refund.subject}")
+    private String emailRefundSubject;
+
+    @Value("${email.refund.body}")
+    private String emailRefundBody;
+
+    @Value("${email.body.stripe.refund}")
+    private String stripeRefundBody;
+
     @Override
-    public void setSomeProperties(EmailDTO emailDTO, HashMap<String, String> emailInfoMap, EmailType emailType) {
+    public void setSomeProperties(EmailDTO emailDTO, HashMap<String, String> emailInfoMap, EmailType emailType, PaymentType paymentType) {
         emailDTO.setMailTo(emailInfoMap.get(mailToKey));
         emailDTO.setMailCc(emailInfoMap.get(mailCcKey));
         emailDTO.setEmailType(emailType);
@@ -79,9 +98,15 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
                 tmpBody = emailOrderBody;
             }
             case PAYMENT -> {
-                tmpSubject = emailPaymentSubject;
-                tmpBody = String.format(emailPaymentBody, emailInfoMap.get(fullName));
-                tmpBody += String.format(stripePaymentBody, emailInfoMap.get(totalPrice), emailInfoMap.get(currencyType), emailInfoMap.get(paymentDate), emailInfoMap.get(receiptUrl));
+                if (paymentType.equals(PaymentType.PAYMENT)) {
+                    tmpSubject = emailPaymentSubject;
+                    tmpBody = String.format(emailPaymentBody, emailInfoMap.get(fullName));
+                    tmpBody += String.format(stripePaymentBody, emailInfoMap.get(totalPrice), emailInfoMap.get(currencyType), emailInfoMap.get(paymentDate), emailInfoMap.get(receiptUrl));
+                } else {
+                    tmpSubject = emailRefundSubject;
+                    tmpBody = String.format(emailRefundBody, emailInfoMap.get(fullName));
+                    tmpBody += String.format(stripeRefundBody, emailInfoMap.get(refundedAmount), emailInfoMap.get(currencyType), emailInfoMap.get(refundRequestAmount), emailInfoMap.get(currencyType), emailInfoMap.get(refundDate));
+                }
             }
         }
 

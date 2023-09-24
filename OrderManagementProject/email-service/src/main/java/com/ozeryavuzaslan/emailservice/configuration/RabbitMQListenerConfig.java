@@ -19,7 +19,13 @@ public class RabbitMQListenerConfig implements RabbitListenerConfigurer {
     private final ObjectMapper objectMapper;
 
     @Value("${rabbit.stock.email.queue.name}")
-    private String queueName;
+    private String stockQueueName;
+
+    @Value("${rabbit.payment.email.queue.name}")
+    private String paymentQueueName;
+
+    @Value("${rabbit.refund.email.queue.name}")
+    private String refundQueueName;
 
     @Bean
     public MessageConverter messageConverter() {
@@ -27,8 +33,18 @@ public class RabbitMQListenerConfig implements RabbitListenerConfigurer {
     }
 
     @Bean
-    public Queue queue() {
-        return new Queue(queueName,false);
+    public Queue getStockQueue() {
+        return new Queue(stockQueueName,false);
+    }
+
+    @Bean
+    public Queue getPaymentQueue() {
+        return new Queue(paymentQueueName,false);
+    }
+
+    @Bean
+    public Queue getRefundQueue() {
+        return new Queue(refundQueueName,false);
     }
 
     @Bean

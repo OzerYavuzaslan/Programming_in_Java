@@ -2,7 +2,7 @@ package com.ozeryavuzaslan.emailservice.service.rabbitmq;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
-import com.ozeryavuzaslan.basedomains.dto.payments.PaymentResponseForAsyncMsgDTO;
+import com.ozeryavuzaslan.basedomains.dto.payments.RefundResponseForAsyncMsgDTO;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import com.ozeryavuzaslan.emailservice.repository.EmailRepository;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 @Service
 @EnableRabbit
 @RequiredArgsConstructor
-public class EmailPaymentListener {
+public class EmailRefundListener {
     private final EmailDTO emailDTO;
     private final ModelMapper modelMapper;
     private final EmailRepository emailRepository;
@@ -33,43 +33,43 @@ public class EmailPaymentListener {
     @Value("${hash.map.email.cc.key}")
     private String mailCcKey;
 
-    @Value("${hash.map.email.body.stripe.payment.receipt.url}")
-    private String receiptUrl;
-
     @Value("${hash.map.email.body.payment.full.name}")
     private String fullName;
-
-    @Value("${hash.map.email.body.payment.total.price}")
-    private String totalPrice;
 
     @Value("${hash.map.email.body.payment.currency.type}")
     private String currencyType;
 
-    @Value("${hash.map.email.body.payment.date}")
-    private String paymentDate;
+    @Value("${hash.map.email.body.refund.date}")
+    private String refundDate;
 
-    @RabbitListener(queues = "${rabbit.payment.email.queue.name}")
-    public void paymentListener(PaymentResponseForAsyncMsgDTO paymentResponseForAsyncMsgDTO) {
+    @Value("${hash.map.email.body.refund.refunded.amount}")
+    private String refundedAmount;
+
+    @Value("${hash.map.email.body.refund.refunded.amount}")
+    private String refundRequestAmount;
+
+    @RabbitListener(queues = "${rabbit.refund.email.queue.name}")
+    public void paymentListener(RefundResponseForAsyncMsgDTO refundResponseForAsyncMsgDTO) {
         HashMap<String, String> paymentResponseDTOMap = new HashMap<>();
-        paymentResponseDTOMap.put(mailToKey, paymentResponseForAsyncMsgDTO.getEmail());
+        paymentResponseDTOMap.put(mailToKey, refundResponseForAsyncMsgDTO.getEmail());
         paymentResponseDTOMap.put(mailCcKey, null);
 
-        switch (paymentResponseForAsyncMsgDTO.getPaymentProviderType()){
+        switch (refundResponseForAsyncMsgDTO.getPaymentProviderType()){
             case STRIPE -> {
-                paymentResponseDTOMap.put(receiptUrl, paymentResponseForAsyncMsgDTO.getStripePaymentResponseDTO().getReceiptUrl());
-                paymentResponseDTOMap.put(fullName, paymentResponseForAsyncMsgDTO.getName() + " " + paymentResponseForAsyncMsgDTO.getSurname());
-                paymentResponseDTOMap.put(totalPrice, String.valueOf(paymentResponseForAsyncMsgDTO.getTotalPrice()));
-                paymentResponseDTOMap.put(currencyType, paymentResponseForAsyncMsgDTO.getCurrencyType().toString());
-                paymentResponseDTOMap.put(paymentDate, paymentResponseForAsyncMsgDTO.getPaymentDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                paymentResponseDTOMap.put(fullName, refundResponseForAsyncMsgDTO.getName() + " " + refundResponseForAsyncMsgDTO.getSurname());
+                paymentResponseDTOMap.put(refundedAmount, String.valueOf(refundResponseForAsyncMsgDTO.getRefundedAmount()));
+                paymentResponseDTOMap.put(refundRequestAmount, String.valueOf(refundResponseForAsyncMsgDTO.getRefundRequestAmount()));
+                paymentResponseDTOMap.put(currencyType, refundResponseForAsyncMsgDTO.getCurrencyType().toString());
+                paymentResponseDTOMap.put(refundDate, refundResponseForAsyncMsgDTO.getRefundDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             }
             case PAYPAL -> {}
             case CREDIT_CARD -> {}
         }
 
-        emailPropertySetter.setSomeProperties(emailDTO, paymentResponseDTOMap, EmailType.PAYMENT, paymentResponseForAsyncMsgDTO.getPaymentType());
+        emailPropertySetter.setSomeProperties(emailDTO, paymentResponseDTOMap, EmailType.PAYMENT, refundResponseForAsyncMsgDTO.getPaymentType());
         emailServiceUtilImpl.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
-        System.err.println("Payment Message --> " + paymentResponseForAsyncMsgDTO);
+        System.err.println("Refund Message --> " + refundResponseForAsyncMsgDTO);
     }
 }

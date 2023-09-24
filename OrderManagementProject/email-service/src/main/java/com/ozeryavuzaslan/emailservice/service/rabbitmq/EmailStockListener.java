@@ -46,7 +46,7 @@ public class EmailStockListener {
         stockDTOMap.put(mailToKey, stockDTO.getBrandCompanyEmail());
         stockDTOMap.put(mailCcKey, null);
 
-        emailPropertySetter.setSomeProperties(emailDTO, stockDTOMap, EmailType.STOCK);
+        emailPropertySetter.setSomeProperties(emailDTO, stockDTOMap, EmailType.STOCK, null);
         emailServiceUtilImpl.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
