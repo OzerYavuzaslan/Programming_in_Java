@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailConsumer {
+public class EmailOrderConsumer {
   //  private final EmailServiceUtilImpl emailServiceUtil;
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailOrderConsumer.class);
 
     @KafkaListener(topics = "${kafka.order.topic}", groupId = "${kafka.email.group}", containerFactory = "emailListenerFactory")
     public void consume(ConsumerRecord<String, OrderEventDTO> orderPayload){
