@@ -49,7 +49,7 @@ public class EmailRefundListener {
     private String refundRequestAmount;
 
     @RabbitListener(queues = "${rabbit.refund.email.queue.name}")
-    public void paymentListener(RefundResponseForAsyncMsgDTO refundResponseForAsyncMsgDTO) {
+    public void refundListener(RefundResponseForAsyncMsgDTO refundResponseForAsyncMsgDTO) {
         HashMap<String, String> paymentResponseDTOMap = new HashMap<>();
         paymentResponseDTOMap.put(mailToKey, refundResponseForAsyncMsgDTO.getEmail());
         paymentResponseDTOMap.put(mailCcKey, null);
