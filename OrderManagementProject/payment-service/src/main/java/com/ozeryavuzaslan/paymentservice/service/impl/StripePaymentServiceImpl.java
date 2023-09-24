@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.paymentservice.service.impl;
 import com.ozeryavuzaslan.basedomains.dto.payments.*;
 import com.ozeryavuzaslan.basedomains.util.NumericalTypeConversion;
 import com.ozeryavuzaslan.paymentservice.dto.PaymentInvoiceDTO;
+import com.ozeryavuzaslan.paymentservice.exception.PaymentNotFoundException;
 import com.ozeryavuzaslan.paymentservice.exception.RefundAmountExceedsException;
 import com.ozeryavuzaslan.paymentservice.model.PaymentInvoice;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
@@ -44,6 +45,9 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     @Value("${refund.request.exceeds.exception.message}")
     private String refundRequestExceedsTheActualPayment;
 
+    @Value("${payment.not.found.exception.message}")
+    private String paymentNotFoundExceptionMsg;
+
     @PostConstruct
     private void init(){
         Stripe.apiKey = stripeSecretKey;
@@ -60,7 +64,7 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
 
     @Override
     public StripeRefundResponseDTO refund(StripeRefundRequestDTO stripeRefundRequestDTO) throws StripeException {
-        PaymentInvoiceDTO paymentInvoiceDTO = modelMapper.map(paymentRepository.findByOrderid(stripeRefundRequestDTO.getOrderid()), PaymentInvoiceDTO.class);
+        PaymentInvoiceDTO paymentInvoiceDTO = modelMapper.map(paymentRepository.findByOrderid(stripeRefundRequestDTO.getOrderid()).orElseThrow(() -> new PaymentNotFoundException(paymentNotFoundExceptionMsg)), PaymentInvoiceDTO.class);
         double tmpRefundRequestAmount = numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
         double tmpRefundedAmount = numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(paymentInvoiceDTO.getRefundedAmount()));
         double tmpPaidTotalPrice = numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(paymentInvoiceDTO.getTotalPrice()));
@@ -75,7 +79,7 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
                 stripeRefundResponseDTO.getRefundedAmount(), stripeRefundResponseDTO.getRefundRequestAmount(),
                 stripeRefundResponseDTO.getPaymentType(), LocalDateTime.now());
 
-        rabbitTemplate.convertAndSend(refundRequestExceedsTheActualPayment, modelMapper.map(stripeRefundResponseDTO, RefundResponseForAsyncMsgDTO.class));
+        rabbitTemplate.convertAndSend(refundServiceQueueName, modelMapper.map(stripeRefundResponseDTO, RefundResponseForAsyncMsgDTO.class));
         return stripeRefundResponseDTO;
     }
 
