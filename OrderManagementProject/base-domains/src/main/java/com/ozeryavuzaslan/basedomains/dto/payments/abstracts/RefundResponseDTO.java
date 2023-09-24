@@ -1,9 +1,6 @@
 package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +26,7 @@ public abstract class RefundResponseDTO {
     private PaymentProviderType paymentProviderType;
     private double refundedAmount;
     private double refundRequestAmount;
+    private PaymentType paymentType;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime refundDate;

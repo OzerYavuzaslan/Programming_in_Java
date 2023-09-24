@@ -1,9 +1,6 @@
 package com.ozeryavuzaslan.paymentservice.model;
 
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
-import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -98,6 +95,10 @@ public class PaymentInvoice {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentProviderType paymentProviderType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     @Column(columnDefinition = "TEXT")
     private String exceptionMessage;

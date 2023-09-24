@@ -6,6 +6,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.StripeRefundRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripeRefundResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentType;
 import com.ozeryavuzaslan.basedomains.util.NumericalTypeConversion;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
 import com.stripe.model.Charge;
@@ -34,6 +35,7 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
         stripePaymentResponseDTO.setPaymentStatus(getStatus(charge.getStatus()));
         stripePaymentResponseDTO.setBalanceTransactionId(charge.getBalanceTransaction());
         stripePaymentResponseDTO.setPaymentDate(LocalDateTime.now());
+        stripePaymentResponseDTO.setPaymentType(PaymentType.PAYMENT);
 
         if (stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
@@ -52,6 +54,7 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
         stripeRefundResponseDTO.setPaymentid(refund.getCharge());
         stripeRefundResponseDTO.setBalanceTransactionId(refund.getBalanceTransaction());
         stripeRefundResponseDTO.setRefundDate(LocalDateTime.now());
+        stripeRefundResponseDTO.setPaymentType(PaymentType.REFUND);
 
         if (stripeRefundRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripeRefundRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
