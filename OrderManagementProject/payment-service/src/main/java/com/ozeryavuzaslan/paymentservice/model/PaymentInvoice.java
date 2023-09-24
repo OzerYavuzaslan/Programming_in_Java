@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 public class PaymentInvoice {
     @Id
     @Column(nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false, unique = true)

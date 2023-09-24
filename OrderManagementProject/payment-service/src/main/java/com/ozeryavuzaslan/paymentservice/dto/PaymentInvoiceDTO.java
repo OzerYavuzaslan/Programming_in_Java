@@ -26,8 +26,8 @@ public class PaymentInvoiceDTO implements Serializable {
     private double taxRate;
     private double totalPrice;
     private double totalPriceWithoutTax;
-    private double refundedAmount = 0.0D;
-    private double refundRequestAmount = 0.0D;
+    private double refundedAmount;
+    private double refundRequestAmount;
     private String receiptUrl;
     private CurrencyType currencyType;
     private PaymentStatus paymentStatus;
