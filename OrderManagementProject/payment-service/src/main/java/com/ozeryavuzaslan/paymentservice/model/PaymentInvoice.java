@@ -1,22 +1,21 @@
 package com.ozeryavuzaslan.paymentservice.model;
 
-import com.ozeryavuzaslan.basedomains.dto.enums.CurrencyType;
-import com.ozeryavuzaslan.basedomains.dto.enums.MonetaryUnitType;
-import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
-import com.ozeryavuzaslan.basedomains.dto.enums.PaymentStatus;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Table(name = "payment_invoices",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"orderid", "payment_id", "balanceTransactionId"})
+                @UniqueConstraint(columnNames = {"orderid", "payment_id", "balanceTransactionId", "refund_id"})
         },
         indexes = {
                 @Index(name = "order_id_index", columnList = "orderid"),
@@ -24,7 +23,8 @@ import java.time.LocalDateTime;
                 @Index(name = "user_email_index", columnList = "email"),
                 @Index(name = "user_index", columnList = "name, surname"),
                 @Index(name = "payment_id_index", columnList = "payment_id"),
-                @Index(name = "balance_transaction_id_index", columnList = "balanceTransactionId")
+                @Index(name = "balance_transaction_id_index", columnList = "balanceTransactionId"),
+                @Index(name = "refund_id_index", columnList = "refund_id")
         }
 )
 @Entity
@@ -46,6 +46,9 @@ public class PaymentInvoice {
 
     @Column(name = "payment_id", nullable = false, unique = true)
     private String paymentid;
+
+    @Column(name = "refund_id", unique = true)
+    private String refundid;
 
     @Column(nullable = false)
     private String userid;
@@ -71,6 +74,12 @@ public class PaymentInvoice {
     @Column(nullable = false)
     private double totalPriceWithoutTax;
 
+    @Column(nullable = false)
+    private double refundedAmount = 0.0D;
+
+    @Column(nullable = false)
+    private double refundRequestAmount = 0.0D;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String receiptUrl;
 
@@ -90,13 +99,12 @@ public class PaymentInvoice {
     @Enumerated(EnumType.STRING)
     private PaymentProviderType paymentProviderType;
 
-    @CreationTimestamp
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
+    private String exceptionMessage;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;
 
-    @CreationTimestamp
-    @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime addDate;
+    private LocalDateTime refundDate;
 }

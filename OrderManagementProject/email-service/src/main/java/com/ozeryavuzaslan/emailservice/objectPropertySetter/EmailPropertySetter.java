@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.objectPropertySetter;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.enums.EmailType;
+import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
 import jakarta.mail.MessagingException;
 
 import java.util.HashMap;

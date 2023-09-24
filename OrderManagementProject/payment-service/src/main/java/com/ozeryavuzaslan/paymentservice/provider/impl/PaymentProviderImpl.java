@@ -1,6 +1,8 @@
 package com.ozeryavuzaslan.paymentservice.provider.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.RefundRequestDTO;
+import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.RefundResponseDTO;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
 import com.ozeryavuzaslan.paymentservice.provider.PaymentProvider;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PaymentProviderImpl implements PaymentProvider<PaymentService<PaymentRequestDTO, PaymentResponseDTO>> {
+public class PaymentProviderImpl implements PaymentProvider<PaymentService<PaymentRequestDTO, PaymentResponseDTO, RefundRequestDTO, RefundResponseDTO>> {
     private final ApplicationContext applicationContext;
 
     @Override

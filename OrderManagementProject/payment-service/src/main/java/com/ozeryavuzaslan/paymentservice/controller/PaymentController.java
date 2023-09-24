@@ -1,8 +1,11 @@
 package com.ozeryavuzaslan.paymentservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
+import com.ozeryavuzaslan.basedomains.dto.payments.StripeRefundRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
+import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.RefundRequestDTO;
+import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.RefundResponseDTO;
 import com.ozeryavuzaslan.paymentservice.paymentGateway.PaymentGateway;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payments")
 public class PaymentController {
-    private final PaymentGateway<PaymentResponseDTO, PaymentRequestDTO> paymentGateway;
+    private final PaymentGateway<PaymentResponseDTO, PaymentRequestDTO, RefundResponseDTO, RefundRequestDTO> paymentGateway;
 
     @PostMapping("/stripe/pay")
     public ResponseEntity<PaymentResponseDTO> processPayment(@Valid @RequestBody StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception {
@@ -24,7 +27,7 @@ public class PaymentController {
     }
 
     @PostMapping("/stripe/refund")
-    public ResponseEntity<PaymentResponseDTO> processRefund(@Valid @RequestBody StripePaymentRequestDTO stripePaymentRequestDTO) throws Exception {
-        return ResponseEntity.ok(paymentGateway.makePayment(stripePaymentRequestDTO));
+    public ResponseEntity<RefundResponseDTO> processRefund(@Valid @RequestBody StripeRefundRequestDTO stripeRefundRequestDTO) throws Exception {
+        return ResponseEntity.ok(paymentGateway.makeRefund(stripeRefundRequestDTO));
     }
 }

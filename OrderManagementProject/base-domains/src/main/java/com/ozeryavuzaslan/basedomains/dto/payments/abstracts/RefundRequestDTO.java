@@ -1,9 +1,9 @@
 package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 
+import com.ozeryavuzaslan.basedomains.customValidations.EnumNamePattern;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
-import com.ozeryavuzaslan.basedomains.customValidations.EnumNamePattern;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import static com.ozeryavuzaslan.basedomains.util.Constants.*;
+import static com.ozeryavuzaslan.basedomains.util.Constants.PAYMENT_PROVIDER_NOT_VALID;
 
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class PaymentRequestDTO {
+public abstract class RefundRequestDTO {
     @NotNull(message = ORDER_ID_NOT_VALID)
     @Positive(message = ORDER_ID_NOT_VALID)
     private long orderid;
@@ -44,17 +45,9 @@ public abstract class PaymentRequestDTO {
     @NotBlank(message = EMAIL_NOT_VALID)
     private String email;
 
-    @NotNull(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
-    @Positive(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
-    private double taxRate;
-
-    @NotNull(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
-    @Positive(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
-    private double totalPrice;
-
-    @NotNull(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
-    @Positive(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
-    private double totalPriceWithoutTax;
+    @NotNull(message = REFUND_AMOUNT_INFO_NOT_VALID)
+    @Positive(message = REFUND_AMOUNT_INFO_NOT_VALID)
+    private double refundRequestAmount;
 
     @EnumNamePattern(regexp = CURRENCY_VALIDATION_LIST, message = CURRENCY_NOT_VALID)
     private CurrencyType currencyType;

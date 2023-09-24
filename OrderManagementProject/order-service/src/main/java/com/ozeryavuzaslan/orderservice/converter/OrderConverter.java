@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.orderservice.converter;
 
 
-import com.ozeryavuzaslan.basedomains.dto.enums.OrderStatusType;
+import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
 import lombok.AllArgsConstructor;

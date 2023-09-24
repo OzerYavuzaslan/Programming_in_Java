@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.service.rabbitmq;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.enums.EmailType;
+import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentResponseForAsyncMsgDTO;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;

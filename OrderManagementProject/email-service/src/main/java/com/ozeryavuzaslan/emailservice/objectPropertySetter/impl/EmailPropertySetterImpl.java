@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.emailservice.objectPropertySetter.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.enums.EmailStatus;
-import com.ozeryavuzaslan.basedomains.dto.enums.EmailType;
+import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailStatus;
+import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;

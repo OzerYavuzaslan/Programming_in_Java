@@ -3,6 +3,8 @@ package com.ozeryavuzaslan.paymentservice.controller.advice;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
+import com.ozeryavuzaslan.paymentservice.exception.PaymentNotFoundException;
+import com.ozeryavuzaslan.paymentservice.exception.RefundNotFoundException;
 import com.stripe.exception.StripeException;
 import lombok.RequiredArgsConstructor;
 import org.postgresql.util.PSQLException;
@@ -41,6 +43,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${unique.constraint.violation.sql.code}")
     private String uniqueConstraintViolationSQLStatusCode;
 
+    @Value("${payment.not.found.exception.message}")
+    private String paymentNotFoundExceptionMsg;
+
+    @Value("${refund.not.found.exception.message}")
+    private String refundNotFoundExceptionMsg;
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
@@ -69,6 +77,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
+    }
+
+    @ResponseBody
+    @ExceptionHandler({PaymentNotFoundException.class, RefundNotFoundException.class})
+    public final ResponseEntity<ErrorDetailsDTO> handleNotFoundException(Exception exception, WebRequest request) {
+        boolean isPaymentException = exception.getClass().getName().equals(PaymentNotFoundException.class.getName());
+        String tmpExceptionMessage;
+
+        if (isPaymentException)
+            tmpExceptionMessage = paymentNotFoundExceptionMsg;
+        else
+            tmpExceptionMessage = refundNotFoundExceptionMsg;
+
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler
+                        .returnProperMessage(tmpExceptionMessage,
+                                exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
     }
 
     @ResponseBody

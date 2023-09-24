@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.dto.enums;
+package com.ozeryavuzaslan.basedomains.dto.payments.enums;
 
 import lombok.Getter;
 

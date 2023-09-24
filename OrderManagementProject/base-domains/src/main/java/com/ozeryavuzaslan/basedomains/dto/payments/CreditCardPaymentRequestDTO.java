@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.basedomains.dto.payments;
 
-import com.ozeryavuzaslan.basedomains.dto.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import lombok.*;
 

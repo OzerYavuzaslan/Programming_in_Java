@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.basedomains.util;
 
-public interface DoubleToIntConversion {
+public interface NumericalTypeConversion {
     int convertDoubleToIntWithoutLosingPrecision(double doubleValue);
+    double convertIntToProperDouble(int intValue);
 }
