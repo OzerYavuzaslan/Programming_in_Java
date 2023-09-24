@@ -51,6 +51,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${refund.not.found.exception.message}")
     private String refundNotFoundExceptionMsg;
 
+    @Value("${refund.request.exceeds.exception.message}")
+    private String refundRequestExceedsTheActualPayment;
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
@@ -105,7 +108,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(StripeException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughException(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
+                customMessageHandler.returnProperMessage(refundRequestExceedsTheActualPayment, exception.getMessage()),
                 request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
