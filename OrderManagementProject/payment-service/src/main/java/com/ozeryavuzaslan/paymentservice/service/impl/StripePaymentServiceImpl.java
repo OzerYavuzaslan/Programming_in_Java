@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -84,17 +82,10 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
     }
 
     private Charge stripePayment(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException {
-        Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
-        chargeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
-        chargeParams.put("customer", stripePaymentRequestDTO.getUserid());
-        return Charge.create(chargeParams);
+        return Charge.create(setSomePaymentProperties.setSomeProperties(stripePaymentRequestDTO));
     }
 
     private Refund stripeRefund(StripeRefundRequestDTO stripeRefundRequestDTO, PaymentInvoiceDTO paymentInvoiceDTO) throws StripeException {
-        Map<String, Object> refundParams = new HashMap<>();
-        refundParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
-        refundParams.put("charge", paymentInvoiceDTO.getPaymentid());
-        return Refund.create(refundParams);
+        return Refund.create(setSomePaymentProperties.setSomeProperties(stripeRefundRequestDTO, paymentInvoiceDTO));
     }
 }

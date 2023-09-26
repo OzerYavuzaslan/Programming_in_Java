@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.basedomains.dto.orders;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,12 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDTO {
-    @JsonIgnore
     private long orderid;
     private String productCode;
     private String productName;
     private int quantity;
-    private double price;
     private String email;
     private String name;
     private String surname;

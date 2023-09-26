@@ -13,6 +13,7 @@ public class ErrorDetailsDTO {
     private LocalDateTime timeStamp;
     private String message;
     private String details;
+    private boolean status = false;
 
     public void setErrorDetailsProperties(LocalDateTime timeStamp, String message, String details){
         this.setTimeStamp(timeStamp);

@@ -8,20 +8,31 @@ import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentType;
 import com.ozeryavuzaslan.basedomains.util.NumericalTypeConversion;
+import com.ozeryavuzaslan.paymentservice.dto.PaymentInvoiceDTO;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
+import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
+import com.stripe.model.Customer;
+import com.stripe.model.CustomerCollection;
 import com.stripe.model.Refund;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
     private final ModelMapper modelMapper;
+    private final Map<String, Object> stripeParams = new HashMap<>();
     private final NumericalTypeConversion numericalTypeConversion;
 
     @Value("${stripe.status}")
@@ -31,6 +42,7 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
     public StripePaymentResponseDTO setSomeProperties(Charge charge, StripePaymentRequestDTO stripePaymentRequestDTO) {
         StripePaymentResponseDTO stripePaymentResponseDTO = modelMapper.map(stripePaymentRequestDTO, StripePaymentResponseDTO.class);
         stripePaymentResponseDTO.setPaymentid(charge.getId());
+        stripePaymentResponseDTO.setUserid(charge.getCustomer());
         stripePaymentResponseDTO.setReceiptUrl(charge.getReceiptUrl());
         stripePaymentResponseDTO.setPaymentStatus(getStatus(charge.getStatus()));
         stripePaymentResponseDTO.setBalanceTransactionId(charge.getBalanceTransaction());
@@ -71,5 +83,27 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
             return PaymentStatus.SUCCESS;
 
         return PaymentStatus.FAIL;
+    }
+
+    @Override
+    public Map<String, Object> setSomeProperties(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException {
+        stripeParams.put("email", stripePaymentRequestDTO.getEmail());
+        String customerId = getCustomer().getData().get(0).getId();
+        stripeParams.clear();
+        stripeParams.put("customer", customerId);
+        stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
+        stripeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
+        return stripeParams;
+    }
+
+    @Override
+    public Map<String, Object> setSomeProperties(StripeRefundRequestDTO stripeRefundRequestDTO, PaymentInvoiceDTO paymentInvoiceDTO) {
+        stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
+        stripeParams.put("charge", paymentInvoiceDTO.getPaymentid());
+        return stripeParams;
+    }
+
+    private CustomerCollection getCustomer() throws StripeException {
+        return Customer.list(stripeParams);
     }
 }

@@ -24,7 +24,6 @@ public final class Constants {
     public final static String ORDER_ID_NOT_VALID = "OrderId must be positive and can't be null!";
     public final static String PAYMENT_AMOUNT_INFO_NOT_VALID = "Tax rate, total price and total price without tax info must be positive! They also can't be null";
     public final static String REFUND_AMOUNT_INFO_NOT_VALID = "Refund amount can't be null, negative and zero!";
-    public final static String USER_ID_NOT_VALID = "UserId cannot be null, empty and blank!";
     public final static String CURRENCY_VALIDATION_LIST = "USD|EUR|TL";
     public final static String MONETARY_UNIT_VALIDATION_LIST = "CENT|KURUS";
     public final static String PAYMENT_PROVIDER_TYPE_VALIDATION_LIST = "STRIPE|PAYPAL|CREDIT_CARD";
