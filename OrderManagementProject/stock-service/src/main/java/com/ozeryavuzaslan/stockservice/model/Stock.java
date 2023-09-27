@@ -49,6 +49,13 @@ public class Stock {
     @Column(nullable = false)
     private double price;
 
+    private double discountAmount = 0.0D;
+
+    private double discountPercentage = 0.0D;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime discountEndDate = null;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(nullable = false, name = "category_id", referencedColumnName = "id")
     private Category category;

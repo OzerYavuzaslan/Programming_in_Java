@@ -1,5 +1,9 @@
 package com.ozeryavuzaslan.orderservice.model;
 
+import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,14 +13,17 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Table(name = "orders",
+@Table(name = "orders", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"paymentid"})
+},
         indexes = {
-                @Index(name = "product_code_index", columnList = "productCode"),
                 @Index(name = "user_email_index", columnList = "email"),
                 @Index(name = "user_index", columnList = "name, surname"),
-                @Index(name = "date_index", columnList = "date"),
-                @Index(name = "update_date_index", columnList = "updateDate")
+                @Index(name = "order_date_index", columnList = "orderDate"),
+                @Index(name = "update_date_index", columnList = "updateDate"),
+                @Index(name = "payment_id_index", columnList = "paymentid")
         }
 )
 @Entity
@@ -25,22 +32,24 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+    //TODO: discountEndDate için stock serviste ilgili düzeltmeleri yap
+
     @Id
-    @Column(nullable = false, name = "id")
+    @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long orderid;
+    private long id;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<OrderStock> orderStocks;
 
     @Column(nullable = false)
-    private String productCode;
+    private double totalPrice;
 
     @Column(nullable = false)
-    private String productName;
+    private double taxRate;
 
     @Column(nullable = false)
-    private int quantity;
-
-    @Column(nullable = false)
-    private double price;
+    private double totalPriceWithoutTax;
 
     @Column(nullable = false)
     private String email;
@@ -54,11 +63,40 @@ public class Order {
     @Column(nullable = false)
     private String phoneNumber;
 
-    @CreationTimestamp
-    @Column(nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime date;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String address1;
 
+    @Column(columnDefinition = "TEXT")
+    private String address2;
+
+    @Column(nullable = false)
+    private String userid;
+
+    @Column(nullable = false, unique = true)
+    private String paymentid;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentProviderType paymentProviderType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CurrencyType currencyType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatusType orderStatusType;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime orderDate;
+
+    @CreationTimestamp
     @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;

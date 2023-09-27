@@ -49,6 +49,9 @@ public class StockDTO implements Serializable {
     @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     private double price;
 
+    private double discountAmount = 0.0D;
+    private double discountPercentage = 0.0D;
+
     @NotNull(message = CATEGORY_NULL_MSG)
     private CategoryDTO category;
 
@@ -59,4 +62,8 @@ public class StockDTO implements Serializable {
     @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
+
+    //TODO: custom anatasyon üret
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime discountEndDate = null;
 }

@@ -30,6 +30,7 @@ public final class Constants {
     public final static String CURRENCY_NOT_VALID = "Currency is not valid!";
     public final static String MONETARY_UNIT_NOT_VALID = "Monetary unit is not valid!";
     public final static String PAYMENT_PROVIDER_NOT_VALID = "Payment provider is not valid!";
+    public final static String DISCOUNT_NEGATIVE_MSG = "Discount cannot be negative!";
 
     private Constants(){
     }

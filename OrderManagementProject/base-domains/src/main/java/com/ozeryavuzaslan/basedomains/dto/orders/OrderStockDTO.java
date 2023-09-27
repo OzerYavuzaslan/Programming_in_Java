@@ -5,16 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDTO implements Serializable {
+public class OrderStockDTO implements Serializable {
     private long id;
-    private String email;
-    private String name;
-    private String surname;
-    private String phoneNumber;
-    private List<OrderStockDTO> orderStockDTOList;
+    private int quantity;
+    private UUID productCode;
+    private String productName;
 }
