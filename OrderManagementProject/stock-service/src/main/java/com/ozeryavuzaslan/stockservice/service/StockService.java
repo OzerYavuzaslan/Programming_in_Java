@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.stockservice.service;
 import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface StockService {
     List<StockDTO> getStockList(Pageable pageable);
     List<StockDTO> getStockList();
     void deleteStockByProductCode(UUID productCode);
-    StockDTO decreaseStockQuantity(UUID productCode, int quantity);
-    List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList);
+    StockDTO getSpecificStocks(UUID productCode, int quantity);
+    List<StockDTO> getSpecificStocks(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList, StockAim stockAim);
+    void checkStockServiceCacheState();
 }

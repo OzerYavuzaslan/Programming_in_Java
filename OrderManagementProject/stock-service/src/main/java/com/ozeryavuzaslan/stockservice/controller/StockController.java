@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.stockservice.controller;
 import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
@@ -43,15 +44,16 @@ public class StockController {
         return ResponseEntity.ok(stockService.updateStock(stockDTO));
     }
 
-    @PutMapping("/modify/product")
+    @PutMapping("/product")
     public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
                                                           @RequestParam int quantityAmount){
-        return ResponseEntity.ok(stockService.decreaseStockQuantity(productCode, quantityAmount));
+        return ResponseEntity.ok(stockService.getSpecificStocks(productCode, quantityAmount));
     }
 
-    @PutMapping("/modify/productList")
-    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList){
-        return ResponseEntity.ok(stockService.decreaseStockQuantity(decreaseStockQuantityDTOList));
+    @PutMapping("/modifyOrGet/specificProductList/{stockAim}")
+    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
+                                                                    @PathVariable StockAim stockAim){
+        return ResponseEntity.ok(stockService.getSpecificStocks(decreaseStockQuantityDTOList, stockAim));
     }
 
     @GetMapping("/{productCode}")
@@ -71,6 +73,7 @@ public class StockController {
 
     @GetMapping
     public ResponseEntity<List<StockDTO>> getStocks(@ParameterObject Pageable pageable){
+        stockService.checkStockServiceCacheState();
         return ResponseEntity.ok(stockService.getStockList(pageable));
     }
 

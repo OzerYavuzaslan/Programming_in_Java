@@ -17,7 +17,7 @@ public class OrderConverter {
 
         orderEventDTO.setOrderDTO(orderDTO);
         orderEventDTO.setMessage("Order status is pending state");
-        orderEventDTO.setOrderStatusType(OrderStatusType.PENDING);
+        orderEventDTO.setOrderStatusType(OrderStatusType.TAKEN);
 
         return orderEventDTO;
     }

@@ -30,7 +30,9 @@ public final class Constants {
     public final static String CURRENCY_NOT_VALID = "Currency is not valid!";
     public final static String MONETARY_UNIT_NOT_VALID = "Monetary unit is not valid!";
     public final static String PAYMENT_PROVIDER_NOT_VALID = "Payment provider is not valid!";
-    public final static String DISCOUNT_NEGATIVE_MSG = "Discount cannot be negative!";
+    public final static String FUTURE_DATE_NOT_VALID = "The date must be in the future!";
+    public final static String FUTURE_DATE_VALIDATION_REQUEST = "When discount is set, discountEndDate must be provided!";
+    public final static String DISCOUNTS_NOT_VALID = "Discount amount and percentage must be zero or greater than zero!";
 
     private Constants(){
     }

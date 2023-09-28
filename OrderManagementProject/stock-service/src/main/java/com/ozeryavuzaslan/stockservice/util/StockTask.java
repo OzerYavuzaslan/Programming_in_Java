@@ -21,6 +21,7 @@ public class StockTask extends TimerTask {
 
     @Override
     public void run() {
+        stockService.checkStockServiceCacheState();
         List<StockDTO> stockDTOList = stockService.getStockList()
                 .stream()
                 .filter(stockDTO -> stockDTO.getQuantity() == 0)

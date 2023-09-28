@@ -1,7 +1,6 @@
 package com.ozeryavuzaslan.orderservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.orders.OrderResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> placeOrder(@Valid @RequestBody OrderDTO orderDTO){
+    public ResponseEntity<OrderDTO> getOrder(@Valid @RequestBody OrderDTO orderDTO){
         return null;
     }
 }

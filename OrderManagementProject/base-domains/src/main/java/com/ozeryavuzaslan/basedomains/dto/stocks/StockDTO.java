@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.basedomains.dto.stocks;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ozeryavuzaslan.basedomains.customValidations.FutureDate;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FutureDate(fieldName = "discountEndDate")
 public class StockDTO implements Serializable {
     @JsonIgnore
     private Long id;
@@ -49,8 +51,11 @@ public class StockDTO implements Serializable {
     @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     private double price;
 
-    private double discountAmount = 0.0D;
-    private double discountPercentage = 0.0D;
+    @PositiveOrZero(message = DISCOUNTS_NOT_VALID)
+    private double discountAmount;
+
+    @PositiveOrZero(message = DISCOUNTS_NOT_VALID)
+    private double discountPercentage;
 
     @NotNull(message = CATEGORY_NULL_MSG)
     private CategoryDTO category;
@@ -63,7 +68,6 @@ public class StockDTO implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
 
-    //TODO: custom anatasyon üret
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime discountEndDate = null;
+    private LocalDateTime discountEndDate;
 }

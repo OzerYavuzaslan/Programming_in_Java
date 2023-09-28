@@ -4,6 +4,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
@@ -24,7 +25,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -107,7 +111,6 @@ public class StockServiceImpl implements StockService {
     @Cacheable(value = "stocks")
     @SuppressWarnings("ConstantConditions")
     public List<StockDTO> getStockList(Pageable pageable){
-        isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
         return stockRepository
                 .findAll(pageable)
                 .stream()
@@ -118,7 +121,6 @@ public class StockServiceImpl implements StockService {
     @Override
     @Cacheable(value = "stocks")
     public List<StockDTO> getStockList() {
-        isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
         Pageable pageable = PageRequest.of(0, 1000);
         return getStockList(pageable);
     }
@@ -133,7 +135,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @CachePut(value = "stocks", key = "#productCode")
-    public StockDTO decreaseStockQuantity(UUID productCode, int quantity) {
+    public StockDTO getSpecificStocks(UUID productCode, int quantity) {
         StockDTO stockDTO = getStockByProductCode(productCode);
 
         if (stockDTO.getQuantity() < quantity)
@@ -144,7 +146,7 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<StockDTO> decreaseStockQuantity(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList) {
+    public List<StockDTO> getSpecificStocks(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList, StockAim stockAim) {
         Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList());
 
         if (optionalStockList.isEmpty())
@@ -172,9 +174,24 @@ public class StockServiceImpl implements StockService {
             if (stockQuantity < requestedStockQuantity)
                 throw new ProductAmountNotEnoughException(stockAmountNotEnough + " (" + stockList.get(i).getProductName() + ")");
 
-            stockList.get(i).setQuantity(stockQuantity - requestedStockQuantity);
+            if (stockAim.equals(StockAim.DECREASE))
+                stockList.get(i).setQuantity(stockQuantity - requestedStockQuantity);
         }
 
+        if (stockAim.equals(StockAim.DECREASE))
+            return decreaseStocksQuantity(stockList);
+
+        return stockList.stream()
+                .map(stock -> modelMapper.map(stock, StockDTO.class))
+                .toList();
+    }
+
+    @Override
+    public void checkStockServiceCacheState(){
+        isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
+    }
+
+    private List<StockDTO> decreaseStocksQuantity(List<Stock> stockList){
         isCacheRefresh = false;
         return stockRepository
                 .saveAll(stockList)
