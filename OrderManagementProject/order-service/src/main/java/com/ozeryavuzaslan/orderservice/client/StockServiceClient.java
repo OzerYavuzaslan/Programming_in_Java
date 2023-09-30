@@ -18,6 +18,6 @@ public interface StockServiceClient {
     List<StockDTO> getAllStocks(Pageable pageable);
 
     @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.modify.or.get.specific.product.list}")
-    List<StockDTO> modifyorGetProductList(@RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
-                                     @PathVariable("stockAim") StockAim stockAim);
+    List<StockDTO> modifyOrGetProductList(@RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
+                                          @PathVariable("stockAim") StockAim stockAim);
 }

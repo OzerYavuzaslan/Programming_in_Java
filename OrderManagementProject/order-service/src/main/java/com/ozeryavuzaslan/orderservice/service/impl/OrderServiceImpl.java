@@ -1,8 +1,10 @@
 package com.ozeryavuzaslan.orderservice.service.impl;
 
+import com.google.gson.reflect.TypeToken;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
 import com.ozeryavuzaslan.orderservice.client.RevenueServiceClient;
 import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
@@ -12,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.lang.reflect.Type;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +26,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO takeOrder(OrderDTO orderDTO) {
-        List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList = orderDTO.getOrderStockDTOList().stream().forEach(orderStockDTO -> modelMapper.map(orderStockDTO, DecreaseStockQuantityDTO.class));
+        Type listType = new TypeToken<List<DecreaseStockQuantityDTO>>() {}.getType();
+        List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList = modelMapper.map(orderDTO.getOrderStockDTOList(), listType);
+        List<StockDTO> stockDTOList = stockServiceClient.modifyOrGetProductList(decreaseStockQuantityDTOList, StockAim.GET);
 
 
-        List<StockDTO> stockDTOList = stockServiceClient.modifyorGetProductList();
 
         return null;
     }
