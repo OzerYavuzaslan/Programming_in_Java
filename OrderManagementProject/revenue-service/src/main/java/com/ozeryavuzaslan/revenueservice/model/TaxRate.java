@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.orderservice.model;
+package com.ozeryavuzaslan.revenueservice.model;
 
-import com.ozeryavuzaslan.basedomains.dto.orders.enums.TaxRateType;
+import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

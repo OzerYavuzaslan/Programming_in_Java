@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService{
     @CachePut(value = "categories", key = "#categoryWithoutUUIDDTO.name")
     public CategoryDTO saveCategory(CategoryWithoutUUIDDTO categoryWithoutUUIDDTO) {
         categoryPropertySetter.setSomeProperties(categoryWithoutUUIDDTO, true, false);
-        cacheManagementService.clearStockCache(categoryCacheName);
+        cacheManagementService.clearCache(categoryCacheName);
         return modelMapper.map(categoryRepository.save(modelMapper.map(categoryWithoutUUIDDTO, Category.class)), CategoryDTO.class);
     }
 
@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService{
     @CachePut(value = "categories", key = "#categoryDTO.categoryCode")
     public CategoryDTO updateCategory(CategoryDTO categoryDTO) {
         categoryPropertySetter.setSomeProperties(modelMapper.map(categoryDTO, CategoryWithoutUUIDDTO.class), false, true);
-        cacheManagementService.clearStockCache(categoryCacheName);
+        cacheManagementService.clearCache(categoryCacheName);
         return modelMapper.map(categoryRepository.save(modelMapper.map(getCategory(categoryDTO.getCategoryCode()), Category.class)), CategoryDTO.class);
     }
 
@@ -82,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService{
     @CacheEvict(value = "categories", key = "#categoryCode")
     public void deleteCategoryByCategoryCode(UUID categoryCode) {
         categoryRepository.delete(modelMapper.map(getCategory(categoryCode), Category.class));
-        cacheManagementService.clearStockCache(categoryCacheName);
+        cacheManagementService.clearCache(categoryCacheName);
     }
 
     private CategoryDTO getCategory(UUID categoryCode){

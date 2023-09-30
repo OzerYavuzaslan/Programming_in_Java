@@ -1,16 +1,19 @@
 package com.ozeryavuzaslan.orderservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
+import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    @Override
-    public OrderDTO getOrder(OrderDTO orderDTO) {
+    private final StockServiceClient stockServiceClient;
 
+    @Override
+    public OrderDTO getOrder(Pageable pageable, OrderDTO orderDTO) {
 
 
         return null;

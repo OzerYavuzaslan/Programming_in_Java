@@ -23,8 +23,11 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final CacheManagementService cacheManagementService;
 
-    @Value("${category.get.endpoint}")
+    @Value("${category.get.by.id.endpoint}")
     private String categoryGetEndpoint;
+
+    @Value("${category.cache.name}")
+    private String categoryCacheName;
 
     @PostMapping("/categories")
     public ResponseEntity<CategoryDTO> insertCategory(@Valid @RequestBody CategoryWithoutUUIDDTO categoryWithoutUUIDDTO){
@@ -68,7 +71,7 @@ public class CategoryController {
 
     @PatchMapping("/categories/clearCache")
     public ResponseEntity<String> clearCache(){
-        cacheManagementService.clearCategoryCache();
+        cacheManagementService.clearCache(categoryCacheName);
         return new ResponseEntity<>("Category cache has been refreshed.", HttpStatus.OK);
     }
 }

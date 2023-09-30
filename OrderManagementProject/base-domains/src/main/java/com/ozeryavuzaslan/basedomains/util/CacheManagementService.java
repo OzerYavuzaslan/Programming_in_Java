@@ -1,8 +1,6 @@
 package com.ozeryavuzaslan.basedomains.util;
 
 public interface CacheManagementService {
-    void clearStockCache();
-    void clearCategoryCache();
-    void clearStockCache(String cacheName);
+    void clearCache(String cacheName);
     boolean releaseCache(boolean isCacheRefresh, String cacheName);
 }

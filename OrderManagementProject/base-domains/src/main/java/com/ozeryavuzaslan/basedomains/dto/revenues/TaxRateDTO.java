@@ -1,6 +1,6 @@
-package com.ozeryavuzaslan.basedomains.dto.orders;
+package com.ozeryavuzaslan.basedomains.dto.revenues;
 
-import com.ozeryavuzaslan.basedomains.dto.orders.enums.TaxRateType;
+import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -38,7 +38,7 @@ public class StockServiceImpl implements StockService {
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
     private final CacheManagementService cacheManagementService;
-    private static boolean isCacheRefresh = true;
+    private static boolean isCacheRefresh = false;
 
     @Value("${stock.amount.not.enough}")
     private String stockAmountNotEnough;

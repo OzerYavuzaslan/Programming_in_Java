@@ -27,8 +27,11 @@ public class StockController {
     private final CustomLocation customLocation;
     private final CacheManagementService cacheManagementService;
 
-    @Value("${stock.get.endpoint}")
+    @Value("${stock.get.by.id.endpoint}")
     private String stockGetEndpoint;
+
+    @Value("${stock.cache.name}")
+    private String stockCacheName;
 
     @PostMapping
     public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
@@ -85,7 +88,7 @@ public class StockController {
 
     @PatchMapping("/clearCache")
     public ResponseEntity<String> clearCache(){
-        cacheManagementService.clearStockCache();
+        cacheManagementService.clearCache(stockCacheName);
         return new ResponseEntity<>("Stock cache has been refreshed.", HttpStatus.OK);
     }
 }

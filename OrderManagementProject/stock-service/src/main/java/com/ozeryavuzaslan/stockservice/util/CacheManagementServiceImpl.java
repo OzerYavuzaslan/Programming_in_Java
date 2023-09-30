@@ -4,7 +4,6 @@ import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,17 +12,7 @@ public class CacheManagementServiceImpl implements CacheManagementService {
     private final CacheManager cacheManager;
 
     @Override
-    @CacheEvict(value = "stocks", allEntries = true)
-    public void clearStockCache(){
-    }
-
-    @Override
-    @CacheEvict(value = "categories", allEntries = true)
-    public void clearCategoryCache() {
-    }
-
-    @Override
-    public void clearStockCache(String cacheName){
+    public void clearCache(String cacheName){
         Cache cache = cacheManager.getCache(cacheName);
 
         if (cache != null)
@@ -32,13 +21,11 @@ public class CacheManagementServiceImpl implements CacheManagementService {
 
     @Override
     public boolean releaseCache(boolean isCacheRefresh, String cacheName){
-        boolean tmpIsCacheRefresh = false;
-
         if (!isCacheRefresh) {
-            clearStockCache(cacheName);
-            tmpIsCacheRefresh = true;
+            clearCache(cacheName);
+            return true;
         }
 
-        return tmpIsCacheRefresh;
+        return false;
     }
 }

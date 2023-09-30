@@ -13,6 +13,7 @@
         <module name="email-service" />
         <module name="api-gateway" />
         <module name="order-service" />
+        <module name="revenue-service" />
         <module name="service-registry" />
       </profile>
     </annotationProcessing>
@@ -24,6 +25,7 @@
       <module name="email-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />
+      <module name="revenue-service" options="-parameters" />
       <module name="service-registry" options="-parameters" />
       <module name="stock-service" options="-parameters" />
     </option>
