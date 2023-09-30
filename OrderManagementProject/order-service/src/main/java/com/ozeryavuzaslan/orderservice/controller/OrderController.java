@@ -3,8 +3,6 @@ package com.ozeryavuzaslan.orderservice.controller;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     @PostMapping
-    public ResponseEntity<OrderDTO> getOrder(@ParameterObject Pageable pageable,
-                                             @Valid @RequestBody OrderDTO orderDTO){
+    public ResponseEntity<OrderDTO> getOrder(@Valid @RequestBody OrderDTO orderDTO){
 
 
         return null;
