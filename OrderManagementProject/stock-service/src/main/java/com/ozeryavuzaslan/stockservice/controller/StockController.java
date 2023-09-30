@@ -56,6 +56,9 @@ public class StockController {
     @PutMapping("/modifyOrGet/specificProductList/{stockAim}")
     public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
                                                                     @PathVariable StockAim stockAim){
+        if (stockAim.equals(StockAim.GET))
+            stockService.checkStockServiceCacheState();
+
         return ResponseEntity.ok(stockService.getSpecificStocks(decreaseStockQuantityDTOList, stockAim));
     }
 

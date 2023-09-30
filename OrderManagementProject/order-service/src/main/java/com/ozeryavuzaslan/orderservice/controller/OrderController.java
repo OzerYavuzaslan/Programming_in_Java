@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     @PostMapping
-    public ResponseEntity<OrderDTO> getOrder(@Valid @RequestBody OrderDTO orderDTO){
+    public ResponseEntity<OrderDTO> takeOrder(@Valid @RequestBody OrderDTO orderDTO){
 
 
         return null;

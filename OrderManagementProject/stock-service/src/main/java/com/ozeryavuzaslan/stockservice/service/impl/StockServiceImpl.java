@@ -181,7 +181,8 @@ public class StockServiceImpl implements StockService {
         if (stockAim.equals(StockAim.DECREASE))
             return decreaseStocksQuantity(stockList);
 
-        return stockList.stream()
+        return stockList
+                .stream()
                 .map(stock -> modelMapper.map(stock, StockDTO.class))
                 .toList();
     }

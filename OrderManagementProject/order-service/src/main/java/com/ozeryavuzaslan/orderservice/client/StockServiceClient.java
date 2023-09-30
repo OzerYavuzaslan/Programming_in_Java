@@ -14,10 +14,10 @@ import java.util.List;
 
 @FeignClient(name = "STOCK-SERVICE")
 public interface StockServiceClient {
-    @GetMapping("${stock.list.base.endpoint}")
+    @GetMapping("${base.endpoint}" + "${stock.base.endpoint}")
     List<StockDTO> getAllStocks(Pageable pageable);
 
-    @PutMapping("${stock.list.base.endpoint}" + "${stock.modify.or.get.specific.product.list}")
-    List<StockDTO> modifyProductList(@RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
+    @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.modify.or.get.specific.product.list}")
+    List<StockDTO> modifyorGetProductList(@RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
                                      @PathVariable("stockAim") StockAim stockAim);
 }
