@@ -21,11 +21,9 @@ public class CacheManagementServiceImpl implements CacheManagementService {
 
     @Override
     public boolean releaseCache(boolean isCacheRefresh, String cacheName){
-        if (!isCacheRefresh) {
+        if (!isCacheRefresh)
             clearCache(cacheName);
-            return true;
-        }
 
-        return false;
+        return true;
     }
 }

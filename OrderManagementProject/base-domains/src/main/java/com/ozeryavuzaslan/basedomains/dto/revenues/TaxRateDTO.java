@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaxRateDTO {
-    private Long id;
+public class TaxRateDTO implements Serializable {
+    private long id;
     private int year;
     private int month;
     private double rate;

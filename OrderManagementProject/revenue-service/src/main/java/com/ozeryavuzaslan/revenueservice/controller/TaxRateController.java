@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.revenueservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
+import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.revenueservice.service.TaxRateService;
 import jakarta.validation.Valid;
@@ -53,6 +54,13 @@ public class TaxRateController {
     public ResponseEntity<List<TaxRateDTO>> getTaxRates(@ParameterObject Pageable pageable){
         taxRateService.checkTaxRateServiceCacheState();
         return ResponseEntity.ok(taxRateService.getAllTaxRates(pageable));
+    }
+
+    @GetMapping("/taxRate/getSpecificTaxRate")
+    private ResponseEntity<TaxRateDTO> getSpecificTaxRate(@RequestParam int taxYear,
+                                                          @RequestParam int taxMonth,
+                                                          @RequestParam TaxRateType taxRateType){
+        return ResponseEntity.ok(taxRateService.getTaxRate(taxYear, taxMonth, taxRateType));
     }
 
     @PatchMapping("/taxRate/clearCache")
