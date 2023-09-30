@@ -78,6 +78,7 @@ public class TaxRateServiceImpl implements TaxRateService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "taxes", allEntries = true)
     public List<TaxRateDTO> taxRateBulkUpdate(List<TaxRateDTO> taxRateDTOList) {
         List<Long> taxRateIds = taxRateDTOList.stream().map(TaxRateDTO::getId).collect(Collectors.toList());
