@@ -12,6 +12,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Table(name = "tax_rates",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"year", "month", "taxRateType"}, name = "unique_year_month_taxRateType")
+        },
         indexes = {
                 @Index(name = "year_index", columnList = "year"),
                 @Index(name = "month_index", columnList = "month"),
