@@ -20,7 +20,6 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDTO implements Serializable {
-    @JsonIgnore
     private Long id;
 
     @NotNull(message = UUID_VALID_NULL_MSG)

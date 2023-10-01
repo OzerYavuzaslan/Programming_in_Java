@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.model;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import jakarta.persistence.*;
@@ -32,23 +33,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
-    //TODO: discountEndDate için stock serviste ilgili düzeltmeleri yap
-
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<OrderStock> orderStocks;
+    private List<OrderStock> orderStockList;
 
-    @Column(nullable = false)
     private double totalPrice;
-
-    @Column(nullable = false)
     private double taxRate;
-
-    @Column(nullable = false)
     private double totalPriceWithoutTax;
 
     @Column(nullable = false)
@@ -69,10 +63,9 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String address2;
 
-    @Column(nullable = false)
     private String userid;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String paymentid;
 
     @Column(nullable = false)
@@ -86,6 +79,10 @@ public class Order {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MonetaryUnitType monetaryUnitType;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

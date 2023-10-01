@@ -1,9 +1,8 @@
 package com.ozeryavuzaslan.stockservice.controller;
 
-import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
@@ -42,6 +41,11 @@ public class StockController {
                 .build();
     }
 
+    @PostMapping("/reserveProducts")
+    public ResponseEntity<List<ReservedStockDTO>> takeReserveStock(@Valid @RequestBody List<ReservedStockDTO> reservedStockDTOList){
+        return ResponseEntity.ok(stockService.reserveStock(reservedStockDTOList));
+    }
+
     @PutMapping("/updateStocks")
     public ResponseEntity<StockDTO> updateStock(@Valid @RequestBody StockDTO stockDTO){
         return ResponseEntity.ok(stockService.updateStock(stockDTO));
@@ -50,16 +54,7 @@ public class StockController {
     @PutMapping("/product")
     public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
                                                           @RequestParam int quantityAmount){
-        return ResponseEntity.ok(stockService.getSpecificStocks(productCode, quantityAmount));
-    }
-
-    @PutMapping("/modifyOrGet/specificProductList/{stockAim}")
-    public ResponseEntity<List<StockDTO>> modifyProductListQuantity(@Valid @RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
-                                                                    @PathVariable StockAim stockAim){
-        if (stockAim.equals(StockAim.GET))
-            stockService.checkStockServiceCacheState();
-
-        return ResponseEntity.ok(stockService.getSpecificStocks(decreaseStockQuantityDTOList, stockAim));
+        return ResponseEntity.ok(stockService.decreaseStock(productCode, quantityAmount));
     }
 
     @GetMapping("/{productCode}")

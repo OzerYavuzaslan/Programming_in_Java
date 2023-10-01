@@ -1,17 +1,20 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
+import com.ozeryavuzaslan.stockservice.model.ReservedStock;
 import com.ozeryavuzaslan.stockservice.model.Stock;
+import com.ozeryavuzaslan.stockservice.objectPropertySetter.ReservedStockPropertySetter;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
+import com.ozeryavuzaslan.stockservice.repository.ReservedStockRepository;
 import com.ozeryavuzaslan.stockservice.repository.StockRepository;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import jakarta.transaction.Transactional;
@@ -25,10 +28,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,8 @@ public class StockServiceImpl implements StockService {
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
     private final CacheManagementService cacheManagementService;
+    private final ReservedStockRepository reservedStockRepository;
+    private final ReservedStockPropertySetter reservedStockPropertySetter;
     private static boolean isCacheRefresh = false;
 
     @Value("${stock.amount.not.enough}")
@@ -135,7 +138,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @CachePut(value = "stocks", key = "#productCode")
-    public StockDTO getSpecificStocks(UUID productCode, int quantity) {
+    public StockDTO decreaseStock(UUID productCode, int quantity) {
         StockDTO stockDTO = getStockByProductCode(productCode);
 
         if (stockDTO.getQuantity() < quantity)
@@ -146,44 +149,52 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public List<StockDTO> getSpecificStocks(List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList, StockAim stockAim) {
-        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeIn(decreaseStockQuantityDTOList.stream().map(DecreaseStockQuantityDTO::getProductCode).toList());
+    @Transactional
+    public List<ReservedStockDTO> reserveStock(List<ReservedStockDTO> reservedStockDTOList) {
+        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeInOrderByProductCodeAsc(reservedStockDTOList.stream().map(ReservedStockDTO::getProductCode).toList());
 
         if (optionalStockList.isEmpty())
             throw new StockNotFoundException(stocksNotFound);
 
         List<Stock> stockList = optionalStockList.get();
+        Set<UUID> productCodesFromDTO = reservedStockDTOList
+                .stream()
+                .map(ReservedStockDTO::getProductCode)
+                .collect(Collectors.toSet());
 
-        if (stockList.size() != decreaseStockQuantityDTOList.size())
-            stockList.forEach(this::findNotEnoughStock);
+        for (Stock stock : stockList)
+            if (!productCodesFromDTO.contains(stock.getProductCode()))
+                throw new StockNotFoundException(stockNotFound + " (" + stock.getProductName() + ")");
 
-/*
-        Collections.sort(decreaseStockQuantityDTOList, new Comparator<DecreaseStockQuantityDTO>() {
-            @Override
-            public int compare(DecreaseStockQuantityDTO o1, DecreaseStockQuantityDTO o2) {
-                return o1.getProductCode().toString().compareTo(o2.getProductCode().toString());
-            }
-        });
-*/
-        decreaseStockQuantityDTOList.sort(Comparator.comparing(stockQuantityDTO -> stockQuantityDTO.getProductCode().toString()));
+        Optional<List<ReservedStock>> optionalReservedStockList = reservedStockRepository.findByStockInAndReserveTypeOrderByStock_ProductCodeAsc(stockList, ReserveType.RESERVED);
+        Map<UUID, ReservedStock> reservedStockMap = null;
 
-        for (int i = 0; i < decreaseStockQuantityDTOList.size(); i++) {
-            int stockQuantity = stockList.get(i).getQuantity();
-            int requestedStockQuantity = decreaseStockQuantityDTOList.get(i).getQuantity();
-
-            if (stockQuantity < requestedStockQuantity)
-                throw new ProductAmountNotEnoughException(stockAmountNotEnough + " (" + stockList.get(i).getProductName() + ")");
-
-            if (stockAim.equals(StockAim.DECREASE))
-                stockList.get(i).setQuantity(stockQuantity - requestedStockQuantity);
+        if (optionalReservedStockList.isPresent()) {
+            List<ReservedStock> reservedStockList = optionalReservedStockList.get();
+            reservedStockMap = reservedStockPropertySetter.setSomeProperties(reservedStockList);
         }
 
-        if (stockAim.equals(StockAim.DECREASE))
-            return decreaseStocksQuantity(stockList);
+        reservedStockDTOList.sort(Comparator.comparing(stockQuantityDTO -> stockQuantityDTO.getProductCode().toString()));
+        List<ReservedStock> reservedStockListToSave = new ArrayList<>();
 
-        return stockList
+        for (int i = 0; i < reservedStockDTOList.size(); i++) {
+            UUID currentProductCode = reservedStockDTOList.get(i).getProductCode();
+            int reservedQuantity = (reservedStockMap != null && reservedStockMap.containsKey(currentProductCode)) ? reservedStockMap.get(currentProductCode).getQuantity() : 0;
+            int stockQuantity = stockList.get(i).getQuantity();
+            int requestedAndReservedStockQuantity = reservedStockDTOList.get(i).getQuantity() + reservedQuantity;
+
+            if (stockQuantity < requestedAndReservedStockQuantity)
+                throw new ProductAmountNotEnoughException(stockAmountNotEnough + " (" + stockList.get(i).getProductName() + ")");
+
+            StockDTO stockDTO = modelMapper.map(stockList.get(i), StockDTO.class);
+            reservedStockDTOList.get(i).setStock(stockDTO);
+            reservedStockListToSave.add(modelMapper.map(reservedStockDTOList.get(i), ReservedStock.class));
+        }
+
+        return reservedStockRepository
+                .saveAll(reservedStockListToSave)
                 .stream()
-                .map(stock -> modelMapper.map(stock, StockDTO.class))
+                .map(reservedStock -> modelMapper.map(reservedStock, ReservedStockDTO.class))
                 .toList();
     }
 
@@ -205,12 +216,5 @@ public class StockServiceImpl implements StockService {
         return modelMapper
                 .map(stockRepository
                         .findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);
-    }
-
-    private void findNotEnoughStock(Stock stock){
-        stockRepository
-                .findByProductCode(stock
-                        .getProductCode())
-                .orElseThrow(() -> new StockNotFoundException(stockNotFound + " (" + stock.getProductName() + ")"));
     }
 }

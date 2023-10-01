@@ -19,7 +19,6 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 @AllArgsConstructor
 @FutureDate(fieldName = "discountEndDate")
 public class StockDTO implements Serializable {
-    @JsonIgnore
     private Long id;
 
     @NotNull(message = UUID_VALID_NULL_MSG)

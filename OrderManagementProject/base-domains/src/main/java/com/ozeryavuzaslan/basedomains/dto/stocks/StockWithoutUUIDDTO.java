@@ -41,13 +41,19 @@ public class StockWithoutUUIDDTO implements Serializable {
     @NotEmpty(message = EMAIL_NOT_VALID)
     private String brandCompanyEmail;
 
-    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     @Positive(message = QUANTITY_NEGATIVE_MSG)
+    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     private int quantity;
 
-    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     @Positive(message = PRICE_NEGATIVE_MSG)
+    @NotNull(message = PRICE_OR_QUANTITY_NULL_MSG)
     private double price;
+
+    @PositiveOrZero(message = DISCOUNTS_NOT_VALID)
+    private double discountAmount;
+
+    @PositiveOrZero(message = DISCOUNTS_NOT_VALID)
+    private double discountPercentage;
 
     @NotNull(message = CATEGORY_NULL_MSG)
     private CategoryWithoutUUIDDTO category;
@@ -59,4 +65,7 @@ public class StockWithoutUUIDDTO implements Serializable {
     @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime discountEndDate;
 }

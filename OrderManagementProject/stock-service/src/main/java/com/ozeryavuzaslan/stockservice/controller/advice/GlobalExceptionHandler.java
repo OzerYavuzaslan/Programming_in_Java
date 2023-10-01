@@ -53,6 +53,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${category.not.found}")
     private String categoryNotFound;
 
+    @Value("${reserve.stock.unique.constraint.violation}")
+    private String uniqueConstraintViolationExceptionMsgForReserveStock;
+
+    @Value("${data.integrity.violation.exception.tax.stock.service.impl.method.name}")
+    private String reserveStockMethodName;
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
@@ -68,17 +74,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(Exception exception, WebRequest request, PSQLException psqlException){
+    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(DataIntegrityViolationException exception, WebRequest request, PSQLException psqlException){
+        Throwable rootCause = exception.getRootCause();
         String tmpExceptionMsg = exception.getMessage();
+        StackTraceElement[] stackTraceElements = exception.getStackTrace();
 
-        if (psqlException != null && psqlException.getSQLState().equals(uniqueConstraintViolationSQLStatusCode))
+        if (psqlException != null && psqlException.getSQLState().equals(uniqueConstraintViolationSQLStatusCode)) {
             tmpExceptionMsg = uniqueConstraintViolationExceptionMsg;
 
-        errorDetailsDTO
-                .setErrorDetailsProperties(LocalDateTime.now(),
-                        customMessageHandler
-                                .returnProperMessage(uniqueConstraintViolationExceptionMsg, tmpExceptionMsg),
-                        request.getDescription(false));
+            for (StackTraceElement element : stackTraceElements) {
+                if (reserveStockMethodName.equals(element.getMethodName())) {
+                    tmpExceptionMsg = uniqueConstraintViolationExceptionMsgForReserveStock;
+                    break;
+                }
+            }
+        }
+
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg),
+                request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
     }

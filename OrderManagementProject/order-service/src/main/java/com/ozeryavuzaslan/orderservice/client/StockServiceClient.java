@@ -1,12 +1,10 @@
 package com.ozeryavuzaslan.orderservice.client;
 
-import com.ozeryavuzaslan.basedomains.dto.stocks.DecreaseStockQuantityDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.enums.StockAim;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,6 +16,5 @@ public interface StockServiceClient {
     List<StockDTO> getAllStocks(Pageable pageable);
 
     @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.modify.or.get.specific.product.list}")
-    List<StockDTO> modifyOrGetProductList(@RequestBody List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList,
-                                          @PathVariable("stockAim") StockAim stockAim);
+    List<StockDTO> modifyOrGetProductList(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 }

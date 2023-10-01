@@ -37,11 +37,9 @@ public class OrderStock {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
     private double price;
 
     private double discountAmount = 0.0D;
-
     private double discountPercentage = 0.0D;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
