@@ -9,12 +9,13 @@ import com.ozeryavuzaslan.orderservice.client.RevenueServiceClient;
 import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.lang.reflect.Type;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,11 +27,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO takeOrder(OrderDTO orderDTO) {
-        Type listType = new TypeToken<List<DecreaseStockQuantityDTO>>() {}.getType();
-        List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList = modelMapper.map(orderDTO.getOrderStockDTOList(), listType);
-        List<StockDTO> stockDTOList = stockServiceClient.modifyOrGetProductList(decreaseStockQuantityDTOList, StockAim.GET);
+        Type decreaseStockQuantityListType = new TypeToken<List<DecreaseStockQuantityDTO>>() {}.getType();
+        List<DecreaseStockQuantityDTO> decreaseStockQuantityDTOList = modelMapper.map(orderDTO.getOrderStockDTOList(), decreaseStockQuantityListType);
 
+        try {
+            List<StockDTO> stockDTOList = stockServiceClient.modifyOrGetProductList(decreaseStockQuantityDTOList, StockAim.GET);
+        } catch (FeignException feignException) {
 
+        }
 
         return null;
     }
