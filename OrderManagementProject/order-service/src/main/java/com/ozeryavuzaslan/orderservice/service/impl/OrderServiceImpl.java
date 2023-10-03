@@ -1,10 +1,7 @@
 package com.ozeryavuzaslan.orderservice.service.impl;
 
-import com.google.gson.reflect.TypeToken;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.payments.CreditCardPaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
-import com.ozeryavuzaslan.basedomains.dto.payments.PaypalPaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
@@ -15,6 +12,7 @@ import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
+import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
@@ -25,7 +23,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final StockServiceClient stockServiceClient;
     private final OrderPropertySetter orderPropertySetter;
+    private final StockPropertySetter stockPropertySetter;
     private final RevenueServiceClient revenueServiceClient;
     private final PaymentServiceClient paymentServiceClient;
     private final PaymentPropertySetter paymentPropertySetter;
@@ -48,17 +46,18 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         orderDTO = modelMapper.map(orderRepository.save(order), OrderDTO.class);
 
-        Type reserveStockQuantityListType = new TypeToken<List<ReservedStockDTO>>() {}.getType();
-        List<ReservedStockDTO> reservedStockDTOList = modelMapper.map(orderDTO.getOrderStockList(), reserveStockQuantityListType);
-
+        List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
         reservedStockDTOList = redirectReserveStocks(reservedStockDTOList);
-        TaxRateDTO taxRateDTO = redirectGetSpecificTaxRate();
 
+        TaxRateDTO taxRateDTO = redirectGetSpecificTaxRate();
         orderDTO = priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
+
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
         orderDTO = redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
 
-        return modelMapper.map(order, OrderDTO.class);
+        //TODO: paymentid orderDTO içine set edilmiyor. Onu hallet. Sonra da fiziken stock'tan düşmek için stock-service'e request at.
+
+        return modelMapper.map(orderRepository.save(modelMapper.map(orderDTO, Order.class)), OrderDTO.class);
     }
 
     //TODO:CircuitBreaker uygula
@@ -96,20 +95,12 @@ public class OrderServiceImpl implements OrderService {
         try{
             switch (orderDTO.getPaymentProviderType()){
                 case STRIPE -> {
-                    StripePaymentResponseDTO stripePaymentResponseDTO = (StripePaymentResponseDTO) paymentServiceClient
+                    StripePaymentResponseDTO stripePaymentResponseDTO = paymentServiceClient
                             .payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
                     orderDTO = modelMapper.map(stripePaymentResponseDTO, OrderDTO.class);
                 }
-                case PAYPAL -> {
-                    PaypalPaymentResponseDTO paypalPaymentResponseDTO = (PaypalPaymentResponseDTO) paymentServiceClient
-                            .payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
-                    orderDTO = modelMapper.map(paypalPaymentResponseDTO, OrderDTO.class);
-                }
-                case CREDIT_CARD -> {
-                    CreditCardPaymentResponseDTO creditCardPaymentResponseDTO = (CreditCardPaymentResponseDTO) paymentServiceClient
-                            .payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
-                    orderDTO = modelMapper.map(creditCardPaymentResponseDTO, OrderDTO.class);
-                }
+                case PAYPAL -> {}
+                case CREDIT_CARD -> {}
             }
 
             return orderDTO;
