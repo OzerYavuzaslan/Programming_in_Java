@@ -1,21 +1,9 @@
 package com.ozeryavuzaslan.orderservice.kafka;
 
-import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
-import com.ozeryavuzaslan.orderservice.converter.OrderConverter;
-import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Service;
-
-@Service
-@RequiredArgsConstructor
+//@Service
+//@RequiredArgsConstructor
 public class OrderProducer {
+    /*
     private final NewTopic topic;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final OrderConverter orderConverter;
@@ -32,4 +20,6 @@ public class OrderProducer {
 
         LOGGER.info(String.format("Order event has been sent --> %s", orderEventDTO));
     }
+
+     */
 }

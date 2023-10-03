@@ -63,8 +63,6 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String address2;
 
-    private String userid;
-
     @Column(unique = true)
     private String paymentid;
 

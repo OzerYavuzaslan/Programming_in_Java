@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "REVENUE-SERVICE")
 public interface RevenueServiceClient {
     @GetMapping("${base.endpoint}" + "${revenue.base.endpoint}" + "${revenue.tax.rate.base.endpoint}" + "${revenue.get.specific.tax.rate.endpoint}")
-    public TaxRateDTO getSpecificTaxRate(@RequestParam int taxYear,
-                                         @RequestParam int taxMonth,
-                                         @RequestParam TaxRateType taxRateType);
+    TaxRateDTO getSpecificTaxRate(@RequestParam int taxYear,
+                                  @RequestParam int taxMonth,
+                                  @RequestParam TaxRateType taxRateType);
 }

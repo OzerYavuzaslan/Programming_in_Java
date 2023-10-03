@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.paymentservice.paymentGateway.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.RefundRequestDTO;
@@ -18,12 +17,12 @@ public class PaymentGatewayImpl implements PaymentGateway<PaymentResponseDTO, Pa
     private final PaymentProvider<PaymentService<PaymentRequestDTO, PaymentResponseDTO, RefundRequestDTO, RefundResponseDTO>> paymentProvider;
 
     @Override
-    public PaymentResponseDTO makePayment(PaymentRequestDTO paymentRequestDTO) throws StripeException, JsonProcessingException {
+    public PaymentResponseDTO makePayment(PaymentRequestDTO paymentRequestDTO) throws StripeException {
         return paymentProvider.getProvider(paymentRequestDTO.getPaymentProviderType()).pay(paymentRequestDTO);
     }
 
     @Override
-    public RefundResponseDTO makeRefund(RefundRequestDTO refundRequestDTO) throws StripeException, JsonProcessingException {
+    public RefundResponseDTO makeRefund(RefundRequestDTO refundRequestDTO) throws StripeException {
         return paymentProvider.getProvider(refundRequestDTO.getPaymentProviderType()).refund(refundRequestDTO);
     }
 }

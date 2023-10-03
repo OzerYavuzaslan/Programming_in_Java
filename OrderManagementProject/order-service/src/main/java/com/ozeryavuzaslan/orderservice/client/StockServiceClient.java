@@ -15,6 +15,6 @@ public interface StockServiceClient {
     @GetMapping("${base.endpoint}" + "${stock.base.endpoint}")
     List<StockDTO> getAllStocks(Pageable pageable);
 
-    @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.modify.or.get.specific.product.list}")
-    List<StockDTO> modifyOrGetProductList(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
+    @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${reserve.stock.reserve.products.endpoint}")
+    List<ReservedStockDTO> reserveStock(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 }

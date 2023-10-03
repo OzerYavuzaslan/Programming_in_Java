@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.stockservice.service;
 
-import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +17,5 @@ public interface StockService {
     List<StockDTO> getStockList();
     void deleteStockByProductCode(UUID productCode);
     StockDTO decreaseStock(UUID productCode, int quantity);
-    List<ReservedStockDTO> reserveStock(List<ReservedStockDTO> reservedStockDTOList);
     void checkStockServiceCacheState();
 }

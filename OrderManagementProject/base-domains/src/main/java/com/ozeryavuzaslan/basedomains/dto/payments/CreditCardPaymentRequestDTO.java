@@ -5,7 +5,6 @@ import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentRequestDTO;
 import lombok.*;
 
 @Data
-@ToString
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class CreditCardPaymentRequestDTO extends PaymentRequestDTO {

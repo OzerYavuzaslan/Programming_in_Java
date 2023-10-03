@@ -1,19 +1,17 @@
 package com.ozeryavuzaslan.basedomains.dto.payments.abstracts;
 
+import com.ozeryavuzaslan.basedomains.customValidations.EnumNamePattern;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
-import com.ozeryavuzaslan.basedomains.customValidations.EnumNamePattern;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 
 @Data
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class PaymentRequestDTO {

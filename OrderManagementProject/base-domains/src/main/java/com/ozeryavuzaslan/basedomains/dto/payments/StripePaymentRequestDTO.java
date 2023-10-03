@@ -6,10 +6,8 @@ import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@ToString
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class StripePaymentRequestDTO extends PaymentRequestDTO {
