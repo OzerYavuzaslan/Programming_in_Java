@@ -12,6 +12,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public class PaymentResponseForAsyncMsgDTO extends PaymentResponseDTO implements Serializable {
     PaypalPaymentResponseDTO paypalPaymentResponseDTO;
-    StripePaymentResponseDTO stripePaymentResponseDTO;
+    com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO stripePaymentResponseDTO;
     CreditCardPaymentResponseDTO creditCardPaymentResponseDTO;
 }

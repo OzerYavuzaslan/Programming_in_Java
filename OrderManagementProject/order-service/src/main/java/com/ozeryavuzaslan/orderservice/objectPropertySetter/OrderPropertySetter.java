@@ -5,5 +5,5 @@ import com.ozeryavuzaslan.orderservice.model.Order;
 
 public interface OrderPropertySetter {
     Order setSomeProperties(OrderDTO orderDTO);
-    OrderDTO setSomeProperties(OrderDTO orderDTO, double totalPrice, double totalPriceWithoutTax, double taxRate);
+    void setSomeProperties(OrderDTO orderDTO, double totalPrice, double totalPriceWithoutTax, double taxRate);
 }

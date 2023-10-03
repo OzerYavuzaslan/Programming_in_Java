@@ -15,18 +15,9 @@ public class PaymentPropertySetterImpl implements PaymentPropertySetter {
     @Override
     public void setSomeProperties(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService) {
         switch (orderDTO.getPaymentProviderType()){
-            case STRIPE -> {
-                paymentRequestDTOForPaymentService.setStripePaymentRequestDTO(modelMapper.map(orderDTO, StripePaymentRequestDTO.class));
-                paymentRequestDTOForPaymentService.getStripePaymentRequestDTO().setOrderid(orderDTO.getId());
-            }
-            case PAYPAL -> {
-                paymentRequestDTOForPaymentService.setPaypalPaymentRequestDTO(modelMapper.map(orderDTO, PaypalPaymentRequestDTO.class));
-                paymentRequestDTOForPaymentService.getPaypalPaymentRequestDTO().setOrderid(orderDTO.getId());
-            }
-            case CREDIT_CARD -> {
-                paymentRequestDTOForPaymentService.setCreditCardPaymentRequestDTO(modelMapper.map(orderDTO, CreditCardPaymentRequestDTO.class));
-                paymentRequestDTOForPaymentService.getCreditCardPaymentRequestDTO().setOrderid(orderDTO.getId());
-            }
+            case STRIPE -> paymentRequestDTOForPaymentService.setStripePaymentRequestDTO(modelMapper.map(orderDTO, StripePaymentRequestDTO.class));
+            case PAYPAL -> paymentRequestDTOForPaymentService.setPaypalPaymentRequestDTO(modelMapper.map(orderDTO, PaypalPaymentRequestDTO.class));
+            case CREDIT_CARD -> paymentRequestDTOForPaymentService.setCreditCardPaymentRequestDTO(modelMapper.map(orderDTO, CreditCardPaymentRequestDTO.class));
         }
     }
 }

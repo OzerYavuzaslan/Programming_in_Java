@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderStock> orderStockList;
 
     private double totalPrice;
@@ -63,7 +64,7 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String address2;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String paymentid;
 
     @Column(nullable = false)
@@ -91,7 +92,7 @@ public class Order {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderDate;
 
-    @CreationTimestamp
+    @UpdateTimestamp
     @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;

@@ -7,5 +7,5 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import java.util.List;
 
 public interface PriceCalculationService {
-    OrderDTO calculateOrderPrice(List<ReservedStockDTO> reservedStockDTOList, TaxRateDTO taxRateDTO, OrderDTO orderDTO);
+    void calculateOrderPrice(List<ReservedStockDTO> reservedStockDTOList, TaxRateDTO taxRateDTO, OrderDTO orderDTO);
 }

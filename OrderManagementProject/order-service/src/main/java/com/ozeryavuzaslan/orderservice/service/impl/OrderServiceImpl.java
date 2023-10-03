@@ -17,7 +17,6 @@ import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import feign.FeignException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -41,23 +40,29 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     @Override
-    @Transactional
+  //  @Transactional
     public OrderDTO takeOrder(OrderDTO orderDTO) {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
-        orderDTO = modelMapper.map(orderRepository.save(order), OrderDTO.class);
+        modelMapper.map(orderRepository.save(order), orderDTO);
 
         List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
         reservedStockDTOList = redirectReserveStocks(reservedStockDTOList);
 
         TaxRateDTO taxRateDTO = redirectGetSpecificTaxRate();
-        orderDTO = priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
+        priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
 
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
-        orderDTO = redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
+        redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
 
-        //TODO: paymentid orderDTO içine set edilmiyor. Onu hallet. Sonra da fiziken stock'tan düşmek için stock-service'e request at.
+        //TODO: Orderdate ilk başta insert edildiğinde adddate ve upddatelerin db'de olduğundan emin ol
+        //TODO: Payment yapıldıktan sonra OrderPropertySetter içinde Order objesinin paymentStatus'ünü değiştir
+        //TODO: fiziken stock'tan düşmek için stock-service'e request at.
+        //TODO: 62. satırda, productName oluyor sana name oluyor. ModelMapper'da skip varmış, onu uygula.
 
-        return modelMapper.map(orderRepository.save(modelMapper.map(orderDTO, Order.class)), OrderDTO.class);
+        modelMapper.map(orderDTO, order);
+        modelMapper.map(orderRepository.save(order), orderDTO);
+
+        return orderDTO;
     }
 
     //TODO:CircuitBreaker uygula
@@ -90,28 +95,24 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private OrderDTO redirectMakePayment(OrderDTO orderDTO,
+    private void redirectMakePayment(OrderDTO orderDTO,
                                      PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService){
         try{
             switch (orderDTO.getPaymentProviderType()){
                 case STRIPE -> {
                     StripePaymentResponseDTO stripePaymentResponseDTO = paymentServiceClient
                             .payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
-                    orderDTO = modelMapper.map(stripePaymentResponseDTO, OrderDTO.class);
+                    modelMapper.map(stripePaymentResponseDTO, orderDTO);
                 }
                 case PAYPAL -> {}
                 case CREDIT_CARD -> {}
             }
-
-            return orderDTO;
         } catch (FeignException feignException){
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
 
-
             //TODO: Exception olduğunda saga pattern cancel işlemini uygula
             //TODO: Servise erişilmiyorsa CircuitBreaker pattern uygula
-            return null;
         }
     }
 }

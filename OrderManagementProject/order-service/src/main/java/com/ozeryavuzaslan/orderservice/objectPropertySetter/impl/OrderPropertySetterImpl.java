@@ -29,10 +29,9 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     }
 
     @Override
-    public OrderDTO setSomeProperties(OrderDTO orderDTO, double totalPrice, double totalPriceWithoutTax, double taxRate) {
+    public void setSomeProperties(OrderDTO orderDTO, double totalPrice, double totalPriceWithoutTax, double taxRate) {
         orderDTO.setTotalPrice(totalPrice);
         orderDTO.setTotalPriceWithoutTax(totalPriceWithoutTax);
         orderDTO.setTaxRate(taxRate);
-        return orderDTO;
     }
 }

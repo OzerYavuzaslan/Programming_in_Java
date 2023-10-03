@@ -16,7 +16,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
     private final OrderPropertySetter orderPropertySetter;
 
     @Override
-    public OrderDTO calculateOrderPrice(List<ReservedStockDTO> reservedStockDTOList, TaxRateDTO taxRateDTO, OrderDTO orderDTO) {
+    public void calculateOrderPrice(List<ReservedStockDTO> reservedStockDTOList, TaxRateDTO taxRateDTO, OrderDTO orderDTO) {
         double tmpTotalPrice = 0.0D;
         double tmpTotalPriceWithoutTax = 0.0D;
         double tmpTaxRate = taxRateDTO.getRate();
@@ -26,6 +26,6 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
             tmpTotalPrice += tmpTotalPriceWithoutTax + reservedStockDTO.getStock().getPrice() * reservedStockDTO.getQuantity() * (tmpTaxRate / 100);
         }
 
-        return orderPropertySetter.setSomeProperties(orderDTO, tmpTotalPrice, tmpTotalPriceWithoutTax, tmpTaxRate);
+        orderPropertySetter.setSomeProperties(orderDTO, tmpTotalPrice, tmpTotalPriceWithoutTax, tmpTaxRate);
     }
 }

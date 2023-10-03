@@ -24,6 +24,7 @@ public class OrderDTO implements Serializable {
     private double totalPrice;
     private double taxRate;
     private double totalPriceWithoutTax;
+    private String paymentid;
     private PaymentProviderType paymentProviderType;
     private CurrencyType currencyType;
     private MonetaryUnitType monetaryUnitType;

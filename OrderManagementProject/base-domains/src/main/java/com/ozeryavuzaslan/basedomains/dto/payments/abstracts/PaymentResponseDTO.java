@@ -4,14 +4,12 @@ import com.ozeryavuzaslan.basedomains.dto.payments.enums.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class PaymentResponseDTO implements Serializable {
