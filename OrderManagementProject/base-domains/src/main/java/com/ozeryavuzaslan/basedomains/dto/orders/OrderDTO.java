@@ -1,8 +1,10 @@
 package com.ozeryavuzaslan.basedomains.dto.orders;
 
+import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
+import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,8 @@ public class OrderDTO implements Serializable {
     private double taxRate;
     private double totalPriceWithoutTax;
     private String paymentid;
+    private OrderStatusType orderStatusType;
+    private PaymentStatus paymentStatus;
     private PaymentProviderType paymentProviderType;
     private CurrencyType currencyType;
     private MonetaryUnitType monetaryUnitType;

@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.objectPropertySetter.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
+import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.model.OrderStock;
@@ -33,5 +34,14 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
         orderDTO.setTotalPrice(totalPrice);
         orderDTO.setTotalPriceWithoutTax(totalPriceWithoutTax);
         orderDTO.setTaxRate(taxRate);
+    }
+
+    @Override
+    public void setSomeProperties(OrderDTO orderDTO, StripePaymentResponseDTO stripePaymentResponseDTO) {
+        orderDTO.setPaymentid(stripePaymentResponseDTO.getPaymentid());
+        orderDTO.setOrderStatusType(OrderStatusType.APPROVED);
+        orderDTO.setPaymentStatus(PaymentStatus.SUCCESS);
+        orderDTO.setTotalPrice(stripePaymentResponseDTO.getTotalPrice());
+        orderDTO.setTotalPriceWithoutTax(stripePaymentResponseDTO.getTotalPriceWithoutTax());
     }
 }

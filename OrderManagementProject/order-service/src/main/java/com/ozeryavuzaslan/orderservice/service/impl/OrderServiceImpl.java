@@ -40,35 +40,14 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     @Override
-  //  @Transactional
+    //  @Transactional
     public OrderDTO takeOrder(OrderDTO orderDTO) {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         modelMapper.map(orderRepository.save(order), orderDTO);
-
         List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
-        reservedStockDTOList = redirectReserveStocks(reservedStockDTOList);
 
-        TaxRateDTO taxRateDTO = redirectGetSpecificTaxRate();
-        priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
-
-        paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
-        redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
-
-        //TODO: Orderdate ilk başta insert edildiğinde adddate ve upddatelerin db'de olduğundan emin ol
-        //TODO: Payment yapıldıktan sonra OrderPropertySetter içinde Order objesinin paymentStatus'ünü değiştir
-        //TODO: fiziken stock'tan düşmek için stock-service'e request at.
-        //TODO: 62. satırda, productName oluyor sana name oluyor. ModelMapper'da skip varmış, onu uygula.
-
-        modelMapper.map(orderDTO, order);
-        modelMapper.map(orderRepository.save(order), orderDTO);
-
-        return orderDTO;
-    }
-
-    //TODO:CircuitBreaker uygula
-    private List<ReservedStockDTO> redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList){
         try {
-            return stockServiceClient.reserveStock(reservedStockDTOList);
+            reservedStockDTOList = redirectReserveStocks(reservedStockDTOList);
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
@@ -77,15 +56,11 @@ public class OrderServiceImpl implements OrderService {
             //TODO: Servise erişilmiyorsa CircuitBreaker pattern uygula
             return null;
         }
-    }
 
-    //TODO:CircuitBreaker uygula
-    private TaxRateDTO redirectGetSpecificTaxRate(){
+        TaxRateDTO taxRateDTO;
+
         try {
-            LocalDate currentDate = LocalDate.now();
-            int taxYear = currentDate.getYear();
-            int taxMonth = currentDate.getMonthValue();
-            return revenueServiceClient.getSpecificTaxRate(taxYear, taxMonth, TaxRateType.KDV);
+            taxRateDTO = redirectGetSpecificTaxRate();
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
@@ -93,26 +68,52 @@ public class OrderServiceImpl implements OrderService {
             //TODO: Exception olduğunda circuitBraker çalışacak şekilde kontrol yap
             return null;
         }
-    }
 
-    private void redirectMakePayment(OrderDTO orderDTO,
-                                     PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService){
-        try{
-            switch (orderDTO.getPaymentProviderType()){
-                case STRIPE -> {
-                    StripePaymentResponseDTO stripePaymentResponseDTO = paymentServiceClient
-                            .payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
-                    modelMapper.map(stripePaymentResponseDTO, orderDTO);
-                }
-                case PAYPAL -> {}
-                case CREDIT_CARD -> {}
-            }
-        } catch (FeignException feignException){
+        priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
+        paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
+
+        try {
+            redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
+        } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
 
             //TODO: Exception olduğunda saga pattern cancel işlemini uygula
             //TODO: Servise erişilmiyorsa CircuitBreaker pattern uygula
+        }
+
+        //TODO: Orderdate ilk başta insert edildiğinde adddate ve upddatelerin db'de olduğundan emin ol
+        //TODO: Payment yapıldıktan sonra OrderPropertySetter içinde Order objesinin paymentStatus'ünü değiştir
+        //TODO: fiziken stock'tan düşmek için stock-service'e request at.
+
+        modelMapper.map(orderDTO, order);
+        modelMapper.map(orderRepository.save(order), orderDTO);
+        return orderDTO;
+    }
+
+    //TODO:CircuitBreaker uygula
+    private List<ReservedStockDTO> redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList) {
+        return stockServiceClient.reserveStock(reservedStockDTOList);
+    }
+
+    //TODO:CircuitBreaker uygula
+    private TaxRateDTO redirectGetSpecificTaxRate() {
+        LocalDate currentDate = LocalDate.now();
+        int taxYear = currentDate.getYear();
+        int taxMonth = currentDate.getMonthValue();
+        return revenueServiceClient.getSpecificTaxRate(taxYear, taxMonth, TaxRateType.KDV);
+    }
+
+    //TODO:CircuitBreaker uygula
+    private void redirectMakePayment(OrderDTO orderDTO,
+                                     PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService) {
+        switch (orderDTO.getPaymentProviderType()) {
+            case STRIPE -> {
+                StripePaymentResponseDTO stripePaymentResponseDTO = paymentServiceClient.payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
+                orderPropertySetter.setSomeProperties(orderDTO, stripePaymentResponseDTO);
+            }
+            case PAYPAL -> {}
+            case CREDIT_CARD -> {}
         }
     }
 }
