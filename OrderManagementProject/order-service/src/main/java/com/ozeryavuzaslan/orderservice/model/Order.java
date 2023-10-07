@@ -5,6 +5,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentProviderType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,9 +43,11 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderStock> orderStockList;
 
-    private double totalPrice;
     private double taxRate;
+    private double totalPrice;
     private double totalPriceWithoutTax;
+    private double totalPriceWithDiscount;
+    private double totalPriceWithDiscountWithoutTax;
 
     @Column(nullable = false)
     private String email;
@@ -70,6 +73,10 @@ public class Order {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ReserveType reserveType;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

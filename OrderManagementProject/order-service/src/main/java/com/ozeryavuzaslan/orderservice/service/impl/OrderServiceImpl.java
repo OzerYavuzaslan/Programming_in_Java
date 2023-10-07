@@ -40,7 +40,6 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     @Override
-    //  @Transactional
     public OrderDTO takeOrder(OrderDTO orderDTO) {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         modelMapper.map(orderRepository.save(order), orderDTO);
@@ -53,7 +52,6 @@ public class OrderServiceImpl implements OrderService {
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
 
             //TODO: Exception olduğunda saga pattern cancel işlemini uygula
-            //TODO: Servise erişilmiyorsa CircuitBreaker pattern uygula
             return null;
         }
 
@@ -73,19 +71,27 @@ public class OrderServiceImpl implements OrderService {
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
 
         try {
+            //TODO:Payment servisi içerisinde stripe kullanıcısı yoksa exception dönecek şekilde handle et
             redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
 
             //TODO: Exception olduğunda saga pattern cancel işlemini uygula
-            //TODO: Servise erişilmiyorsa CircuitBreaker pattern uygula
+            return null;
         }
 
-        //TODO: Orderdate ilk başta insert edildiğinde adddate ve upddatelerin db'de olduğundan emin ol
-        //TODO: Payment yapıldıktan sonra OrderPropertySetter içinde Order objesinin paymentStatus'ünü değiştir
-        //TODO: fiziken stock'tan düşmek için stock-service'e request at.
+        try {
+            reservedStockDTOList = redirectDecreaseStocks(reservedStockDTOList);
+        } catch (FeignException feignException) {
+            int responseStatusCode = feignException.status();
+            HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
 
+            //TODO: Exception olduğunda saga pattern cancel işlemini uygula
+            return null;
+        }
+
+        orderPropertySetter.setReserveType(orderDTO);
         modelMapper.map(orderDTO, order);
         modelMapper.map(orderRepository.save(order), orderDTO);
         return orderDTO;
@@ -115,5 +121,10 @@ public class OrderServiceImpl implements OrderService {
             case PAYPAL -> {}
             case CREDIT_CARD -> {}
         }
+    }
+
+    //TODO:CircuitBreaker uygula
+    private List<ReservedStockDTO> redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList){
+        return stockServiceClient.decreaseStocks(reservedStockDTOList);
     }
 }

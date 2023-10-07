@@ -8,6 +8,7 @@ import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -17,15 +18,37 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
 
     @Override
     public void calculateOrderPrice(List<ReservedStockDTO> reservedStockDTOList, TaxRateDTO taxRateDTO, OrderDTO orderDTO) {
-        double tmpTotalPrice = 0.0D;
-        double tmpTotalPriceWithoutTax = 0.0D;
-        double tmpTaxRate = taxRateDTO.getRate();
+        double tmpTotalPriceWithoutTax = 0.0;
+        double tmpTotalPriceWithDiscountWithoutTax = 0.0;
+        double tmpTotalPriceWithDiscount = 0.0;
+        double tmpTotalPrice = 0.0;
+        double taxRate = taxRateDTO.getRate();
 
-        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList){
-            tmpTotalPriceWithoutTax += reservedStockDTO.getStock().getPrice() * reservedStockDTO.getQuantity();
-            tmpTotalPrice += tmpTotalPriceWithoutTax + reservedStockDTO.getStock().getPrice() * reservedStockDTO.getQuantity() * (tmpTaxRate / 100);
+        for (ReservedStockDTO reservedStock : reservedStockDTOList) {
+            double unitPrice = reservedStock.getStock().getPrice();
+            int quantity = reservedStock.getQuantity();
+
+            double priceForTotalQuantity = unitPrice * quantity;
+            tmpTotalPriceWithoutTax += priceForTotalQuantity;
+
+            double taxForProductWithoutDiscount = priceForTotalQuantity * (taxRate / 100);
+            tmpTotalPrice += priceForTotalQuantity + taxForProductWithoutDiscount;
+
+            if (((LocalDateTime.now().isBefore(reservedStock.getStock().getDiscountEndDate())
+                    || LocalDateTime.now().isEqual(reservedStock.getStock().getDiscountEndDate())))
+                    && reservedStock.getStock().getDiscountPercentage() > 0) {
+                double discountAmount = reservedStock.getStock().getDiscountAmount();
+                double discountedPriceForProduct = priceForTotalQuantity - (discountAmount * quantity);
+                tmpTotalPriceWithDiscountWithoutTax += discountedPriceForProduct;
+                double taxForProduct = discountedPriceForProduct * (taxRate / 100);
+                tmpTotalPriceWithDiscount += discountedPriceForProduct + taxForProduct;
+            } else {
+                tmpTotalPriceWithDiscountWithoutTax += priceForTotalQuantity;
+                tmpTotalPriceWithDiscount += priceForTotalQuantity + taxForProductWithoutDiscount;
+            }
         }
 
-        orderPropertySetter.setSomeProperties(orderDTO, tmpTotalPrice, tmpTotalPriceWithoutTax, tmpTaxRate);
+        orderPropertySetter.setSomeProperties(orderDTO, tmpTotalPriceWithoutTax, tmpTotalPriceWithDiscountWithoutTax,
+                tmpTotalPrice, tmpTotalPriceWithDiscount, taxRate);
     }
 }

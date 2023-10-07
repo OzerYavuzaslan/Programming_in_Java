@@ -72,6 +72,12 @@ public class PaymentInvoice {
     private double totalPriceWithoutTax;
 
     @Column(nullable = false)
+    private double totalPriceWithDiscount;
+
+    @Column(nullable = false)
+    private double totalPriceWithDiscountWithoutTax;
+
+    @Column(nullable = false)
     private double refundedAmount = 0.0D;
 
     @Column(nullable = false)

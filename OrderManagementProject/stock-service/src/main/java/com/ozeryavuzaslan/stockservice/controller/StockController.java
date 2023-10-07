@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.stockservice.controller;
 
+import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
@@ -45,10 +46,9 @@ public class StockController {
         return ResponseEntity.ok(stockService.updateStock(stockDTO));
     }
 
-    @PutMapping("/product")
-    public ResponseEntity<StockDTO> modifyProductQuantity(@RequestParam UUID productCode,
-                                                          @RequestParam int quantityAmount){
-        return ResponseEntity.ok(stockService.decreaseStock(productCode, quantityAmount));
+    @PutMapping("/decreaseStocks")
+    public ResponseEntity<List<ReservedStockDTO>> decreaseStocks(@Valid @RequestBody List<ReservedStockDTO> reservedStockDTOList){
+        return ResponseEntity.ok(stockService.decreaseStock(reservedStockDTOList));
     }
 
     @GetMapping("/{productCode}")

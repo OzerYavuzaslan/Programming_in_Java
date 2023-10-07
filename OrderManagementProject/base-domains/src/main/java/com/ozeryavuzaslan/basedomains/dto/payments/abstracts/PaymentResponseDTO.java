@@ -23,6 +23,8 @@ public abstract class PaymentResponseDTO implements Serializable {
     private String phoneNumber;
     private CurrencyType currencyType;
     private double totalPriceWithoutTax;
+    private double totalPriceWithDiscount;
+    private double totalPriceWithDiscountWithoutTax;
     private PaymentStatus paymentStatus;
     private MonetaryUnitType monetaryUnitType;
     private PaymentProviderType paymentProviderType;

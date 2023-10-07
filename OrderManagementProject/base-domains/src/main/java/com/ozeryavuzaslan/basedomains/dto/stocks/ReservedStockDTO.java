@@ -16,7 +16,6 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 @AllArgsConstructor
 public class ReservedStockDTO {
     private long id;
-
     private long orderid;
 
     @NotNull(message = UUID_VALID_NULL_MSG)

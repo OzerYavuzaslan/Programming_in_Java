@@ -51,6 +51,8 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
         if (stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
+            stripePaymentResponseDTO.setTotalPriceWithDiscount(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithDiscount())));
+            stripePaymentResponseDTO.setTotalPriceWithDiscountWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithDiscountWithoutTax())));
             stripePaymentResponseDTO.setTotalPrice(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice())));
             stripePaymentResponseDTO.setTotalPriceWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax())));
         }
@@ -91,7 +93,12 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
         String customerId = getCustomer().getData().get(0).getId();
         stripeParams.clear();
         stripeParams.put("customer", customerId);
-        stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
+
+        if (stripePaymentRequestDTO.getTotalPriceWithDiscount() < stripePaymentRequestDTO.getTotalPrice())
+            stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPriceWithDiscount()));
+        else
+            stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
+
         stripeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
         return stripeParams;
     }

@@ -22,6 +22,9 @@ public class StockPropertySetterImpl implements StockPropertySetter{
             stockWithoutUUIDDTO.setAddDate(LocalDateTime.now());
         }
 
+        if (stockWithoutUUIDDTO.getDiscountPercentage() > 0.0D)
+            stockWithoutUUIDDTO.setDiscountAmount(getDiscountAmount(stockWithoutUUIDDTO));
+
         stockWithoutUUIDDTO.setUpdateDate(LocalDateTime.now());
         categoryPropertySetter.setSomeProperties(stockWithoutUUIDDTO.getCategory(), isInsert, isCategoryPresent);
     }
@@ -31,6 +34,14 @@ public class StockPropertySetterImpl implements StockPropertySetter{
         stockWithoutUUIDDTO.setAddDate(stock.getAddDate());
         stockWithoutUUIDDTO.setProductCode(stock.getProductCode());
         stockWithoutUUIDDTO.setId(stock.getId());
+
+        if (stockWithoutUUIDDTO.getDiscountPercentage() > 0.0D)
+            stockWithoutUUIDDTO.setDiscountAmount(getDiscountAmount(stockWithoutUUIDDTO));
+
         categoryPropertySetter.setSomeProperties(stock.getCategory(), stockWithoutUUIDDTO.getCategory());
+    }
+
+    private double getDiscountAmount(StockWithoutUUIDDTO stockWithoutUUIDDTO){
+        return stockWithoutUUIDDTO.getPrice() * stockWithoutUUIDDTO.getDiscountPercentage() / 100;
     }
 }

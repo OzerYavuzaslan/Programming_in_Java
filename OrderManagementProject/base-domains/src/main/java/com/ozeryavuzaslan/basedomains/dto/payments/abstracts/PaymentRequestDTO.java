@@ -54,6 +54,14 @@ public abstract class PaymentRequestDTO {
     @Positive(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
     private double totalPriceWithoutTax;
 
+    @NotNull(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
+    @Positive(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
+    private double totalPriceWithDiscount;
+
+    @NotNull(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
+    @Positive(message = PAYMENT_AMOUNT_INFO_NOT_VALID)
+    private double totalPriceWithDiscountWithoutTax;
+
     @EnumNamePattern(regexp = CURRENCY_VALIDATION_LIST, message = CURRENCY_NOT_VALID)
     private CurrencyType currencyType;
 

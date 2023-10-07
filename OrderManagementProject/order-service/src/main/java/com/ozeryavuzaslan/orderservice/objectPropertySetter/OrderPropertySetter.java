@@ -6,6 +6,8 @@ import com.ozeryavuzaslan.orderservice.model.Order;
 
 public interface OrderPropertySetter {
     Order setSomeProperties(OrderDTO orderDTO);
-    void setSomeProperties(OrderDTO orderDTO, double totalPrice, double totalPriceWithoutTax, double taxRate);
+    void setSomeProperties(OrderDTO orderDTO, double totalPriceWithoutTax, double totalPriceWithDiscountWithoutTax,
+                           double totalPrice, double totalPriceWithDiscount, double taxRate);
     void setSomeProperties(OrderDTO orderDTO, StripePaymentResponseDTO stripePaymentResponseDTO);
+    void setReserveType(OrderDTO orderDTO);
 }
