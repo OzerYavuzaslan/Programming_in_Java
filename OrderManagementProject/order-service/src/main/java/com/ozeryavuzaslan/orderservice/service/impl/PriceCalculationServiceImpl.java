@@ -34,7 +34,8 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
             double taxForProductWithoutDiscount = priceForTotalQuantity * (taxRate / 100);
             tmpTotalPrice += priceForTotalQuantity + taxForProductWithoutDiscount;
 
-            if (((LocalDateTime.now().isBefore(reservedStock.getStock().getDiscountEndDate())
+            if (((reservedStock.getStock().getDiscountEndDate() != null )
+                    && (LocalDateTime.now().isBefore(reservedStock.getStock().getDiscountEndDate())
                     || LocalDateTime.now().isEqual(reservedStock.getStock().getDiscountEndDate())))
                     && reservedStock.getStock().getDiscountPercentage() > 0) {
                 double discountAmount = reservedStock.getStock().getDiscountAmount();

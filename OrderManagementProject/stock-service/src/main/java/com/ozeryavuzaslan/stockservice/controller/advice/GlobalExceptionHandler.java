@@ -5,6 +5,7 @@ import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.stockservice.exception.CategoryNotFoundException;
 import com.ozeryavuzaslan.stockservice.exception.ProductAmountNotEnoughException;
+import com.ozeryavuzaslan.stockservice.exception.ReservedStockNotFound;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +54,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${category.not.found}")
     private String categoryNotFound;
 
+    @Value("${stock.reserved.stock.list.not.found}")
+    private String reservedStocksNotFound;
+
     @Value("${reserve.stock.unique.constraint.violation}")
     private String uniqueConstraintViolationExceptionMsgForReserveStock;
 
@@ -74,7 +78,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(DataIntegrityViolationException exception, WebRequest request, PSQLException psqlException){
+    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(DataIntegrityViolationException exception, WebRequest request, PSQLException psqlException) {
         Throwable rootCause = exception.getRootCause();
         String tmpExceptionMsg = exception.getMessage();
         StackTraceElement[] stackTraceElements = exception.getStackTrace();
@@ -110,18 +114,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler({CategoryNotFoundException.class, StockNotFoundException.class})
+    @ExceptionHandler({CategoryNotFoundException.class, StockNotFoundException.class, ReservedStockNotFound.class})
     public final ResponseEntity<ErrorDetailsDTO> handleNotFoundExceptions(Exception exception, WebRequest request) {
-        boolean isStockException = exception.getClass().getName().equals(StockNotFoundException.class.getName());
+        String className = exception.getClass().getName();
         String tmpExceptionMessage;
 
-        if (isStockException)
+        if (className.equalsIgnoreCase(StockNotFoundException.class.getName()))
             tmpExceptionMessage = stockNotFound;
-        else
+        else if (className.equalsIgnoreCase(CategoryNotFoundException.class.getName()))
             tmpExceptionMessage = categoryNotFound;
+        else
+            tmpExceptionMessage = reservedStocksNotFound;
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(tmpExceptionMessage, exception.getMessage()), request.getDescription(false));
+                customMessageHandler
+                        .returnProperMessage(tmpExceptionMessage, exception.getMessage()), request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
     }
@@ -135,7 +142,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(firstError, firstError)  +
+                customMessageHandler.returnProperMessage(firstError, firstError) +
                         customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg) + " | " +
                         customMessageHandler.returnProperMessage(totalErrors, totalErrors) +
                         exception.getErrorCount() + " --> " + customStringBuilder.getDefaultExceptionMessages(exception),

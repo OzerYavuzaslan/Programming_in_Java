@@ -17,6 +17,7 @@ import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import feign.FeignException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     @Override
+    @Transactional
     public OrderDTO takeOrder(OrderDTO orderDTO) {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         modelMapper.map(orderRepository.save(order), orderDTO);

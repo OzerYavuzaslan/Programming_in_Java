@@ -33,7 +33,6 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     @Override
     public void setSomeProperties(OrderDTO orderDTO, double totalPriceWithoutTax, double totalPriceWithDiscountWithoutTax,
                                   double totalPrice, double totalPriceWithDiscount, double taxRate) {
-
         orderDTO.setTaxRate(taxRate);
         orderDTO.setTotalPrice(totalPrice);
         orderDTO.setTotalPriceWithoutTax(totalPriceWithoutTax);

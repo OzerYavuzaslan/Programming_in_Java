@@ -10,4 +10,5 @@ import java.util.Optional;
 
 public interface ReservedStockRepository extends JpaRepository<ReservedStock, Long> {
     Optional<List<ReservedStock>> findByStockInAndReserveTypeOrderByStock_ProductCodeAsc(List<Stock> stocks, ReserveType reserveType);
+    List<ReservedStock> findByIdInAndReserveTypeOrderByIdAsc(List<Long> reservedStockIDList, ReserveType reserveType);
 }

@@ -6,6 +6,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
+import com.ozeryavuzaslan.stockservice.exception.ReservedStockNotFound;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.model.ReservedStock;
@@ -25,10 +26,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,8 +40,14 @@ public class StockServiceImpl implements StockService {
     private final ReservedStockRepository reservedStockRepository;
     private static boolean isCacheRefresh = false;
 
+    @Value("${stock.list.not.found}")
+    private String stocksNotFound;
+
     @Value("${stock.not.found}")
     private String stockNotFound;
+
+    @Value("${stock.reserved.stock.list.not.found}")
+    private String reservedStocksNotFound;
 
     @Value("${stock.cache.name}")
     private String stockCacheName;
@@ -86,22 +91,54 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
+    @Transactional
     @CachePut(value = "stocks", key = "#result.productCode")
     public List<ReservedStockDTO> decreaseStock(List<ReservedStockDTO> reservedStockDTOList) {
-        List<Stock> stockList = new ArrayList<>();
-        List<ReservedStock> reservedStockList = new ArrayList<>();
+        List<Stock> stockList = stockRepository
+                .findByIdInOrderByIdAsc(reservedStockDTOList
+                        .stream()
+                        .map(reservedStockDTO -> reservedStockDTO.getStock().getId())
+                        .collect(Collectors.toList()));
 
-        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
-            reservedStockDTO.getStock().setQuantity(reservedStockDTO.getStock().getQuantity() - reservedStockDTO.getQuantity());
-            stockList.add(modelMapper.map(reservedStockDTO.getStock(), Stock.class));
-            reservedStockDTO.setReserveType(ReserveType.STOCK_DECREASED);
-            reservedStockList.add(modelMapper.map(reservedStockDTO, ReservedStock.class));
+        List<ReservedStock> reservedStockList = reservedStockRepository
+                .findByIdInAndReserveTypeOrderByIdAsc(reservedStockDTOList
+                        .stream()
+                        .map(ReservedStockDTO::getId).toList(),
+                        ReserveType.RESERVED);
+
+        if (stockList.isEmpty())
+            throw new StockNotFoundException(stocksNotFound);
+
+        if (reservedStockList.isEmpty())
+            throw new ReservedStockNotFound(reservedStocksNotFound);
+
+        reservedStockDTOList.sort(Comparator.comparing(ReservedStockDTO::getId));
+
+        Set<Long> stockIDListFromDTO = reservedStockDTOList
+                .stream()
+                .map(reservedStockDTO -> reservedStockDTO.getStock().getId())
+                .collect(Collectors.toSet());
+
+        if (reservedStockDTOList.size() != reservedStockList.size()) {
+            for (ReservedStock reservedStock : reservedStockList)
+                if (!stockIDListFromDTO.contains(reservedStock.getId()))
+                    throw new StockNotFoundException(reservedStocksNotFound + " to decrease from the stock (" + reservedStock.getId() + ")");
+        }
+
+        for (Stock stock : stockList)
+            if (!stockIDListFromDTO.contains(stock.getId()))
+                throw new StockNotFoundException(stockNotFound + " to decrease from the stock (" + stock.getProductName() + ")");
+
+        for (int i = 0; i < reservedStockDTOList.size(); i++) {
+            stockList.get(i).setQuantity(stockList.get(i).getQuantity() - reservedStockDTOList.get(i).getQuantity());
+            reservedStockList.get(i).setReserveType(ReserveType.STOCK_DECREASED);
         }
 
         stockRepository.saveAll(stockList);
         reservedStockList = reservedStockRepository.saveAll(reservedStockList);
         isCacheRefresh = false;
-        return reservedStockList.stream().map(reservedStock -> modelMapper.map(reservedStock, ReservedStockDTO.class)).toList();
+        stockPropertySetter.setSomeProperties(reservedStockList, reservedStockDTOList);
+        return reservedStockDTOList;
     }
 
     @Override
