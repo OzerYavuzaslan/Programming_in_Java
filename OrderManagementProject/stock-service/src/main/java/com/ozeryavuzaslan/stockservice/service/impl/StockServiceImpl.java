@@ -113,7 +113,6 @@ public class StockServiceImpl implements StockService {
             throw new ReservedStockNotFound(reservedStocksNotFound);
 
         reservedStockDTOList.sort(Comparator.comparing(ReservedStockDTO::getId));
-
         Set<Long> stockIDListFromDTO = reservedStockDTOList
                 .stream()
                 .map(reservedStockDTO -> reservedStockDTO.getStock().getId())

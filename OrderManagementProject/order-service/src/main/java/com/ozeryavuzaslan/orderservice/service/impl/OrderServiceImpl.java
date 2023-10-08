@@ -17,6 +17,7 @@ import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -99,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
         return orderDTO;
     }
 
-    //TODO:CircuitBreaker uygula
+    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
     private List<ReservedStockDTO> redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList) {
         return stockServiceClient.reserveStock(reservedStockDTOList);
     }

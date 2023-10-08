@@ -79,7 +79,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(DataIntegrityViolationException exception, WebRequest request, PSQLException psqlException) {
-        Throwable rootCause = exception.getRootCause();
         String tmpExceptionMsg = exception.getMessage();
         StackTraceElement[] stackTraceElements = exception.getStackTrace();
 

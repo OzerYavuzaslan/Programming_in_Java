@@ -32,6 +32,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${first.error}")
     private String firstError;
 
+
+
     @Override
     @ResponseBody
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
