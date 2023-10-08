@@ -117,7 +117,12 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
                     case APPROVED -> {
                         tmpSubject = emailApprovedOrderSubject;
                         tmpBody = String.format(emailApprovedOrderBody, emailInfoMap.get(fullName));
-                        tmpBody += String.format(emailApprovedOrderBodyDetails, emailInfoMap.get(orderID), emailInfoMap.get(orderDate), (emailInfoMap.get(address1) + " " + emailInfoMap.get(address2)));
+                        String tmpAddress = emailInfoMap.get(address1);
+
+                        if (emailInfoMap.containsKey(address2))
+                            tmpAddress += " " + emailInfoMap.get(address2);
+
+                        tmpBody += String.format(emailApprovedOrderBodyDetails, emailInfoMap.get(orderID), emailInfoMap.get(orderDate), tmpAddress);
                     }
                     case PREPARING -> {}
                     case IN_CARGO -> {}
