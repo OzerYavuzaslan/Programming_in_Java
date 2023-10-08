@@ -58,7 +58,7 @@ public class EmailPaymentListener {
             case STRIPE -> {
                 paymentResponseDTOMap.put(receiptUrl, paymentResponseForAsyncMsgDTO.getStripePaymentResponseDTO().getReceiptUrl());
                 paymentResponseDTOMap.put(fullName, paymentResponseForAsyncMsgDTO.getName() + " " + paymentResponseForAsyncMsgDTO.getSurname());
-                paymentResponseDTOMap.put(totalPrice, String.valueOf(paymentResponseForAsyncMsgDTO.getTotalPrice()));
+                paymentResponseDTOMap.put(totalPrice, String.valueOf(paymentResponseForAsyncMsgDTO.getTotalPriceWithDiscount()));
                 paymentResponseDTOMap.put(currencyType, paymentResponseForAsyncMsgDTO.getCurrencyType().toString());
                 paymentResponseDTOMap.put(paymentDate, paymentResponseForAsyncMsgDTO.getPaymentDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             }

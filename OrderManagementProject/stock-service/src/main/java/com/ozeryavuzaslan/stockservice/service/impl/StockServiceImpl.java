@@ -92,7 +92,7 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    @CachePut(value = "stocks", key = "#result.productCode")
+    @Cacheable(value = "stocks")
     public List<ReservedStockDTO> decreaseStock(List<ReservedStockDTO> reservedStockDTOList) {
         List<Stock> stockList = stockRepository
                 .findByIdInOrderByIdAsc(reservedStockDTOList
@@ -137,8 +137,10 @@ public class StockServiceImpl implements StockService {
         stockRepository.saveAll(stockList);
         reservedStockList = reservedStockRepository.saveAll(reservedStockList);
         isCacheRefresh = false;
-        stockPropertySetter.setSomeProperties(reservedStockList, reservedStockDTOList);
-        return reservedStockDTOList;
+        return reservedStockList
+                .stream()
+                .map(reservedStock -> modelMapper.map(reservedStock, ReservedStockDTO.class))
+                .toList();
     }
 
     @Override
