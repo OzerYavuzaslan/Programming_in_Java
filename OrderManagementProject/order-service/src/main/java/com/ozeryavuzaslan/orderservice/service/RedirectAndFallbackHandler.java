@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.util;
+package com.ozeryavuzaslan.orderservice.service;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;

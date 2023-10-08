@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.emailservice.objectPropertySetter.impl;
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailStatus;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentType;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import jakarta.mail.MessagingException;
@@ -25,12 +26,6 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${email.payment.body}")
     private String emailPaymentBody;
 
-    @Value("${email.order.subject}")
-    private String emailOrderSubject;
-
-    @Value("${email.order.body}")
-    private String emailOrderBody;
-
     @Value("${hash.map.product.code.key}")
     private String productCodeKey;
 
@@ -46,7 +41,7 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${hash.map.email.body.stripe.payment.receipt.url}")
     private String receiptUrl;
 
-    @Value("${hash.map.email.body.payment.full.name}")
+    @Value("${hash.map.email.body.full.name}")
     private String fullName;
 
     @Value("${hash.map.email.body.payment.total.price}")
@@ -79,6 +74,30 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${email.body.stripe.refund}")
     private String stripeRefundBody;
 
+    @Value("${hash.map.order.orderId.key}")
+    private String orderID;
+
+    @Value("${hash.map.order.orderDate.key}")
+    private String orderDate;
+
+    @Value("${hash.map.order.address1.key}")
+    private String address1;
+
+    @Value("${hash.map.order.address2.key}")
+    private String address2;
+
+    @Value("${hash.map.order.statusType.key}")
+    private String orderStatusType;
+
+    @Value("${email.approved.order.subject}")
+    private String emailApprovedOrderSubject;
+
+    @Value("${email.approved.order.body}")
+    private String emailApprovedOrderBody;
+
+    @Value("${email.approved.order.body.details}")
+    private String emailApprovedOrderBodyDetails;
+
     @Override
     public void setSomeProperties(EmailDTO emailDTO, HashMap<String, String> emailInfoMap, EmailType emailType, PaymentType paymentType) {
         emailDTO.setMailTo(emailInfoMap.get(mailToKey));
@@ -94,8 +113,19 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
                 tmpBody = emailInfoMap.get(productCodeKey) + " " + emailInfoMap.get(productNameKey) + " " + emailStockBody;
             }
             case ORDER -> {
-                tmpSubject = emailOrderSubject;
-                tmpBody = emailOrderBody;
+                switch (OrderStatusType.valueOf(emailInfoMap.get(orderStatusType))){
+                    case APPROVED -> {
+                        tmpSubject = emailApprovedOrderSubject;
+                        tmpBody = String.format(emailApprovedOrderBody, emailInfoMap.get(fullName));
+                        tmpBody += String.format(emailApprovedOrderBodyDetails, emailInfoMap.get(orderID), emailInfoMap.get(orderDate), (emailInfoMap.get(address1) + " " + emailInfoMap.get(address2)));
+                    }
+                    case PREPARING -> {}
+                    case IN_CARGO -> {}
+                    case CANCELED_BY_CUSTOMER -> {}
+                    case CANCELED_PAYMENT_FAILED -> {}
+                    case CANCELED_NOT_ENOUGH_STOCK -> {}
+                    case CANCELED_SERVICE_DOWN -> {}
+                }
             }
             case PAYMENT -> {
                 if (paymentType.equals(PaymentType.PAYMENT)) {

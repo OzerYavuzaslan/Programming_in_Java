@@ -1,10 +1,10 @@
-package com.ozeryavuzaslan.emailservice.service;
+package com.ozeryavuzaslan.emailservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.util.EmailManagementService;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import com.ozeryavuzaslan.emailservice.repository.EmailRepository;
+import com.ozeryavuzaslan.emailservice.service.EmailManagementService;
 import com.ozeryavuzaslan.emailservice.util.email.EmailMessage;
 import com.ozeryavuzaslan.emailservice.util.email.EmailProperties;
 import jakarta.mail.MessagingException;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailServiceUtilImpl implements EmailManagementService{
+public class EmailServiceUtilImpl implements EmailManagementService {
     private final ModelMapper modelMapper;
     private final EmailMessage emailMessage;
     private final EmailRepository emailRepository;

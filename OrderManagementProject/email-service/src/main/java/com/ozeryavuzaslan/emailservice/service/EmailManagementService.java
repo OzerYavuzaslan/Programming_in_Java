@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.util;
+package com.ozeryavuzaslan.emailservice.service;
 
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 

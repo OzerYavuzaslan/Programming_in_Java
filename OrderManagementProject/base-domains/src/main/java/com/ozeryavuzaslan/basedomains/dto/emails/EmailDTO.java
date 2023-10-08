@@ -6,14 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailDTO {
+public class EmailDTO implements Serializable {
     private long id;
     private String body;
     private String mailTo;
@@ -21,7 +23,10 @@ public class EmailDTO {
     private String subject;
     private String mailFrom;
     private EmailType emailType;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sendDate;
+
     private EmailStatus emailStatus;
     private transient String username;
     private transient String password;

@@ -3,10 +3,10 @@ package com.ozeryavuzaslan.emailservice.service.rabbitmq;
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentResponseForAsyncMsgDTO;
+import com.ozeryavuzaslan.emailservice.service.EmailManagementService;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import com.ozeryavuzaslan.emailservice.repository.EmailRepository;
-import com.ozeryavuzaslan.emailservice.service.EmailServiceUtilImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -25,7 +25,7 @@ public class EmailPaymentListener {
     private final ModelMapper modelMapper;
     private final EmailRepository emailRepository;
     private final EmailPropertySetter emailPropertySetter;
-    private final EmailServiceUtilImpl emailServiceUtilImpl;
+    private final EmailManagementService emailManagementService;
 
     @Value("${hash.map.email.to.key}")
     private String mailToKey;
@@ -36,7 +36,7 @@ public class EmailPaymentListener {
     @Value("${hash.map.email.body.stripe.payment.receipt.url}")
     private String receiptUrl;
 
-    @Value("${hash.map.email.body.payment.full.name}")
+    @Value("${hash.map.email.body.full.name}")
     private String fullName;
 
     @Value("${hash.map.email.body.payment.total.price}")
@@ -67,7 +67,7 @@ public class EmailPaymentListener {
         }
 
         emailPropertySetter.setSomeProperties(emailDTO, paymentResponseDTOMap, EmailType.PAYMENT, paymentResponseForAsyncMsgDTO.getPaymentType());
-        emailServiceUtilImpl.sendEmail(emailDTO);
+        emailManagementService.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
         System.err.println("Payment Message --> " + paymentResponseForAsyncMsgDTO);

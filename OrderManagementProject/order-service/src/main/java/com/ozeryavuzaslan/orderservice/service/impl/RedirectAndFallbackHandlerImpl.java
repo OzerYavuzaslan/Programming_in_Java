@@ -6,7 +6,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
-import com.ozeryavuzaslan.basedomains.util.RedirectAndFallbackHandler;
+import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
 import com.ozeryavuzaslan.orderservice.client.PaymentServiceClient;
 import com.ozeryavuzaslan.orderservice.client.RevenueServiceClient;
 import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
@@ -25,7 +25,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class RedirectAndFallbackMethodHandlerImpl implements RedirectAndFallbackHandler {
+public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandler {
     private final StockServiceClient stockServiceClient;
     private final OrderPropertySetter orderPropertySetter;
     private final PaymentServiceClient paymentServiceClient;

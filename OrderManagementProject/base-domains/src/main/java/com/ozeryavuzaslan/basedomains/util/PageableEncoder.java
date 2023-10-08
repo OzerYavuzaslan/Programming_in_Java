@@ -3,16 +3,14 @@ package com.ozeryavuzaslan.basedomains.util;
 import feign.RequestTemplate;
 import feign.codec.EncodeException;
 import feign.codec.Encoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.lang.reflect.Type;
 
+@RequiredArgsConstructor
 public class PageableEncoder implements Encoder {
     private final Encoder delegate;
-
-    public PageableEncoder(Encoder delegate) {
-        this.delegate = delegate;
-    }
 
     @Override
     public void encode(Object object, Type bodyType, RequestTemplate template) throws EncodeException {

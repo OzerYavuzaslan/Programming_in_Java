@@ -3,10 +3,10 @@ package com.ozeryavuzaslan.emailservice.service.rabbitmq;
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.emailservice.service.EmailManagementService;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import com.ozeryavuzaslan.emailservice.repository.EmailRepository;
-import com.ozeryavuzaslan.emailservice.service.EmailServiceUtilImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -24,7 +24,7 @@ public class EmailStockListener {
     private final ModelMapper modelMapper;
     private final EmailRepository emailRepository;
     private final EmailPropertySetter emailPropertySetter;
-    private final EmailServiceUtilImpl emailServiceUtilImpl;
+    private final EmailManagementService emailManagementService;
 
     @Value("${hash.map.product.code.key}")
     private String productCodeKey;
@@ -39,7 +39,7 @@ public class EmailStockListener {
     private String mailCcKey;
 
     @RabbitListener(queues = "${rabbit.stock.email.queue.name}")
-    public void paymentListener(StockDTO stockDTO) {
+    public void stockListener(StockDTO stockDTO) {
         HashMap<String, String> stockDTOMap = new HashMap<>();
         stockDTOMap.put(productCodeKey, stockDTO.getProductCode().toString());
         stockDTOMap.put(productNameKey, stockDTO.getProductName());
@@ -47,7 +47,7 @@ public class EmailStockListener {
         stockDTOMap.put(mailCcKey, null);
 
         emailPropertySetter.setSomeProperties(emailDTO, stockDTOMap, EmailType.STOCK, null);
-        emailServiceUtilImpl.sendEmail(emailDTO);
+        emailManagementService.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
         System.err.println("Stock Message --> " + stockDTO);

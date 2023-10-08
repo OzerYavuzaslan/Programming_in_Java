@@ -1,5 +1,5 @@
 kafka.order.group = stock
-kafka.order.topic = order_topics
+kafka.approved.order.topic = order_topics
 kafka.consumer.offset = earliest
 bootstrap.server = 127.0.0.1:9092
 
@@ -76,7 +76,7 @@ import org.springframework.stereotype.Service;
 public class StockConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(StockConsumer.class);
 
-    @KafkaListener(topics = "${kafka.order.topic}", groupId = "${kafka.order.group}", containerFactory = "orderListenerFactory")
+    @KafkaListener(topics = "${kafka.approved.order.topic}", groupId = "${kafka.order.group}", containerFactory = "orderListenerFactory")
     public void consume(ConsumerRecord<String, OrderEventDTO> orderPayload){
         LOGGER.info(String.format("Order event has been received by stock service --> %s", orderPayload.value()));
 

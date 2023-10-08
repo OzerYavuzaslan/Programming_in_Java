@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.emailservice.configuration;
 
-import com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +27,7 @@ public class KafkaConsumerConfig {
     private String autoOffsetResetConfig;
 
     @Bean
-    public ConsumerFactory<String, OrderEventDTO> emailConsumerFactory(){
+    public ConsumerFactory<String, OrderDTO> emailConsumerFactory(){
         Map<String, Object> config = new HashMap<>();
 
         config.put(ConsumerConfig.GROUP_ID_CONFIG, emailGroup);
@@ -37,15 +37,15 @@ public class KafkaConsumerConfig {
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         config.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         config.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
-        config.put(JsonDeserializer.TYPE_MAPPINGS, "OrderEventDTO : com.ozeryavuzaslan.basedomains.dto.orders.OrderEventDTO"); //TODO: Yeni classa göre burayı düzenle
+        config.put(JsonDeserializer.TYPE_MAPPINGS, "OrderDTO : com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO");
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         return new DefaultKafkaConsumerFactory<>(config);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderEventDTO> emailListenerFactory(){
-        ConcurrentKafkaListenerContainerFactory<String, OrderEventDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, OrderDTO> emailOrderEventListenerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, OrderDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(emailConsumerFactory());
 
         return factory;

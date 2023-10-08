@@ -9,8 +9,10 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -37,4 +39,10 @@ public class OrderDTO implements Serializable {
     private CurrencyType currencyType;
     private MonetaryUnitType monetaryUnitType;
     private List<OrderStockDTO> orderStockList;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime orderDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateDate;
 }
