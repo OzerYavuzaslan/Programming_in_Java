@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "STOCK-SERVICE")
+@FeignClient(name = "stock-service")
 public interface StockServiceClient {
     @GetMapping("${base.endpoint}" + "${stock.base.endpoint}")
     List<StockDTO> getAllStocks(Pageable pageable);

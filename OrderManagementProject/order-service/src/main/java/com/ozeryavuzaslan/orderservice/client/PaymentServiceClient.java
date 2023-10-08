@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "PAYMENT-SERVICE")
+@FeignClient(name = "payment-service")
 public interface PaymentServiceClient {
     @PostMapping("${base.endpoint}" + "${payment.base.endpoint}" + "${payment.stripe.base.endpoint}" + "${payment.pay.endpoint}")
     StripePaymentResponseDTO payViaStripe(@RequestBody StripePaymentRequestDTO stripePaymentRequestDTO);

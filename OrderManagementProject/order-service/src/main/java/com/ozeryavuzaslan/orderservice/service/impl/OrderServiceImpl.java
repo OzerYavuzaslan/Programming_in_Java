@@ -2,13 +2,9 @@ package com.ozeryavuzaslan.orderservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
-import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
-import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
-import com.ozeryavuzaslan.orderservice.client.PaymentServiceClient;
-import com.ozeryavuzaslan.orderservice.client.RevenueServiceClient;
-import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
+import com.ozeryavuzaslan.basedomains.util.RedirectAndFallbackHandler;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
@@ -17,14 +13,12 @@ import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -32,11 +26,9 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private final ModelMapper modelMapper;
     private final OrderRepository orderRepository;
-    private final StockServiceClient stockServiceClient;
+    private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
-    private final RevenueServiceClient revenueServiceClient;
-    private final PaymentServiceClient paymentServiceClient;
     private final PaymentPropertySetter paymentPropertySetter;
     private final PriceCalculationService priceCalculationService;
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
@@ -49,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
         List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
 
         try {
-            reservedStockDTOList = redirectReserveStocks(reservedStockDTOList);
+            reservedStockDTOList = redirectAndFallbackHandler.redirectReserveStocks(reservedStockDTOList);
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
@@ -61,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         TaxRateDTO taxRateDTO;
 
         try {
-            taxRateDTO = redirectGetSpecificTaxRate();
+            taxRateDTO = redirectAndFallbackHandler.redirectGetSpecificTaxRate();
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
@@ -75,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
 
         try {
             //TODO:Payment servisi içerisinde stripe kullanıcısı yoksa exception dönecek şekilde handle et
-            redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
+            redirectAndFallbackHandler.redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
@@ -85,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         try {
-            reservedStockDTOList = redirectDecreaseStocks(reservedStockDTOList);
+            reservedStockDTOList = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList);
         } catch (FeignException feignException) {
             int responseStatusCode = feignException.status();
             HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
@@ -98,36 +90,5 @@ public class OrderServiceImpl implements OrderService {
         modelMapper.map(orderDTO, order);
         modelMapper.map(orderRepository.save(order), orderDTO);
         return orderDTO;
-    }
-
-    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
-    private List<ReservedStockDTO> redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList) {
-        return stockServiceClient.reserveStock(reservedStockDTOList);
-    }
-
-    //TODO:CircuitBreaker uygula
-    private TaxRateDTO redirectGetSpecificTaxRate() {
-        LocalDate currentDate = LocalDate.now();
-        int taxYear = currentDate.getYear();
-        int taxMonth = currentDate.getMonthValue();
-        return revenueServiceClient.getSpecificTaxRate(taxYear, taxMonth, TaxRateType.KDV);
-    }
-
-    //TODO:CircuitBreaker uygula
-    private void redirectMakePayment(OrderDTO orderDTO,
-                                     PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService) {
-        switch (orderDTO.getPaymentProviderType()) {
-            case STRIPE -> {
-                StripePaymentResponseDTO stripePaymentResponseDTO = paymentServiceClient.payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
-                orderPropertySetter.setSomeProperties(orderDTO, stripePaymentResponseDTO);
-            }
-            case PAYPAL -> {}
-            case CREDIT_CARD -> {}
-        }
-    }
-
-    //TODO:CircuitBreaker uygula
-    private List<ReservedStockDTO> redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList){
-        return stockServiceClient.decreaseStocks(reservedStockDTOList);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "REVENUE-SERVICE")
+@FeignClient(name = "revenue-service")
 public interface RevenueServiceClient {
     @GetMapping("${base.endpoint}" + "${revenue.base.endpoint}" + "${revenue.tax.rate.base.endpoint}" + "${revenue.get.specific.tax.rate.endpoint}")
     TaxRateDTO getSpecificTaxRate(@RequestParam int taxYear,
