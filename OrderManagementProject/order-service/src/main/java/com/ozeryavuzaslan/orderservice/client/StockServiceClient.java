@@ -20,5 +20,5 @@ public interface StockServiceClient {
     List<ReservedStockDTO> reserveStock(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 
     @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.decrease.stocks.endpoint}")
-    List<ReservedStockDTO> decreaseStocks(List<ReservedStockDTO> reservedStockDTOList);
+    List<ReservedStockDTO> decreaseStocks(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 }
