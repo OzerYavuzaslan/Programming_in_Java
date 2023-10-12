@@ -3,10 +3,10 @@ package com.ozeryavuzaslan.emailservice.service.kafka;
 import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
 import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.emailservice.service.EmailManagementService;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import com.ozeryavuzaslan.emailservice.repository.EmailRepository;
+import com.ozeryavuzaslan.emailservice.service.EmailManagementService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.modelmapper.ModelMapper;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 @Service
@@ -34,9 +33,6 @@ public class EmailApprovedOrderConsumer {
 
     @Value("${hash.map.order.orderId.key}")
     private String orderID;
-
-    @Value("${hash.map.order.orderDate.key}")
-    private String orderDate;
 
     @Value("${hash.map.email.body.full.name}")
     private String fullName;
@@ -59,7 +55,6 @@ public class EmailApprovedOrderConsumer {
         approvedOrderDTOMap.put(mailToKey, orderDTO.getEmail());
         approvedOrderDTOMap.put(mailCcKey, null);
         approvedOrderDTOMap.put(orderID, String.valueOf(orderDTO.getId()));
-        approvedOrderDTOMap.put(orderDate, orderDTO.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         approvedOrderDTOMap.put(fullName, orderDTO.getName() + " " + orderDTO.getSurname());
         approvedOrderDTOMap.put(address1, orderDTO.getAddress1());
 
@@ -72,6 +67,6 @@ public class EmailApprovedOrderConsumer {
         emailManagementService.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
-        System.err.println("Stock Message --> " + orderDTO);
+        System.err.println("Order Message --> " + orderDTO);
     }
 }

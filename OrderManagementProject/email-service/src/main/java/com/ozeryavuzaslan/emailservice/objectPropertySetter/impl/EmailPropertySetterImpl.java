@@ -77,9 +77,6 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${hash.map.order.orderId.key}")
     private String orderID;
 
-    @Value("${hash.map.order.orderDate.key}")
-    private String orderDate;
-
     @Value("${hash.map.order.address1.key}")
     private String address1;
 
@@ -122,7 +119,7 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
                         if (emailInfoMap.containsKey(address2))
                             tmpAddress += " " + emailInfoMap.get(address2);
 
-                        tmpBody += String.format(emailApprovedOrderBodyDetails, emailInfoMap.get(orderID), emailInfoMap.get(orderDate), tmpAddress);
+                        tmpBody += String.format(emailApprovedOrderBodyDetails, emailInfoMap.get(orderID), tmpAddress);
                     }
                     case PREPARING -> {}
                     case IN_CARGO -> {}
