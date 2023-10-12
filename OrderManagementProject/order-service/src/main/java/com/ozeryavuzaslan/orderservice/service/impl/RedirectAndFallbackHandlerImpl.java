@@ -15,6 +15,7 @@ import com.ozeryavuzaslan.orderservice.exception.ReserveStockServiceNotRunningEx
 import com.ozeryavuzaslan.orderservice.exception.RevenueServiceNotRunningException;
 import com.ozeryavuzaslan.orderservice.exception.StockServiceNotRunningException;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
+import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,14 +46,14 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getReserveStockFallbackMethod")
-    public List<ReservedStockDTO> redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList) {
+    public List<ReservedStockDTO> redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList)  throws FeignException {
         return stockServiceClient.reserveStock(reservedStockDTOList);
     }
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getPaymentFallbackMethod")
     public void redirectMakePayment(OrderDTO orderDTO,
-                                     PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService) {
+                                     PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService)  throws FeignException {
         switch (orderDTO.getPaymentProviderType()) {
             case STRIPE -> {
                 StripePaymentResponseDTO stripePaymentResponseDTO = paymentServiceClient.payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
@@ -65,13 +66,13 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getStockFallbackMethod")
-    public List<ReservedStockDTO> redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList){
+    public List<ReservedStockDTO> redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList) throws FeignException {
         return stockServiceClient.decreaseStocks(reservedStockDTOList);
     }
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getRevenueFallbackMethod")
-    public TaxRateDTO redirectGetSpecificTaxRate() {
+    public TaxRateDTO redirectGetSpecificTaxRate() throws FeignException {
         LocalDate currentDate = LocalDate.now();
         int taxYear = currentDate.getYear();
         int taxMonth = currentDate.getMonthValue();
