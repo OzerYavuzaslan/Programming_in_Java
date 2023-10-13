@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface StockRepository extends JpaRepository<Stock, Long> {
     Optional<Stock> findByProductCode(UUID productCode);
     Optional<Stock> findByProductName(String productName);
-    Optional<List<Stock>> findByProductCodeInOrderByProductCodeAsc(List<UUID> productCodeList);
+    List<Stock> findByProductCodeInOrderByProductCodeAsc(List<UUID> productCodeList);
     List<Stock> findByIdInOrderByIdAsc(List<Long> stockIDList);
 }

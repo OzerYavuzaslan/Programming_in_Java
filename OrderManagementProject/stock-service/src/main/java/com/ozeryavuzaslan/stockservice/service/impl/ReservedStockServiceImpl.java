@@ -40,12 +40,11 @@ public class ReservedStockServiceImpl implements ReservedStockService {
     @Override
     @Transactional
     public List<ReservedStockDTO> reserveStock(List<ReservedStockDTO> reservedStockDTOList) {
-        Optional<List<Stock>> optionalStockList = stockRepository.findByProductCodeInOrderByProductCodeAsc(reservedStockDTOList.stream().map(ReservedStockDTO::getProductCode).toList());
+        List<Stock> stockList = stockRepository.findByProductCodeInOrderByProductCodeAsc(reservedStockDTOList.stream().map(ReservedStockDTO::getProductCode).toList());
 
-        if (optionalStockList.isEmpty())
+        if (stockList.isEmpty())
             throw new StockNotFoundException(stocksNotFound);
 
-        List<Stock> stockList = optionalStockList.get();
         Set<UUID> productCodesFromDTO = reservedStockDTOList
                 .stream()
                 .map(ReservedStockDTO::getProductCode)
@@ -55,13 +54,11 @@ public class ReservedStockServiceImpl implements ReservedStockService {
             if (!productCodesFromDTO.contains(stock.getProductCode()))
                 throw new StockNotFoundException(stockNotFound + " (" + stock.getProductName() + ")");
 
-        Optional<List<ReservedStock>> optionalReservedStockList = reservedStockRepository.findByStockInAndReserveTypeOrderByStock_ProductCodeAsc(stockList, ReserveType.RESERVED);
+        List<ReservedStock> reservedStockList = reservedStockRepository.findByStockInAndReserveTypeOrderByStock_ProductCodeAsc(stockList, ReserveType.RESERVED);
         Map<UUID, ReservedStock> reservedStockMap = null;
 
-        if (optionalReservedStockList.isPresent()) {
-            List<ReservedStock> reservedStockList = optionalReservedStockList.get();
+        if (!reservedStockList.isEmpty())
             reservedStockMap = reservedStockPropertySetter.setSomeProperties(reservedStockList);
-        }
 
         reservedStockDTOList.sort(Comparator.comparing(stockQuantityDTO -> stockQuantityDTO.getProductCode().toString()));
         List<ReservedStock> reservedStockListToSave = new ArrayList<>();

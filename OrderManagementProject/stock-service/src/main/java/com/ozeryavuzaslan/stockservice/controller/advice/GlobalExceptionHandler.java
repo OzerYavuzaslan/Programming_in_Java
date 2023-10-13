@@ -109,7 +109,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ResponseBody
