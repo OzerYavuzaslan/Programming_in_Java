@@ -46,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     //TODO: CircuitBreaker'a girerse de Saga Rollback implementasyonlarını yaz
+    // Bunun için uygun bir DB de oluştur. Service not running exceptionından önce db'den gerekli bilgileri alıp, stocktan geri düşürme, paymentten geri ödeme vb. yapsın.
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         modelMapper.map(orderRepository.save(order), orderDTO);
