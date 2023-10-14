@@ -17,6 +17,7 @@ public final class HandledHTTPExceptions {
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.NOT_MODIFIED.getHttpStatusCode());
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.NOT_FOUND.getHttpStatusCode());
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.UNPROCESSABLE_ENTITY.getHttpStatusCode());
+        knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.NOT_ACCEPTABLE.getHttpStatusCode());
     }
 
     public static boolean checkKnownException(int statusCode) {

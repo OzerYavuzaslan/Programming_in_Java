@@ -74,14 +74,16 @@ public class OrderServiceImpl implements OrderService {
         try (Response taxRateResponse = redirectAndFallbackHandler.redirectGetSpecificTaxRate()) {
             statusCode = taxRateResponse.status();
 
-            if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+            if (HandledHTTPExceptions.checkKnownException(statusCode)) { //TODO: Exception anında SAGA rollback uygula
+
+
+
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
 
             taxRateDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), TaxRateDTO.class);
         } catch (IOException e) {
-            //TODO: Exception anında SAGA rollback uygula
             throw new Exception(e);
         }
 
@@ -93,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
                 case STRIPE -> {
                     statusCode = paymentResponse.status();
 
-                    if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                    if (HandledHTTPExceptions.checkKnownException(statusCode)) { //TODO: Exception anında SAGA rollback uygula
                         ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(paymentResponse.body().asInputStream(), ErrorDetailsDTO.class);
                         throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
                     }
@@ -105,20 +107,20 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
         } catch (IOException e) {
-            //TODO: Exception anında SAGA rollback uygula
             throw new Exception(e);
         }
 
         try (Response reserveStockResponse = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList)) {
             statusCode = reserveStockResponse.status();
 
-            if (HandledHTTPExceptions.checkKnownException(statusCode))
-                throw new RuntimeException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
+            if (HandledHTTPExceptions.checkKnownException(statusCode)) { //TODO: Exception anında SAGA rollback uygula
+                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class);
+                throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
+            }
 
             JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
             reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
         } catch (IOException e) {
-            //TODO: Exception anında SAGA rollback uygula
             throw new Exception(e);
         }
 
