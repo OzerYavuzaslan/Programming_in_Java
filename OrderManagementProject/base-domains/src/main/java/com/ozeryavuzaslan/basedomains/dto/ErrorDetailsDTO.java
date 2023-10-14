@@ -16,8 +16,8 @@ public class ErrorDetailsDTO {
     private boolean status = false;
 
     public void setErrorDetailsProperties(LocalDateTime timeStamp, String message, String details){
-        this.setTimeStamp(timeStamp);
-        this.setMessage(message);
-        this.setDetails(details);
+        this.timeStamp = timeStamp;
+        this.message = message;
+        this.details = details;
     }
 }

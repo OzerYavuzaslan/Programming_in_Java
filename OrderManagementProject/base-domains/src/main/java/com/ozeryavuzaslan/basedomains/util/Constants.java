@@ -1,5 +1,9 @@
 package com.ozeryavuzaslan.basedomains.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
     public final static String UUID_VALID_NULL_MSG = "UUID cannot be null!";
     public final static String PRODUCT_NAME_NULL_MSG = "Product name cannot be null!";
@@ -33,7 +37,4 @@ public final class Constants {
     public final static String FUTURE_DATE_NOT_VALID = "The date must be in the future!";
     public final static String FUTURE_DATE_VALIDATION_REQUEST = "When discount is set, discountEndDate must be provided!";
     public final static String DISCOUNTS_NOT_VALID = "Discount amount and percentage must be zero or greater than zero!";
-
-    private Constants(){
-    }
 }

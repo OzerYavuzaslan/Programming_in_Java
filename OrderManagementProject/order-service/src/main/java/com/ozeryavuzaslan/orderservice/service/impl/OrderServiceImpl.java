@@ -1,91 +1,122 @@
 package com.ozeryavuzaslan.orderservice.service.impl;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
+import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
+import com.ozeryavuzaslan.orderservice.service.BeginSagaRollbackChain;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
-import feign.FeignException;
+import feign.Response;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
     private final OrderProducer orderProducer;
     private final OrderRepository orderRepository;
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
     private final PaymentPropertySetter paymentPropertySetter;
+    private final BeginSagaRollbackChain beginSagaRollbackChain;
     private final PriceCalculationService priceCalculationService;
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     @Override
     @Transactional
-    public OrderDTO takeOrder(OrderDTO orderDTO) {
+    //TODO: CircuitBreaker'a girerse de Saga Rollback implementasyonlarını yaz
+    public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         modelMapper.map(orderRepository.save(order), orderDTO);
         List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
+        int statusCode;
 
-        try {
-            reservedStockDTOList = redirectAndFallbackHandler.redirectReserveStocks(reservedStockDTOList);
-        } catch (FeignException feignException) {
-            int responseStatusCode = feignException.status();
-            HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
+        try (Response reserveStockResponse = redirectAndFallbackHandler.redirectReserveStocks(reservedStockDTOList)) {
+            statusCode = reserveStockResponse.status();
 
-            //TODO: Exception olduğunda saga pattern cancel işlemini uygula
-            return null;
+            if (HandledHTTPExceptions.checkKnownException(statusCode))
+                throw new RuntimeException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
+
+            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
+            reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), type);
+        } catch (IOException e) {
+            throw new Exception(e);
         }
 
+        //TODO: reserveStockList geldikten sonra Order içindeki OrderStock proplarını düzgün doldur
         TaxRateDTO taxRateDTO;
 
-        try {
-            taxRateDTO = redirectAndFallbackHandler.redirectGetSpecificTaxRate();
-        } catch (FeignException feignException) {
-            int responseStatusCode = feignException.status();
-            HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
+        try (Response taxRateResponse = redirectAndFallbackHandler.redirectGetSpecificTaxRate()) {
+            statusCode = taxRateResponse.status();
 
-            //TODO: Exception olduğunda saga pattern cancel işlemini uygula
-            return null;
+            if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), ErrorDetailsDTO.class);
+                throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
+            }
+
+            taxRateDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), TaxRateDTO.class);
+        } catch (IOException e) {
+            //TODO: Exception anında SAGA rollback uygula
+            throw new Exception(e);
         }
 
         priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
 
-        try {
-            //TODO:Payment servisi içerisinde stripe kullanıcısı yoksa exception dönecek şekilde handle et
-            redirectAndFallbackHandler.redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService);
-        } catch (FeignException feignException) {
-            int responseStatusCode = feignException.status();
-            HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
+        //TODO: Payment Service içinde genel olarak Stripe exceptionları handle et
+        try (Response paymentResponse = redirectAndFallbackHandler.redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService)) {
+            switch (orderDTO.getPaymentProviderType()) {
+                case STRIPE -> {
+                    statusCode = paymentResponse.status();
 
-            //TODO: Exception olduğunda saga pattern cancel işlemini uygula
-            return null;
+                    if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                        ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(paymentResponse.body().asInputStream(), ErrorDetailsDTO.class);
+                        throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
+                    }
+
+                    StripePaymentResponseDTO stripePaymentResponseDTO = objectMapper.readValue(paymentResponse.body().asInputStream(), StripePaymentResponseDTO.class);
+                    orderPropertySetter.setSomeProperties(orderDTO, stripePaymentResponseDTO);
+                }
+                case PAYPAL, CREDIT_CARD -> {
+                }
+            }
+        } catch (IOException e) {
+            //TODO: Exception anında SAGA rollback uygula
+            throw new Exception(e);
         }
 
-        try {
-            reservedStockDTOList = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList);
-        } catch (FeignException feignException) {
-            int responseStatusCode = feignException.status();
-            HttpStatus httpStatus = HttpStatus.valueOf(responseStatusCode);
+        try (Response reserveStockResponse = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList)) {
+            statusCode = reserveStockResponse.status();
 
-            //TODO: Exception olduğunda saga pattern cancel işlemini uygula
-            return null;
+            if (HandledHTTPExceptions.checkKnownException(statusCode))
+                throw new RuntimeException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
+
+            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
+            reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), type);
+        } catch (IOException e) {
+            //TODO: Exception anında SAGA rollback uygula
+            throw new Exception(e);
         }
 
         orderPropertySetter.setReserveType(orderDTO);

@@ -21,6 +21,7 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     public Order setSomeProperties(OrderDTO orderDTO) {
         Order order = modelMapper.map(orderDTO, Order.class);
         order.setPaymentStatus(PaymentStatus.PENDING);
+        order.setReserveType(ReserveType.NOT_RESERVED);
         order.setOrderStatusType(OrderStatusType.TAKEN);
 
         if (order.getOrderStockList() != null)

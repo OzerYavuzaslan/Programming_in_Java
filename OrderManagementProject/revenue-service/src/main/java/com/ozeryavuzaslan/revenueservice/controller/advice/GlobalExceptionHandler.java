@@ -102,7 +102,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({TaxRateNotFoundException.class})
     public final ResponseEntity<ErrorDetailsDTO> handleNotFoundExceptions(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(taxRateNotFound, exception.getMessage()), request.getDescription(false));
+                customMessageHandler.returnProperMessage(taxRateNotFound,
+                        exception.getMessage()),
+                request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
     }

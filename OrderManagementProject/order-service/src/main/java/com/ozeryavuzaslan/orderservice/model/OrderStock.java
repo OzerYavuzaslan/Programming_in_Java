@@ -38,7 +38,6 @@ public class OrderStock {
     private int quantity;
 
     private double price;
-
     private double discountAmount = 0.0D;
     private double discountPercentage = 0.0D;
 

@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Table(name = "reserved_stocks",
         uniqueConstraints = {
@@ -37,6 +38,9 @@ public class ReservedStock {
 
     @Column(nullable = false)
     private long orderid;
+
+    @Column(nullable = false)
+    private UUID productCode;
 
     @Column(nullable = false)
     private int quantity;

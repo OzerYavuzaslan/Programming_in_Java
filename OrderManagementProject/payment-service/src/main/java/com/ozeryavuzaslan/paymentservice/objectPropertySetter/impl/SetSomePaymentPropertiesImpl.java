@@ -9,6 +9,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentType;
 import com.ozeryavuzaslan.basedomains.util.NumericalTypeConversion;
 import com.ozeryavuzaslan.paymentservice.dto.PaymentInvoiceDTO;
+import com.ozeryavuzaslan.paymentservice.exception.StripeCustomerNotFound;
 import com.ozeryavuzaslan.paymentservice.objectPropertySetter.SetSomePaymentProperties;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -37,6 +38,9 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
     @Value("${stripe.status}")
     private String stripePaymentStatus;
+
+    @Value("${stripe.customer.not.found.exception.message}")
+    private String customerNotFound;
 
     @Override
     public StripePaymentResponseDTO setSomeProperties(Charge charge, StripePaymentRequestDTO stripePaymentRequestDTO) {
@@ -90,7 +94,14 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
     @Override
     public Map<String, Object> setSomeProperties(StripePaymentRequestDTO stripePaymentRequestDTO) throws StripeException {
         stripeParams.put("email", stripePaymentRequestDTO.getEmail());
-        String customerId = getCustomer().getData().get(0).getId();
+        String customerId;
+
+        try {
+            customerId = getCustomer().getData().get(0).getId();
+        } catch (IndexOutOfBoundsException exception){
+            throw new StripeCustomerNotFound(customerNotFound + " " + stripePaymentRequestDTO.getEmail());
+        }
+
         stripeParams.clear();
         stripeParams.put("customer", customerId);
 

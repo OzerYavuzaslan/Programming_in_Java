@@ -6,6 +6,7 @@ import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.paymentservice.exception.PaymentNotFoundException;
 import com.ozeryavuzaslan.paymentservice.exception.RefundAmountExceedsException;
 import com.ozeryavuzaslan.paymentservice.exception.RefundNotFoundException;
+import com.ozeryavuzaslan.paymentservice.exception.StripeCustomerNotFound;
 import com.stripe.exception.StripeException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -105,13 +106,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler({StripeCustomerNotFound.class})
+    public final ResponseEntity<ErrorDetailsDTO> handleCustomerNotFoundException(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler
+                        .returnProperMessage(exception.getMessage(),
+                                exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseBody
     @ExceptionHandler(StripeException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughException(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
                 customMessageHandler.returnProperMessage(refundRequestExceedsTheActualPayment, exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ResponseBody

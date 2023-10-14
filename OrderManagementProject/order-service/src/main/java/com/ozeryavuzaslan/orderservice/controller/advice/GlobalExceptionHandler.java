@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.orderservice.controller.advice;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
+import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.exception.PaymentServiceNotRunningException;
 import com.ozeryavuzaslan.orderservice.exception.ReserveStockServiceNotRunningException;
 import com.ozeryavuzaslan.orderservice.exception.RevenueServiceNotRunningException;
@@ -60,6 +61,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         exception.getMessage(),
                         request.getDescription(false));
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(RuntimeException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleExceptionsOfMicroservices(Exception exception, WebRequest request) {
+        String[] microserviceResponse = exception.getMessage().split("_");
+        String tmpExceptionMsg = exception.getMessage();
+        int httpStatusCode = HttpStatus.NOT_ACCEPTABLE.value();
+
+        if (microserviceResponse.length == 2) {
+            tmpExceptionMsg = microserviceResponse[0];
+            httpStatusCode = Integer.parseInt(microserviceResponse[1]);
+        }
+
+        errorDetailsDTO
+                .setErrorDetailsProperties(LocalDateTime.now(),
+                        tmpExceptionMsg,
+                        request.getDescription(false));
+        return new ResponseEntity<>(errorDetailsDTO, HandledHTTPExceptions.getProperHTTPStatus(httpStatusCode));
     }
 
     @ResponseBody

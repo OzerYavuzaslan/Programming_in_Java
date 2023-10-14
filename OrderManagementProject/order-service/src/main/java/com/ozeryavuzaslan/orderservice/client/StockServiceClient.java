@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.client;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +18,8 @@ public interface StockServiceClient {
     List<StockDTO> getAllStocks(Pageable pageable);
 
     @PostMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${reserve.stock.reserve.products.endpoint}")
-    List<ReservedStockDTO> reserveStock(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
+    Response reserveStock(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 
     @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.decrease.stocks.endpoint}")
-    List<ReservedStockDTO> decreaseStocks(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
+    Response decreaseStocks(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 }

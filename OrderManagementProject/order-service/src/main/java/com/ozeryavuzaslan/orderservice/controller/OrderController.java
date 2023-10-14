@@ -16,7 +16,7 @@ public class OrderController {
     private final CustomLocation customLocation;
 
     @PostMapping
-    public ResponseEntity<OrderDTO> takeOrder(@Valid @RequestBody OrderDTO orderDTO){
+    public ResponseEntity<OrderDTO> takeOrder(@Valid @RequestBody OrderDTO orderDTO) throws Exception {
         return ResponseEntity.ok(orderService.takeOrder(orderDTO));
     }
 
