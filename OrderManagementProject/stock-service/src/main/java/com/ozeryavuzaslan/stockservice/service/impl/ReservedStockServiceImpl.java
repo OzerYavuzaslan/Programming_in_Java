@@ -77,8 +77,6 @@ public class ReservedStockServiceImpl implements ReservedStockService {
             reservedStockListToSave.add(modelMapper.map(reservedStockDTOList.get(i), ReservedStock.class));
         }
 
-
-
         return reservedStockRepository
                 .saveAll(reservedStockListToSave)
                 .stream()

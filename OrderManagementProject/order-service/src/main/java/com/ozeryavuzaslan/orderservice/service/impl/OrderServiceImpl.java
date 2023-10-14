@@ -15,6 +15,7 @@ import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
+import com.ozeryavuzaslan.orderservice.repository.OrderStockRepository;
 import com.ozeryavuzaslan.orderservice.service.BeginSagaRollbackChain;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
+    private final OrderStockRepository orderStockRepository;
     private final PaymentPropertySetter paymentPropertySetter;
     private final BeginSagaRollbackChain beginSagaRollbackChain;
     private final PriceCalculationService priceCalculationService;
@@ -59,13 +61,14 @@ public class OrderServiceImpl implements OrderService {
             if (HandledHTTPExceptions.checkKnownException(statusCode))
                 throw new RuntimeException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
 
-            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
-            reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), type);
+            JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
+            reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
         } catch (IOException e) {
             throw new Exception(e);
         }
 
-        //TODO: reserveStockList geldikten sonra Order içindeki OrderStock proplarını düzgün doldur
+        orderPropertySetter.setSomeProperties(reservedStockDTOList, order);
+        orderRepository.save(order);
         TaxRateDTO taxRateDTO;
 
         try (Response taxRateResponse = redirectAndFallbackHandler.redirectGetSpecificTaxRate()) {
@@ -112,8 +115,8 @@ public class OrderServiceImpl implements OrderService {
             if (HandledHTTPExceptions.checkKnownException(statusCode))
                 throw new RuntimeException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
 
-            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
-            reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), type);
+            JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
+            reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
         } catch (IOException e) {
             //TODO: Exception anında SAGA rollback uygula
             throw new Exception(e);

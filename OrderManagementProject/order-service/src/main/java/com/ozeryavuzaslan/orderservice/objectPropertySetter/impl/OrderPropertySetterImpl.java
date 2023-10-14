@@ -4,6 +4,7 @@ import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentStatus;
+import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.model.OrderStock;
@@ -11,6 +12,9 @@ import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -50,6 +54,20 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
         orderDTO.setTotalPriceWithoutTax(stripePaymentResponseDTO.getTotalPriceWithoutTax());
         orderDTO.setTotalPriceWithDiscount(stripePaymentResponseDTO.getTotalPriceWithDiscount());
         orderDTO.setTotalPriceWithDiscountWithoutTax(stripePaymentResponseDTO.getTotalPriceWithDiscountWithoutTax());
+    }
+
+    @Override
+    public void setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, Order order) {
+        order.setReserveType(ReserveType.RESERVED);
+        reservedStockDTOList.sort(Comparator.comparing(stockQuantityDTO -> stockQuantityDTO.getProductCode().toString()));
+        order.getOrderStockList().sort(Comparator.comparing(orderStock -> orderStock.getProductCode().toString()));
+
+        for (int i = 0; i < reservedStockDTOList.size(); i++){
+            order.getOrderStockList().get(i).setDiscountAmount(reservedStockDTOList.get(i).getStock().getDiscountAmount());
+            order.getOrderStockList().get(i).setDiscountPercentage(reservedStockDTOList.get(i).getStock().getDiscountPercentage());
+            order.getOrderStockList().get(i).setDiscountEndDate(reservedStockDTOList.get(i).getStock().getDiscountEndDate());
+            order.getOrderStockList().get(i).setPrice(reservedStockDTOList.get(i).getStock().getPrice());
+        }
     }
 
     @Override
