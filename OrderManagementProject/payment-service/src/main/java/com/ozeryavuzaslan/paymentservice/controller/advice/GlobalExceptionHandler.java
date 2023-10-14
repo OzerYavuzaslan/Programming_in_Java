@@ -121,17 +121,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(StripeException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleQuantityNotEnoughException(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(refundRequestExceedsTheActualPayment, exception.getMessage()),
+                customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ResponseBody
     @ExceptionHandler(RefundAmountExceedsException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleRefundAmountExceedsException(Exception exception, WebRequest request) {
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
+                customMessageHandler.returnProperMessage(refundRequestExceedsTheActualPayment, exception.getMessage()),
                 request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
@@ -144,7 +144,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NotNull HttpStatusCode status,
                                                                   WebRequest request) {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
                 customMessageHandler.returnProperMessage(firstError, firstError)  +
                         customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg) + " | " +

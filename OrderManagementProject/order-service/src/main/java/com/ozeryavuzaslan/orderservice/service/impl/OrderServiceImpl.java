@@ -85,7 +85,6 @@ public class OrderServiceImpl implements OrderService {
         priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
 
-        //TODO: Payment Service içinde genel olarak Stripe exceptionları handle et
         try (Response paymentResponse = redirectAndFallbackHandler.redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService)) {
             switch (orderDTO.getPaymentProviderType()) {
                 case STRIPE -> {
