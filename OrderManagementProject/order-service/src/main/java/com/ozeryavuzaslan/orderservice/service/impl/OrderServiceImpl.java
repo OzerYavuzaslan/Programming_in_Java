@@ -56,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
         modelMapper.map(orderRepository.save(order), orderDTO);
         List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
         int statusCode;
+        JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
 
         try (Response reserveStockResponse = redirectAndFallbackHandler.redirectReserveStocks(reservedStockDTOList)) {
             statusCode = reserveStockResponse.status();
@@ -63,7 +64,6 @@ public class OrderServiceImpl implements OrderService {
             if (HandledHTTPExceptions.checkKnownException(statusCode))
                 throw new RuntimeException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
 
-            JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
             reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
         } catch (IOException e) {
             throw new Exception(e);
@@ -96,7 +96,8 @@ public class OrderServiceImpl implements OrderService {
                 case STRIPE -> {
                     statusCode = paymentResponse.status();
 
-                    if (HandledHTTPExceptions.checkKnownException(statusCode)) { //TODO: Exception anında SAGA rollback uygula
+                    if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                        beginSagaRollbackChain.beginRollbackFromReservedStocksPhase1(reservedStockDTOList);
                         ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(paymentResponse.body().asInputStream(), ErrorDetailsDTO.class);
                         throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
                     }
@@ -119,7 +120,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
 
-            JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
             reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
         } catch (IOException e) {
             throw new Exception(e);

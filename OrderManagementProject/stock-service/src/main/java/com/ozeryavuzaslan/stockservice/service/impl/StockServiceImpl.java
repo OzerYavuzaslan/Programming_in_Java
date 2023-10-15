@@ -16,7 +16,6 @@ import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
 import com.ozeryavuzaslan.stockservice.repository.ReservedStockRepository;
 import com.ozeryavuzaslan.stockservice.repository.StockRepository;
 import com.ozeryavuzaslan.stockservice.service.StockService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +24,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
