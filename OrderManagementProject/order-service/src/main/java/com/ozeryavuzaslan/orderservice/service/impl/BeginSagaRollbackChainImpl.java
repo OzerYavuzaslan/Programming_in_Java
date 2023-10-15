@@ -36,7 +36,9 @@ public class BeginSagaRollbackChainImpl implements BeginSagaRollbackChain {
 
             if (HandledHTTPExceptions.checkKnownException(statusCode)) {
                 FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(reservedStockDTOList);
-                failedOrderRepository.save(modelMapper.map(failedOrderDTO, FailedOrder.class));
+                FailedOrder failedOrder = modelMapper.map(failedOrderDTO, FailedOrder.class);
+                failedOrderPropertySetter.setSomeProperties(failedOrder, failedOrderDTO);
+                failedOrderRepository.save(failedOrder);
             }
         }
     }

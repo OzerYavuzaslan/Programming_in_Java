@@ -21,7 +21,6 @@ import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
 import feign.Response;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     @Override
-    @Transactional
+ //   @Transactional
     //TODO: Yeni eklenen global DTO'ların validasyonlarını ekle
     //TODO: CircuitBreaker'a girerse de Saga Rollback implementasyonlarını yaz
     // Bunun için uygun bir DB de oluştur. Service not running exceptionından önce db'den gerekli bilgileri alıp, stocktan geri düşürme, paymentten geri ödeme vb. yapsın.
