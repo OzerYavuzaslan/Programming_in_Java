@@ -15,6 +15,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class BeginSagaRollbackChainImpl implements BeginSagaRollbackChain {
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void beginRollbackFromReservedStocksPhase1(List<ReservedStockDTO> reservedStockDTOList) {
         try (Response responseRollbackReservedStocks = redirectAndFallbackHandler.redirectRollbackReservedStocks(reservedStockDTOList)) {
             int statusCode = responseRollbackReservedStocks.status();

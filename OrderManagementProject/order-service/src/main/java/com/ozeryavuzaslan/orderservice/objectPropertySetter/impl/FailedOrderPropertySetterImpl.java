@@ -27,7 +27,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     public FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList) {
         List<FailedOrderStockDTO> failedOrderStockDTOList = new ArrayList<>();
 
-        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList){
+        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
             FailedOrderStockDTO failedOrderStockDTO = new FailedOrderStockDTO();
             failedOrderStockDTO.setStockid(reservedStockDTO.getStock().getId());
             failedOrderStockDTO.setReserveStockID(reservedStockDTO.getId());
