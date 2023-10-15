@@ -61,6 +61,8 @@ public class OrderServiceImpl implements OrderService {
      * @throws Exception
      */
     //TODO: Bütün servislere loglama eklemeyi unutma
+    // ErrorDetailsDTO'yu güncelle saga rollback yaparken birden fazla serviste exception olursa client tarafına bütün exceptionları dönecek şekilde olsun.
+    // Yani array şeklinde.
     @Override
     @Transactional
     //TODO: Yeni eklenen global DTO'ların validasyonlarını ekle
