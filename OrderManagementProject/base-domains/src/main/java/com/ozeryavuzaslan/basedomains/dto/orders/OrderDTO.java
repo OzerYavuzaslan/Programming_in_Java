@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.basedomains.dto.orders;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.CurrencyType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.MonetaryUnitType;
@@ -40,9 +41,11 @@ public class OrderDTO implements Serializable {
     private MonetaryUnitType monetaryUnitType;
     private List<OrderStockDTO> orderStockList;
 
+    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderDate;
 
+    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
 }
