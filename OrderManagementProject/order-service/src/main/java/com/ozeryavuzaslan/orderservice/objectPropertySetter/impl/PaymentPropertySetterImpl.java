@@ -28,13 +28,7 @@ public class PaymentPropertySetterImpl implements PaymentPropertySetter {
     @Override
     public void setSomeProperties(OrderDTO orderDTO, RefundRequestDTOForPaymentService refundRequestDTOForPaymentService) {
         switch (orderDTO.getPaymentProviderType()){
-            case STRIPE -> {
-                modelMapper.map(orderDTO, refundRequestDTOForPaymentService.getStripeRefundRequestDTO());
-
-//                StripeRefundRequestDTO stripeRefundRequestDTO = refundRequestDTOForPaymentService.getStripeRefundRequestDTO();
-//                stripeRefundRequestDTO.setRefundRequestAmount(orderDTO.getTotalPriceWithDiscount());
-//                stripeRefundRequestDTO.setOrderid(orderDTO.getId());
-            }
+            case STRIPE -> modelMapper.map(orderDTO, refundRequestDTOForPaymentService.getStripeRefundRequestDTO());
             case PAYPAL, CREDIT_CARD -> {}
         }
     }

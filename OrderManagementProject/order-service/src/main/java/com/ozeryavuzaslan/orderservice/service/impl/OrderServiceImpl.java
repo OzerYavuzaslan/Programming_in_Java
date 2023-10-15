@@ -16,7 +16,7 @@ import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
-import com.ozeryavuzaslan.orderservice.service.BeginSagaRollbackChain;
+import com.ozeryavuzaslan.orderservice.service.SagaRollbackChain;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
     private final PaymentPropertySetter paymentPropertySetter;
-    private final BeginSagaRollbackChain beginSagaRollbackChain;
+    private final SagaRollbackChain sagaRollbackChain;
     private final PriceCalculationService priceCalculationService;
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
@@ -69,8 +69,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderPropertySetter.setSomeProperties(orderDTO);
         modelMapper.map(orderRepository.save(order), orderDTO);
         List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
-        int statusCode;
         JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
+        int statusCode;
 
         try (Response reserveStockResponse = redirectAndFallbackHandler.redirectReserveStocks(reservedStockDTOList)) {
             statusCode = reserveStockResponse.status();
@@ -92,10 +92,10 @@ public class OrderServiceImpl implements OrderService {
             statusCode = taxRateResponse.status();
 
             if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                statusCode = beginSagaRollbackChain.beginRollbackFromReservedStocksPhase1(reservedStockDTOList);
+                statusCode = sagaRollbackChain.beginRollbackChainPhase1(reservedStockDTOList);
 
                 if (HandledHTTPExceptions.checkKnownException(statusCode))
-                    beginSagaRollbackChain.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+                    sagaRollbackChain.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
@@ -115,10 +115,10 @@ public class OrderServiceImpl implements OrderService {
                     statusCode = paymentResponse.status();
 
                     if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                        statusCode = beginSagaRollbackChain.beginRollbackFromReservedStocksPhase1(reservedStockDTOList);
+                        statusCode = sagaRollbackChain.beginRollbackChainPhase1(reservedStockDTOList);
 
                         if (HandledHTTPExceptions.checkKnownException(statusCode))
-                            beginSagaRollbackChain.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+                            sagaRollbackChain.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
 
                         ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(paymentResponse.body().asInputStream(), ErrorDetailsDTO.class);
                         throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
@@ -138,10 +138,10 @@ public class OrderServiceImpl implements OrderService {
             statusCode = reserveStockResponse.status();
 
             if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                statusCode = beginSagaRollbackChain.beginRollbackFromReservedStocksPhase2(orderDTO, reservedStockDTOList);
+                statusCode = sagaRollbackChain.beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
 
                 if (HandledHTTPExceptions.checkKnownException(statusCode))
-                    beginSagaRollbackChain.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
+                    sagaRollbackChain.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);

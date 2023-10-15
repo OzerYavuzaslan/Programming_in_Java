@@ -9,7 +9,7 @@ import com.ozeryavuzaslan.orderservice.model.FailedOrder;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.FailedOrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.FailedOrderRepository;
-import com.ozeryavuzaslan.orderservice.service.BeginSagaRollbackChain;
+import com.ozeryavuzaslan.orderservice.service.SagaRollbackChain;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
 import feign.Response;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class BeginSagaRollbackChainImpl implements BeginSagaRollbackChain {
+public class SagaRollbackChainImpl implements SagaRollbackChain {
     private final ModelMapper modelMapper;
     private final PaymentPropertySetter paymentPropertySetter;
     private final FailedOrderRepository failedOrderRepository;
@@ -35,14 +35,14 @@ public class BeginSagaRollbackChainImpl implements BeginSagaRollbackChain {
     private final RefundRequestDTOForPaymentService refundRequestDTOForPaymentService;
 
     @Override
-    public int beginRollbackFromReservedStocksPhase1(List<ReservedStockDTO> reservedStockDTOList) {
+    public int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList) {
         try (Response responseRollbackReservedStocks = redirectAndFallbackHandler.redirectRollbackReservedStocks(reservedStockDTOList)) {
             return responseRollbackReservedStocks.status();
         }
     }
 
     @Override
-    public int beginRollbackFromReservedStocksPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
+    public int beginRollbackChainPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
         paymentPropertySetter.setSomeProperties(orderDTO, refundRequestDTOForPaymentService);
 
         try (Response responseRollbackPayment = redirectAndFallbackHandler.redirectRollbackPayment(orderDTO, refundRequestDTOForPaymentService)) {
@@ -51,7 +51,7 @@ public class BeginSagaRollbackChainImpl implements BeginSagaRollbackChain {
             if (HandledHTTPExceptions.checkKnownException(statusCode))
                 return statusCode;
 
-            return beginRollbackFromReservedStocksPhase1(reservedStockDTOList);
+            return beginRollbackChainPhase1(reservedStockDTOList);
         }
     }
 
