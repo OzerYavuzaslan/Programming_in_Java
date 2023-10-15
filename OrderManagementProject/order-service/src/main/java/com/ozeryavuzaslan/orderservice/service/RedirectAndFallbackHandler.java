@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.service;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import feign.Response;
 
@@ -13,4 +14,5 @@ public interface RedirectAndFallbackHandler {
     Response redirectMakePayment(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService);
     Response redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList);
     Response redirectRollbackReservedStocks(List<ReservedStockDTO> reservedStockDTOList);
+    Response redirectRollbackPayment(OrderDTO orderDTO, RefundRequestDTOForPaymentService refundRequestDTOForPaymentService);
 }

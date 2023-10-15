@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.orderservice.dto;
 
+import com.ozeryavuzaslan.orderservice.model.enums.PaymentRollbackState;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class FailedOrderDTO {
     private long orderid;
     private long paymentid;
     private boolean orderRollbackStatus;
-    private boolean paymentRollbackStatus;
+    private PaymentRollbackState paymentRollbackState;
     private RollbackPhase rollbackPhase;
     private List<FailedOrderStockDTO> failedOrderStockList;
 

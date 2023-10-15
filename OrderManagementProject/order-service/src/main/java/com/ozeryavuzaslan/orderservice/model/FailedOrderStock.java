@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.orderservice.model;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
+import com.ozeryavuzaslan.orderservice.model.enums.StockRollbackState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,7 +46,9 @@ public class FailedOrderStock {
 
     @Column(nullable = false)
     private boolean reserveRollbackStatus;
-    private boolean stockRollbackStatus;
+
+    @Column(nullable = false)
+    private StockRollbackState stockRollbackState;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

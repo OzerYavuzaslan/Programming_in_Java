@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.orderservice.dto;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
+import com.ozeryavuzaslan.orderservice.model.enums.StockRollbackState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class FailedOrderStockDTO {
     private long failedOrderID;
     private ReserveType reserveType;
     private boolean reserveRollbackStatus;
-    private boolean stockRollbackStatus;
+    private StockRollbackState stockRollbackState;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reserveDate;

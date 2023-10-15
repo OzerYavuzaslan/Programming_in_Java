@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.orderservice.client.PaymentServiceClient;
@@ -81,6 +82,19 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getReserveStockFallbackMethod")
     public Response redirectRollbackReservedStocks(List<ReservedStockDTO> reservedStockDTOList) {
         return stockServiceClient.rollbackReservedStocks(reservedStockDTOList);
+    }
+
+    @Override
+    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getPaymentFallbackMethod")
+    public Response redirectRollbackPayment(OrderDTO orderDTO, RefundRequestDTOForPaymentService refundRequestDTOForPaymentService) {
+        switch (orderDTO.getPaymentProviderType()) {
+            case STRIPE -> {
+                return paymentServiceClient.refundViaStripe(refundRequestDTOForPaymentService.getStripeRefundRequestDTO());
+            }
+            case PAYPAL, CREDIT_CARD -> {return null;}
+        }
+
+        return null;
     }
 
     private Response getRevenueFallbackMethod(Exception exception) {

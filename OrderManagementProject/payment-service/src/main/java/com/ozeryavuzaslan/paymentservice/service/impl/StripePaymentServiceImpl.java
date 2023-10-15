@@ -65,7 +65,7 @@ public class StripePaymentServiceImpl implements PaymentService<StripePaymentReq
         PaymentInvoiceDTO paymentInvoiceDTO = modelMapper.map(paymentRepository.findByOrderid(stripeRefundRequestDTO.getOrderid()).orElseThrow(() -> new PaymentNotFoundException(paymentNotFoundExceptionMsg)), PaymentInvoiceDTO.class);
         double tmpRefundRequestAmount = numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
         double tmpRefundedAmount = paymentInvoiceDTO.getRefundedAmount();
-        double tmpPaidTotalPrice = paymentInvoiceDTO.getTotalPrice();
+        double tmpPaidTotalPrice = paymentInvoiceDTO.getTotalPriceWithDiscount();
 
         if (tmpRefundRequestAmount + tmpRefundedAmount > tmpPaidTotalPrice)
             throw new RefundAmountExceedsException(refundRequestExceedsTheActualPayment);

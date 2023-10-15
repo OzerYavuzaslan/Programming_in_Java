@@ -1,13 +1,17 @@
 package com.ozeryavuzaslan.orderservice.objectPropertySetter.impl;
 
+import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.orderservice.dto.FailedOrderDTO;
 import com.ozeryavuzaslan.orderservice.dto.FailedOrderStockDTO;
 import com.ozeryavuzaslan.orderservice.model.FailedOrder;
 import com.ozeryavuzaslan.orderservice.model.FailedOrderStock;
+import com.ozeryavuzaslan.orderservice.model.enums.PaymentRollbackState;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
+import com.ozeryavuzaslan.orderservice.model.enums.StockRollbackState;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.FailedOrderPropertySetter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -28,12 +32,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         List<FailedOrderStockDTO> failedOrderStockDTOList = new ArrayList<>();
 
         for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
-            FailedOrderStockDTO failedOrderStockDTO = new FailedOrderStockDTO();
-            failedOrderStockDTO.setStockid(reservedStockDTO.getStock().getId());
-            failedOrderStockDTO.setReserveStockID(reservedStockDTO.getId());
-            failedOrderStockDTO.setFailedOrderID(reservedStockDTO.getOrderid());
-            failedOrderStockDTO.setReserveType(reservedStockDTO.getReserveType());
-            failedOrderStockDTO.setReserveRollbackStatus(false);
+            FailedOrderStockDTO failedOrderStockDTO = getFailedOrderStockDTO(reservedStockDTO);
             failedOrderStockDTOList.add(failedOrderStockDTO);
         }
 
@@ -41,6 +40,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderDTO.setOrderid(reservedStockDTOList.get(0).getOrderid());
         failedOrderDTO.setOrderRollbackStatus(false);
         failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_1);
+        failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_NEEDED);
         failedOrderDTO.setFailedOrderStockList(failedOrderStockDTOList);
         return failedOrderDTO;
     }
@@ -56,5 +56,25 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         }
 
         failedOrder.setFailedOrderStockList(failedOrderStocks);
+    }
+
+    @Override
+    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
+        FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList);
+        failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_2);
+        failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
+        return failedOrderDTO;
+    }
+
+    @NotNull
+    private static FailedOrderStockDTO getFailedOrderStockDTO(ReservedStockDTO reservedStockDTO) {
+        FailedOrderStockDTO failedOrderStockDTO = new FailedOrderStockDTO();
+        failedOrderStockDTO.setStockid(reservedStockDTO.getStock().getId());
+        failedOrderStockDTO.setReserveStockID(reservedStockDTO.getId());
+        failedOrderStockDTO.setFailedOrderID(reservedStockDTO.getOrderid());
+        failedOrderStockDTO.setReserveType(reservedStockDTO.getReserveType());
+        failedOrderStockDTO.setReserveRollbackStatus(false);
+        failedOrderStockDTO.setStockRollbackState(StockRollbackState.NOT_NEEDED);
+        return failedOrderStockDTO;
     }
 }

@@ -1,5 +1,6 @@
 package com.ozeryavuzaslan.orderservice.model;
 
+import com.ozeryavuzaslan.orderservice.model.enums.PaymentRollbackState;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,7 +44,10 @@ public class FailedOrder {
 
     @Column(nullable = false)
     private boolean orderRollbackStatus;
-    private boolean paymentRollbackStatus;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentRollbackState paymentRollbackState;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
