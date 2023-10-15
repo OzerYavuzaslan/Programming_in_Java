@@ -5,16 +5,18 @@ import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class StockPropertySetterImpl implements StockPropertySetter{
-    private final ModelMapper modelMapper;
     private final CategoryPropertySetter categoryPropertySetter;
 
     @Override

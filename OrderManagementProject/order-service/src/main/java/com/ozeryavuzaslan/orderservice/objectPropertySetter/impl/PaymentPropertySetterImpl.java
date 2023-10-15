@@ -5,10 +5,14 @@ import com.ozeryavuzaslan.basedomains.dto.payments.*;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 @Component
 @RequiredArgsConstructor
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PaymentPropertySetterImpl implements PaymentPropertySetter {
     private final ModelMapper modelMapper;
 

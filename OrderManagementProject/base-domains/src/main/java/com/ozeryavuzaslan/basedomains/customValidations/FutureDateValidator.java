@@ -1,30 +1,32 @@
 package com.ozeryavuzaslan.basedomains.customValidations;
 
-import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.basedomains.util.ValidateStock;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDateTime;
 
-import static com.ozeryavuzaslan.basedomains.util.Constants.*;
+import static com.ozeryavuzaslan.basedomains.util.Constants.FUTURE_DATE_NOT_VALID;
+import static com.ozeryavuzaslan.basedomains.util.Constants.FUTURE_DATE_VALIDATION_REQUEST;
 
-public class FutureDateValidator implements ConstraintValidator<FutureDate, StockDTO> {
+public class FutureDateValidator implements ConstraintValidator<FutureDate, ValidateStock> {
     @Override
     public void initialize(FutureDate constraintAnnotation) {
         String fieldName = constraintAnnotation.fieldName();
     }
 
     @Override
-    public boolean isValid(StockDTO stockDTO, ConstraintValidatorContext context) {
-        if ((stockDTO.getDiscountAmount() > 0 || stockDTO.getDiscountPercentage() > 0) && stockDTO.getDiscountEndDate() == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(FUTURE_DATE_VALIDATION_REQUEST).addPropertyNode("discountEndDate").addConstraintViolation();
+    public boolean isValid(ValidateStock validateStock, ConstraintValidatorContext constraintValidatorContext) {
+        if ((validateStock.getDiscountAmount() > 0 || validateStock.getDiscountPercentage() > 0) && validateStock.getDiscountEndDate() == null) {
+            constraintValidatorContext.disableDefaultConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(FUTURE_DATE_VALIDATION_REQUEST).addPropertyNode("discountEndDate").addConstraintViolation();
             return false;
         }
 
-        if (stockDTO.getDiscountEndDate() != null && !stockDTO.getDiscountEndDate().isAfter(LocalDateTime.now())) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(FUTURE_DATE_NOT_VALID).addPropertyNode("discountEndDate").addConstraintViolation();
+        if (validateStock.getDiscountEndDate() != null && !validateStock.getDiscountEndDate().isAfter(LocalDateTime.now())
+                && (validateStock.getDiscountAmount() > 0 || validateStock.getDiscountPercentage() > 0)) {
+            constraintValidatorContext.disableDefaultConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(FUTURE_DATE_NOT_VALID).addPropertyNode("discountEndDate").addConstraintViolation();
             return false;
         }
 

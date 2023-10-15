@@ -5,10 +5,7 @@ import com.ozeryavuzaslan.stockservice.service.ReservedStockService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +19,10 @@ public class ReservedStockController {
     @PostMapping("/reserveProducts")
     public ResponseEntity<List<ReservedStockDTO>> reserveStock(@Valid @RequestBody List<ReservedStockDTO> reservedStockDTOList){
         return ResponseEntity.ok(reservedStockService.reserveStock(reservedStockDTOList));
+    }
+
+    @PutMapping("/rollbackReservedStocks")
+    public ResponseEntity<List<ReservedStockDTO>> rollbackReserveStock(@Valid @RequestBody List<ReservedStockDTO> reservedStockDTOList){
+        return ResponseEntity.ok(reservedStockService.rollbackReserveStock(reservedStockDTOList));
     }
 }

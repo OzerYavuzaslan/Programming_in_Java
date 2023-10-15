@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.basedomains.dto.stocks;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ozeryavuzaslan.basedomains.customValidations.FutureDate;
+import com.ozeryavuzaslan.basedomains.util.ValidateStock;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @FutureDate(fieldName = "discountEndDate")
-public class StockDTO implements Serializable {
+public class StockDTO implements Serializable, ValidateStock {
     private Long id;
 
     @NotNull(message = UUID_VALID_NULL_MSG)

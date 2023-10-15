@@ -7,13 +7,17 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class StockPropertySetterImpl implements StockPropertySetter {
     private final ModelMapper modelMapper;
 

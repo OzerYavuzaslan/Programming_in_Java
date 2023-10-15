@@ -17,11 +17,11 @@ public class Resilience4jConfig {
     public CircuitBreakerConfig circuitBreakerConfig() {
         return CircuitBreakerConfig.custom()
                 .failureRateThreshold(100)
-                .slidingWindowSize(10)
+                .slidingWindowSize(20)
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                 .automaticTransitionFromOpenToHalfOpenEnabled(true)
-                .minimumNumberOfCalls(5)
-                .permittedNumberOfCallsInHalfOpenState(3)
+                .minimumNumberOfCalls(10)
+                .permittedNumberOfCallsInHalfOpenState(4)
                 .waitDurationInOpenState(Duration.ofSeconds(5))
                 .build();
     }

@@ -12,4 +12,5 @@ public interface RedirectAndFallbackHandler {
     Response redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList);
     Response redirectMakePayment(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService);
     Response redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList);
+    Response redirectRollbackReservedStocks(List<ReservedStockDTO> reservedStockDTOList);
 }

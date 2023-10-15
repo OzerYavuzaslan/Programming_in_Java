@@ -77,6 +77,12 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
         return revenueServiceClient.getSpecificTaxRate(taxYear, taxMonth, TaxRateType.KDV);
     }
 
+    @Override
+    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getReserveStockFallbackMethod")
+    public Response redirectRollbackReservedStocks(List<ReservedStockDTO> reservedStockDTOList) {
+        return stockServiceClient.rollbackReservedStocks(reservedStockDTOList);
+    }
+
     private Response getRevenueFallbackMethod(Exception exception) {
         throw new RevenueServiceNotRunningException(revenueServiceNotRunning);
     }

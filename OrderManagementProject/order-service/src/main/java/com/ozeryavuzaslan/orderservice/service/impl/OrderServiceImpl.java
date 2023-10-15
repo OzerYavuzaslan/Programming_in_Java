@@ -11,11 +11,11 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
+import com.ozeryavuzaslan.orderservice.model.OrderStock;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
-import com.ozeryavuzaslan.orderservice.repository.OrderStockRepository;
 import com.ozeryavuzaslan.orderservice.service.BeginSagaRollbackChain;
 import com.ozeryavuzaslan.orderservice.service.OrderService;
 import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
@@ -27,6 +27,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -38,7 +39,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
-    private final OrderStockRepository orderStockRepository;
     private final PaymentPropertySetter paymentPropertySetter;
     private final BeginSagaRollbackChain beginSagaRollbackChain;
     private final PriceCalculationService priceCalculationService;
@@ -68,6 +68,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         orderPropertySetter.setSomeProperties(reservedStockDTOList, order);
+        order.getOrderStockList().sort(Comparator.comparing(OrderStock::getId));
         orderRepository.save(order);
         TaxRateDTO taxRateDTO;
 
@@ -75,8 +76,14 @@ public class OrderServiceImpl implements OrderService {
             statusCode = taxRateResponse.status();
 
             if (HandledHTTPExceptions.checkKnownException(statusCode)) { //TODO: Exception anında SAGA rollback uygula
+                try (Response responseRollbackReservedStocks = redirectAndFallbackHandler.redirectRollbackReservedStocks(reservedStockDTOList)) {
+                    statusCode = responseRollbackReservedStocks.status();
 
-
+                    if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                        //TODO: Burada da başarısız olursa DB'ye yaz.
+                        // Sonra bu DB'yi kontrol edecek ayrı bir job oluştur (timer classından)
+                    }
+                }
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);

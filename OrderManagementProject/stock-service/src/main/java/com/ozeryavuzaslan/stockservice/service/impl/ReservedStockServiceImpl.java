@@ -83,4 +83,20 @@ public class ReservedStockServiceImpl implements ReservedStockService {
                 .map(reservedStock -> modelMapper.map(reservedStock, ReservedStockDTO.class))
                 .toList();
     }
+
+    @Override
+    public List<ReservedStockDTO> rollbackReserveStock(List<ReservedStockDTO> reservedStockDTOList) {
+        List<ReservedStock> reservedStockList = new ArrayList<>();
+
+        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList){
+            reservedStockDTO.setReserveType(ReserveType.RESERVE_CANCELED);
+            reservedStockList.add(modelMapper.map(reservedStockDTO, ReservedStock.class));
+        }
+
+        return reservedStockRepository
+                .saveAll(reservedStockList)
+                .stream()
+                .map(reservedStock -> modelMapper.map(reservedStock, ReservedStockDTO.class))
+                .toList();
+    }
 }

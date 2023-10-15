@@ -11,13 +11,17 @@ import com.ozeryavuzaslan.orderservice.model.OrderStock;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Comparator;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class OrderPropertySetterImpl implements OrderPropertySetter {
     private final ModelMapper modelMapper;
 
@@ -59,8 +63,10 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     @Override
     public void setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, Order order) {
         order.setReserveType(ReserveType.RESERVED);
-        reservedStockDTOList.sort(Comparator.comparing(stockQuantityDTO -> stockQuantityDTO.getProductCode().toString()));
-        order.getOrderStockList().sort(Comparator.comparing(orderStock -> orderStock.getProductCode().toString()));
+
+        //Type erasure'dan dolayı kendi tipine cast etmek gerekir.
+        reservedStockDTOList.sort(Comparator.comparing((ReservedStockDTO stockQuantityDTO) -> stockQuantityDTO.getProductCode().toString()).reversed());
+        order.getOrderStockList().sort(Comparator.comparing((OrderStock orderStock) -> orderStock.getProductCode().toString()).reversed());
 
         for (int i = 0; i < reservedStockDTOList.size(); i++){
             order.getOrderStockList().get(i).setDiscountAmount(reservedStockDTOList.get(i).getStock().getDiscountAmount());
