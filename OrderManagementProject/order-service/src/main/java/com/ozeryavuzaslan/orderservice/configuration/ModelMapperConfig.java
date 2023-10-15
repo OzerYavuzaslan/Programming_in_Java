@@ -3,6 +3,8 @@ package com.ozeryavuzaslan.orderservice.configuration;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.abstracts.PaymentResponseDTO;
+import com.ozeryavuzaslan.orderservice.dto.FailedOrderStockDTO;
+import com.ozeryavuzaslan.orderservice.model.FailedOrderStock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
@@ -21,10 +23,10 @@ public class ModelMapperConfig {
 
         TypeMap<OrderDTO, StripePaymentRequestDTO> typeMap2 = modelMapper.createTypeMap(OrderDTO.class, StripePaymentRequestDTO.class);
         typeMap2.addMapping(OrderDTO::getId, StripePaymentRequestDTO::setOrderid);
-/*
-        TypeMap<PaymentResponseDTO, OrderDTO> typeMap3 = modelMapper.createTypeMap(PaymentResponseDTO.class, OrderDTO.class);
-        typeMap3.addMapping(PaymentResponseDTO::getId, OrderDTO::setPaymentid);
-*/
+
+        TypeMap<FailedOrderStock, FailedOrderStockDTO> typeMap3 = modelMapper.createTypeMap(FailedOrderStock.class, FailedOrderStockDTO.class);
+        typeMap3.addMapping(failedOrderStock -> failedOrderStock.getFailedOrder().getId(), FailedOrderStockDTO::setFailedOrderID);
+
         return modelMapper;
     }
 }

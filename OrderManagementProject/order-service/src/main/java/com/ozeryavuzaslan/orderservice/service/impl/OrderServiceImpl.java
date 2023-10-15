@@ -47,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    //TODO: Yeni eklenen global DTO'ların validasyonlarını ekle
     //TODO: CircuitBreaker'a girerse de Saga Rollback implementasyonlarını yaz
     // Bunun için uygun bir DB de oluştur. Service not running exceptionından önce db'den gerekli bilgileri alıp, stocktan geri düşürme, paymentten geri ödeme vb. yapsın.
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
@@ -75,16 +76,8 @@ public class OrderServiceImpl implements OrderService {
         try (Response taxRateResponse = redirectAndFallbackHandler.redirectGetSpecificTaxRate()) {
             statusCode = taxRateResponse.status();
 
-            if (HandledHTTPExceptions.checkKnownException(statusCode)) { //TODO: Exception anında SAGA rollback uygula
-                try (Response responseRollbackReservedStocks = redirectAndFallbackHandler.redirectRollbackReservedStocks(reservedStockDTOList)) {
-                    statusCode = responseRollbackReservedStocks.status();
-
-                    if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                        //TODO: Burada da başarısız olursa DB'ye yaz.
-                        // Sonra bu DB'yi kontrol edecek ayrı bir job oluştur (timer classından)
-                    }
-                }
-
+            if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                beginSagaRollbackChain.beginRollbackFromReservedStocksPhase1(reservedStockDTOList);
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
