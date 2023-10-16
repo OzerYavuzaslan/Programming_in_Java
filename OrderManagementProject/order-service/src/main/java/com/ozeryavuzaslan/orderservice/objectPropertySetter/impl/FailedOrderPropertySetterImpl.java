@@ -29,18 +29,18 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     private final ModelMapper modelMapper;
 
     @Override
-    public FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList) {
+    public FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase) {
         List<FailedOrderStockDTO> failedOrderStockDTOList = new ArrayList<>();
 
         for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
-            FailedOrderStockDTO failedOrderStockDTO = getFailedOrderStockDTO(reservedStockDTO);
+            FailedOrderStockDTO failedOrderStockDTO = getFailedOrderStockDTO(reservedStockDTO, rollbackPhase);
             failedOrderStockDTOList.add(failedOrderStockDTO);
         }
 
         FailedOrderDTO failedOrderDTO = new FailedOrderDTO();
         failedOrderDTO.setOrderid(reservedStockDTOList.get(0).getOrderid());
         failedOrderDTO.setOrderRollbackStatus(false);
-        failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_1);
+        failedOrderDTO.setRollbackPhase(rollbackPhase);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_NEEDED);
         failedOrderDTO.setFailedOrderStockList(failedOrderStockDTOList);
         return failedOrderDTO;
@@ -61,7 +61,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
 
     @Override
     public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase) {
-        FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList);
+        FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList, rollbackPhase);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
         failedOrderDTO.setRollbackPhase(rollbackPhase);
 
@@ -72,7 +72,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     }
 
     @NotNull
-    private static FailedOrderStockDTO getFailedOrderStockDTO(ReservedStockDTO reservedStockDTO) {
+    private static FailedOrderStockDTO getFailedOrderStockDTO(ReservedStockDTO reservedStockDTO, RollbackPhase rollbackPhase) {
         FailedOrderStockDTO failedOrderStockDTO = new FailedOrderStockDTO();
         failedOrderStockDTO.setStockid(reservedStockDTO.getStock().getId());
         failedOrderStockDTO.setReserveStockID(reservedStockDTO.getId());
@@ -80,6 +80,10 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderStockDTO.setReserveType(reservedStockDTO.getReserveType());
         failedOrderStockDTO.setReserveRollbackStatus(false);
         failedOrderStockDTO.setStockRollbackState(StockRollbackState.NOT_NEEDED);
+
+        if (rollbackPhase.equals(RollbackPhase.PHASE_3))
+            failedOrderStockDTO.setStockRollbackState(StockRollbackState.NOT_INCREASED);
+
         return failedOrderStockDTO;
     }
 }

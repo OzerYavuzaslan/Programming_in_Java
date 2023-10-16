@@ -9,7 +9,7 @@ import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
 import java.util.List;
 
 public interface FailedOrderPropertySetter {
-    FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList);
+    FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase);
     void setSomeProperties(FailedOrder failedOrder, FailedOrderDTO failedOrderDTO);
     FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase);
 }

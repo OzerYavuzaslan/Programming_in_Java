@@ -8,7 +8,6 @@ import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentSe
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
@@ -108,6 +107,7 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception(e);
         }
 
+        //TODO: Hesaplamada problem var, çöz.
         priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
 
@@ -136,8 +136,6 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception(e);
         }
 
-        List<StockDTO> notDecreasedStockDTOList = stockPropertySetter.setSomeProperties(reservedStockDTOList);
-
         try (Response reserveStockResponse = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList)) {
             statusCode = reserveStockResponse.status();
 
@@ -162,16 +160,11 @@ public class OrderServiceImpl implements OrderService {
             modelMapper.map(orderRepository.save(order), orderDTO);
             orderProducer.sendMessage(orderDTO);
         } catch (Exception exception) {
-            //TODO: LOGLAMALARI EKLEMEYİ UNUTMA
-            try (Response stockResponse = redirectAndFallbackHandler.redirectStockIncrease(notDecreasedStockDTOList)) {
-                statusCode = stockResponse.status();
+            if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                statusCode = sagaRollbackChainService.beginRollbackChainPhase3(orderDTO, reservedStockDTOList);
 
-                if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                    statusCode = sagaRollbackChainService.beginRollbackChainPhase3(orderDTO, reservedStockDTOList);
-
-                    if (HandledHTTPExceptions.checkKnownException(statusCode))
-                        failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
-                }
+                if (HandledHTTPExceptions.checkKnownException(statusCode))
+                    failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
             }
 
             throw new Exception(exception);

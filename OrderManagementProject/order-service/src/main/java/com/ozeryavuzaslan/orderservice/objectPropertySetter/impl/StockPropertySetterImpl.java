@@ -43,6 +43,7 @@ public class StockPropertySetterImpl implements StockPropertySetter {
         for (ReservedStockDTO reservedStockDTO : reservedStockDTOList){
             StockDTO stockDTO = new StockDTO();
             modelMapper.map(reservedStockDTO.getStock(), stockDTO);
+            stockDTO.setQuantity(stockDTO.getQuantity() + reservedStockDTO.getQuantity());
             stockDTOList.add(stockDTO);
         }
 

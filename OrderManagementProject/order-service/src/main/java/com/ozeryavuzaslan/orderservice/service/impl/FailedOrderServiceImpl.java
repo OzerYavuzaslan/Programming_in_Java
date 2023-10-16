@@ -30,7 +30,7 @@ public class FailedOrderServiceImpl implements FailedOrderService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void insertFailedOrderAndRollbackPhase(List<ReservedStockDTO> reservedStockDTOList) {
-        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(reservedStockDTOList);
+        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(reservedStockDTOList, RollbackPhase.PHASE_1);
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 

@@ -3,8 +3,10 @@ package com.ozeryavuzaslan.orderservice.service.impl;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
+import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
 import com.ozeryavuzaslan.orderservice.service.SagaRollbackChainService;
 import feign.Response;
@@ -20,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
+    private final StockPropertySetter stockPropertySetter;
     private final PaymentPropertySetter paymentPropertySetter;
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final RefundRequestDTOForPaymentService refundRequestDTOForPaymentService;
@@ -47,6 +50,15 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
 
     @Override
     public int beginRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
-        return 0;
+        List<StockDTO> rollbackStockDTOList = stockPropertySetter.setSomeProperties(reservedStockDTOList);
+
+        try (Response stockResponse = redirectAndFallbackHandler.redirectStockIncrease(rollbackStockDTOList)) {
+            int statusCode = stockResponse.status();
+
+            if (HandledHTTPExceptions.checkKnownException(statusCode))
+                return statusCode;
+
+            return beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
+        }
     }
 }
