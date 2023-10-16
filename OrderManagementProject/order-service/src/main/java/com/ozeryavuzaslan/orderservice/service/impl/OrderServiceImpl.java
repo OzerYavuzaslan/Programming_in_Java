@@ -8,6 +8,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentSe
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
@@ -34,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final ObjectMapper objectMapper;
     private final OrderProducer orderProducer;
     private final OrderRepository orderRepository;
-    private final SagaRollbackChain sagaRollbackChain;
+    private final SagaRollbackChainService sagaRollbackChainService;
     private final FailedOrderService failedOrderService;
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
@@ -93,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
             statusCode = taxRateResponse.status();
 
             if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                statusCode = sagaRollbackChain.beginRollbackChainPhase1(reservedStockDTOList);
+                statusCode = sagaRollbackChainService.beginRollbackChainPhase1(reservedStockDTOList);
 
                 if (HandledHTTPExceptions.checkKnownException(statusCode))
                     failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
@@ -116,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
                     statusCode = paymentResponse.status();
 
                     if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                        statusCode = sagaRollbackChain.beginRollbackChainPhase1(reservedStockDTOList);
+                        statusCode = sagaRollbackChainService.beginRollbackChainPhase1(reservedStockDTOList);
 
                         if (HandledHTTPExceptions.checkKnownException(statusCode))
                             failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
@@ -135,11 +136,13 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception(e);
         }
 
+        List<StockDTO> notDecreasedStockDTOList = stockPropertySetter.setSomeProperties(reservedStockDTOList);
+
         try (Response reserveStockResponse = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList)) {
             statusCode = reserveStockResponse.status();
 
             if (HandledHTTPExceptions.checkKnownException(statusCode)) {
-                statusCode = sagaRollbackChain.beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
+                statusCode = sagaRollbackChainService.beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
 
                 if (HandledHTTPExceptions.checkKnownException(statusCode))
                     failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
@@ -159,11 +162,17 @@ public class OrderServiceImpl implements OrderService {
             modelMapper.map(orderRepository.save(order), orderDTO);
             orderProducer.sendMessage(orderDTO);
         } catch (Exception exception) {
-            statusCode = sagaRollbackChain.beginRollbackChainPhase3(orderDTO, reservedStockDTOList);
-
             //TODO: LOGLAMALARI EKLEMEYİ UNUTMA
-            if (HandledHTTPExceptions.checkKnownException(statusCode))
-                failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
+            try (Response stockResponse = redirectAndFallbackHandler.redirectStockIncrease(notDecreasedStockDTOList)) {
+                statusCode = stockResponse.status();
+
+                if (HandledHTTPExceptions.checkKnownException(statusCode)) {
+                    statusCode = sagaRollbackChainService.beginRollbackChainPhase3(orderDTO, reservedStockDTOList);
+
+                    if (HandledHTTPExceptions.checkKnownException(statusCode))
+                        failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
+                }
+            }
 
             throw new Exception(exception);
         }

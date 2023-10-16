@@ -1,9 +1,10 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
+import com.google.gson.reflect.TypeToken;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.exception.ReservedStockNotFound;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,40 +56,50 @@ public class StockServiceImpl implements StockService {
 
     //Such a bad relationship between entities as well as the operations... Do not do what I did here! lol...
     @Override
-    @CachePut(value = "stocks", key = "#stockWithoutUUIDDTO.productName")
-    public StockDTO saveOrUpdateStock(StockWithoutUUIDDTO stockWithoutUUIDDTO) {
-        Optional<Stock> stockOptional = stockRepository.findByProductCode(stockWithoutUUIDDTO.getProductCode());
+    @CachePut(value = "stocks", key = "#stockWithIgnoredUUID.productName")
+    public StockDTO saveOrUpdateStock(StockWithIgnoredUUID stockWithIgnoredUUID) {
+        Optional<Stock> stockOptional = stockRepository.findByProductCode(stockWithIgnoredUUID.getProductCode());
 
         if (stockOptional.isEmpty()) {
             Optional<Category> category;
 
-            if (stockWithoutUUIDDTO.getCategory().getCategoryCode() == null)
-                category = categoryRepository.findByName(stockWithoutUUIDDTO.getCategory().getName());
+            if (stockWithIgnoredUUID.getCategory().getCategoryCode() == null)
+                category = categoryRepository.findByName(stockWithIgnoredUUID.getCategory().getName());
             else
-                category = categoryRepository.findByCategoryCode(stockWithoutUUIDDTO.getCategory().getCategoryCode());
+                category = categoryRepository.findByCategoryCode(stockWithIgnoredUUID.getCategory().getCategoryCode());
 
             boolean isCategoryPresent = category.isPresent();
-            stockPropertySetter.setSomeProperties(stockWithoutUUIDDTO, true, isCategoryPresent);
+            stockPropertySetter.setSomeProperties(stockWithIgnoredUUID, true, isCategoryPresent);
 
             if (isCategoryPresent)
-                stockWithoutUUIDDTO.setCategory(modelMapper.map(category, CategoryWithoutUUIDDTO.class));
+                stockWithIgnoredUUID.setCategory(modelMapper.map(category, CategoryWithoutUUIDDTO.class));
             else
-                stockWithoutUUIDDTO.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockWithoutUUIDDTO.getCategory(), Category.class)), CategoryWithoutUUIDDTO.class));
-        }
-        else {
-            stockPropertySetter.setSomeProperties(stockWithoutUUIDDTO, false, false);
-            stockPropertySetter.setSomeProperties(stockOptional.get(), stockWithoutUUIDDTO);
+                stockWithIgnoredUUID.setCategory(modelMapper.map(categoryRepository.save(modelMapper.map(stockWithIgnoredUUID.getCategory(), Category.class)), CategoryWithoutUUIDDTO.class));
+        } else {
+            stockPropertySetter.setSomeProperties(stockWithIgnoredUUID, false, false);
+            stockPropertySetter.setSomeProperties(stockOptional.get(), stockWithIgnoredUUID);
         }
 
-        Stock stock = stockRepository.save(modelMapper.map(stockWithoutUUIDDTO, Stock.class));
+        Stock stock = stockRepository.save(modelMapper.map(stockWithIgnoredUUID, Stock.class));
         isCacheRefresh = false;
         return modelMapper.map(stock, StockDTO.class);
     }
 
     @Override
     @CachePut(value = "stocks", key = "#stockDTO.productCode")
-    public StockDTO updateStock(StockDTO stockDTO){
-        return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithoutUUIDDTO.class));
+    public StockDTO updateStock(StockDTO stockDTO) {
+        return saveOrUpdateStock(modelMapper.map(stockDTO, StockWithIgnoredUUID.class));
+    }
+
+    @Override
+    public List<StockDTO> updateStocks(List<StockDTO> stockDTOList) {
+        Type stockListType = new TypeToken<List<ReservedStockDTO>>() {}.getType();
+        List<Stock> stockList = modelMapper.map(stockDTOList, stockListType);
+        stockList = stockRepository.saveAll(stockList);
+        Type stockDTOListType = new TypeToken<List<ReservedStockDTO>>() {}.getType();
+        stockDTOList = modelMapper.map(stockList, stockDTOListType);
+        isCacheRefresh = false;
+        return stockDTOList;
     }
 
     @Override
@@ -102,8 +114,8 @@ public class StockServiceImpl implements StockService {
 
         List<ReservedStock> reservedStockList = reservedStockRepository
                 .findByIdInAndReserveTypeOrderByIdAsc(reservedStockDTOList
-                        .stream()
-                        .map(ReservedStockDTO::getId).toList(),
+                                .stream()
+                                .map(ReservedStockDTO::getId).toList(),
                         ReserveType.RESERVED);
 
         if (stockList.isEmpty())
@@ -163,7 +175,7 @@ public class StockServiceImpl implements StockService {
     @Override
     @Cacheable(value = "stocks")
     @SuppressWarnings("ConstantConditions")
-    public List<StockDTO> getStockList(Pageable pageable){
+    public List<StockDTO> getStockList(Pageable pageable) {
         return stockRepository
                 .findAll(pageable)
                 .stream()
@@ -190,11 +202,11 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public void checkStockServiceCacheState(){
+    public void checkStockServiceCacheState() {
         isCacheRefresh = cacheManagementService.releaseCache(isCacheRefresh, stockCacheName);
     }
 
-    private StockDTO getStockByProductCode(UUID productCode){
+    private StockDTO getStockByProductCode(UUID productCode) {
         return modelMapper
                 .map(stockRepository
                         .findByProductCode(productCode).orElseThrow(() -> new StockNotFoundException(stockNotFound)), StockDTO.class);

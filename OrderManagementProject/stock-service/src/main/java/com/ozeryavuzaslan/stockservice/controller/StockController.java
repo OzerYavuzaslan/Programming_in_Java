@@ -2,7 +2,7 @@ package com.ozeryavuzaslan.stockservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
-import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.service.StockService;
 import com.ozeryavuzaslan.stockservice.util.CustomLocation;
@@ -33,17 +33,22 @@ public class StockController {
     private String stockCacheName;
 
     @PostMapping
-    public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithoutUUIDDTO stockWithoutUUIDDTO){
+    public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithIgnoredUUID stockWithIgnoredUUID){
         return ResponseEntity.created(customLocation.getURILocation(stockGetEndpoint,
                         stockService
-                                .saveOrUpdateStock(stockWithoutUUIDDTO)
+                                .saveOrUpdateStock(stockWithIgnoredUUID)
                                 .getId()))
                 .build();
     }
 
-    @PutMapping("/updateStocks")
+    @PutMapping("/updateStock")
     public ResponseEntity<StockDTO> updateStock(@Valid @RequestBody StockDTO stockDTO){
         return ResponseEntity.ok(stockService.updateStock(stockDTO));
+    }
+
+    @PutMapping("/updateStocks")
+    public ResponseEntity<List<StockDTO>> updateStocks(@Valid @RequestBody List<StockDTO> stockDTOList){
+        return ResponseEntity.ok(stockService.updateStocks(stockDTOList));
     }
 
     @PutMapping("/decreaseStocks")

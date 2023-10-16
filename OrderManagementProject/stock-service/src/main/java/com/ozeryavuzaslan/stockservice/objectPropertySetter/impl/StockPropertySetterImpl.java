@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithoutUUIDDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
@@ -20,32 +20,32 @@ public class StockPropertySetterImpl implements StockPropertySetter{
     private final CategoryPropertySetter categoryPropertySetter;
 
     @Override
-    public void setSomeProperties(StockWithoutUUIDDTO stockWithoutUUIDDTO, boolean isInsert, boolean isCategoryPresent){
+    public void setSomeProperties(StockWithIgnoredUUID stockWithIgnoredUUID, boolean isInsert, boolean isCategoryPresent){
         if (isInsert) {
-            stockWithoutUUIDDTO.setProductCode(UUID.randomUUID());
-            stockWithoutUUIDDTO.setAddDate(LocalDateTime.now());
+            stockWithIgnoredUUID.setProductCode(UUID.randomUUID());
+            stockWithIgnoredUUID.setAddDate(LocalDateTime.now());
         }
 
-        if (stockWithoutUUIDDTO.getDiscountPercentage() > 0.0D)
-            stockWithoutUUIDDTO.setDiscountAmount(getDiscountAmount(stockWithoutUUIDDTO));
+        if (stockWithIgnoredUUID.getDiscountPercentage() > 0.0D)
+            stockWithIgnoredUUID.setDiscountAmount(getDiscountAmount(stockWithIgnoredUUID));
 
-        stockWithoutUUIDDTO.setUpdateDate(LocalDateTime.now());
-        categoryPropertySetter.setSomeProperties(stockWithoutUUIDDTO.getCategory(), isInsert, isCategoryPresent);
+        stockWithIgnoredUUID.setUpdateDate(LocalDateTime.now());
+        categoryPropertySetter.setSomeProperties(stockWithIgnoredUUID.getCategory(), isInsert, isCategoryPresent);
     }
 
     @Override
-    public void setSomeProperties(Stock stock, StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        stockWithoutUUIDDTO.setAddDate(stock.getAddDate());
-        stockWithoutUUIDDTO.setProductCode(stock.getProductCode());
-        stockWithoutUUIDDTO.setId(stock.getId());
+    public void setSomeProperties(Stock stock, StockWithIgnoredUUID stockWithIgnoredUUID){
+        stockWithIgnoredUUID.setAddDate(stock.getAddDate());
+        stockWithIgnoredUUID.setProductCode(stock.getProductCode());
+        stockWithIgnoredUUID.setId(stock.getId());
 
-        if (stockWithoutUUIDDTO.getDiscountPercentage() > 0.0D)
-            stockWithoutUUIDDTO.setDiscountAmount(getDiscountAmount(stockWithoutUUIDDTO));
+        if (stockWithIgnoredUUID.getDiscountPercentage() > 0.0D)
+            stockWithIgnoredUUID.setDiscountAmount(getDiscountAmount(stockWithIgnoredUUID));
 
-        categoryPropertySetter.setSomeProperties(stock.getCategory(), stockWithoutUUIDDTO.getCategory());
+        categoryPropertySetter.setSomeProperties(stock.getCategory(), stockWithIgnoredUUID.getCategory());
     }
 
-    private double getDiscountAmount(StockWithoutUUIDDTO stockWithoutUUIDDTO){
-        return stockWithoutUUIDDTO.getPrice() * stockWithoutUUIDDTO.getDiscountPercentage() / 100;
+    private double getDiscountAmount(StockWithIgnoredUUID stockWithIgnoredUUID){
+        return stockWithIgnoredUUID.getPrice() * stockWithIgnoredUUID.getDiscountPercentage() / 100;
     }
 }

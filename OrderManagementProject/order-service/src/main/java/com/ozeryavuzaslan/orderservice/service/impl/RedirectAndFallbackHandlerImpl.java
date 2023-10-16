@@ -5,6 +5,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentSe
 import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.orderservice.client.PaymentServiceClient;
 import com.ozeryavuzaslan.orderservice.client.RevenueServiceClient;
 import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
@@ -95,6 +96,12 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
         }
 
         return null;
+    }
+
+    @Override
+    @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getStockFallbackMethod")
+    public Response redirectStockIncrease(List<StockDTO> stockDTOList) {
+        return stockServiceClient.rollbackDecreasedStocks(stockDTOList);
     }
 
     private Response getRevenueFallbackMethod(Exception exception) {

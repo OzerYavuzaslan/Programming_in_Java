@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.orderservice.objectPropertySetter.impl;
 import com.google.gson.reflect.TypeToken;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -32,5 +34,18 @@ public class StockPropertySetterImpl implements StockPropertySetter {
         });
 
         return reservedStockDTOList;
+    }
+
+    @Override
+    public List<StockDTO> setSomeProperties(List<ReservedStockDTO> reservedStockDTOList) {
+        List<StockDTO> stockDTOList = new ArrayList<>();
+
+        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList){
+            StockDTO stockDTO = new StockDTO();
+            modelMapper.map(reservedStockDTO.getStock(), stockDTO);
+            stockDTOList.add(stockDTO);
+        }
+
+        return stockDTOList;
     }
 }

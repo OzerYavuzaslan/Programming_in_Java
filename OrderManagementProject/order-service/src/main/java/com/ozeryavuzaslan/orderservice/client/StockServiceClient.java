@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.orderservice.client;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,5 +19,8 @@ public interface StockServiceClient {
     Response decreaseStocks(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
 
     @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${reserve.stock.rollback.reserved.stock.endpoint}")
-    Response rollbackReservedStocks(List<ReservedStockDTO> reservedStockDTOList);
+    Response rollbackReservedStocks(@RequestBody List<ReservedStockDTO> reservedStockDTOList);
+
+    @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.rollback.decreased.stock.endpoint}")
+    Response rollbackDecreasedStocks(@RequestBody List<StockDTO> stockDTOList);
 }

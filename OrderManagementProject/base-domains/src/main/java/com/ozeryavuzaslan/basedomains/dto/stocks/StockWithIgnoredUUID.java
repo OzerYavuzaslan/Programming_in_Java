@@ -19,7 +19,7 @@ import static com.ozeryavuzaslan.basedomains.util.Constants.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @FutureDate(fieldName = "discountEndDate")
-public class StockWithoutUUIDDTO implements Serializable, ValidateStock {
+public class StockWithIgnoredUUID implements Serializable, ValidateStock {
     @JsonIgnore
     private Long id;
 

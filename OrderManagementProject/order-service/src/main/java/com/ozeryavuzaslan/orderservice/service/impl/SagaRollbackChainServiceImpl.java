@@ -6,7 +6,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
-import com.ozeryavuzaslan.orderservice.service.SagaRollbackChain;
+import com.ozeryavuzaslan.orderservice.service.SagaRollbackChainService;
 import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class SagaRollbackChainImpl implements SagaRollbackChain {
+public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
     private final PaymentPropertySetter paymentPropertySetter;
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final RefundRequestDTOForPaymentService refundRequestDTOForPaymentService;

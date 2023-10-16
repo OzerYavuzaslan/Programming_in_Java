@@ -5,7 +5,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 
 import java.util.List;
 
-public interface SagaRollbackChain {
+public interface SagaRollbackChainService {
     int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList);
     int beginRollbackChainPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
     int beginRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
