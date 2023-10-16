@@ -16,10 +16,7 @@ import com.ozeryavuzaslan.orderservice.objectPropertySetter.OrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.OrderRepository;
-import com.ozeryavuzaslan.orderservice.service.SagaRollbackChain;
-import com.ozeryavuzaslan.orderservice.service.OrderService;
-import com.ozeryavuzaslan.orderservice.service.PriceCalculationService;
-import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
+import com.ozeryavuzaslan.orderservice.service.*;
 import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -37,10 +34,11 @@ public class OrderServiceImpl implements OrderService {
     private final ObjectMapper objectMapper;
     private final OrderProducer orderProducer;
     private final OrderRepository orderRepository;
+    private final SagaRollbackChain sagaRollbackChain;
+    private final FailedOrderService failedOrderService;
     private final OrderPropertySetter orderPropertySetter;
     private final StockPropertySetter stockPropertySetter;
     private final PaymentPropertySetter paymentPropertySetter;
-    private final SagaRollbackChain sagaRollbackChain;
     private final PriceCalculationService priceCalculationService;
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
@@ -52,10 +50,11 @@ public class OrderServiceImpl implements OrderService {
      * Ödeme yapıldıktan sonra Order'ın payment durumunu güncelliyor.
      * Ödemeyi yaptıktan sonra bu sefer fiziki olarak stocktan miktar düşmek için tekrar stock servise gidiyor.
      * Bundan sonra siparişi kayıt edip asenkron bir şekilde email servisin dinlediği kuyruğa mesaj bırakıyor.
-
+     * <p>
      * Bu işlemler esnasında herhangi bir serviste exception alır ya da servislerden en az biri erişilemez olursa,
      * exception aldığı noktadan geriye doğru rollback işlemleri için bir zincirleme hareket başlatıyor.
      * Rollback esnasında da başka bir exception gelirse, bu sefer de DB'ye kayıt ediyor. Hangi phasedeyken rollback işlemleri başarısız olduysa onun kaydını tutuyor.
+     *
      * @param orderDTO
      * @return orderDTO
      * @throws Exception
@@ -97,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
                 statusCode = sagaRollbackChain.beginRollbackChainPhase1(reservedStockDTOList);
 
                 if (HandledHTTPExceptions.checkKnownException(statusCode))
-                    sagaRollbackChain.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+                    failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
@@ -120,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
                         statusCode = sagaRollbackChain.beginRollbackChainPhase1(reservedStockDTOList);
 
                         if (HandledHTTPExceptions.checkKnownException(statusCode))
-                            sagaRollbackChain.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+                            failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
 
                         ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(paymentResponse.body().asInputStream(), ErrorDetailsDTO.class);
                         throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
@@ -143,7 +142,7 @@ public class OrderServiceImpl implements OrderService {
                 statusCode = sagaRollbackChain.beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
 
                 if (HandledHTTPExceptions.checkKnownException(statusCode))
-                    sagaRollbackChain.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
+                    failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new RuntimeException(errorDetailsDTO.getMessage() + "_" + statusCode);
@@ -154,12 +153,21 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception(e);
         }
 
-        //TODO: Buradan returne kadar olan bölümü try catch içerisinde yapmayı unutma.
-        // catch bölümünde saga rollback uygulanacak
-        orderPropertySetter.setReserveType(orderDTO);
-        modelMapper.map(orderDTO, order);
-        modelMapper.map(orderRepository.save(order), orderDTO);
-        orderProducer.sendMessage(orderDTO);
+        try {
+            orderPropertySetter.setReserveType(orderDTO);
+            modelMapper.map(orderDTO, order);
+            modelMapper.map(orderRepository.save(order), orderDTO);
+            orderProducer.sendMessage(orderDTO);
+        } catch (Exception exception) {
+            statusCode = sagaRollbackChain.beginRollbackChainPhase3(orderDTO, reservedStockDTOList);
+
+            //TODO: LOGLAMALARI EKLEMEYİ UNUTMA
+            if (HandledHTTPExceptions.checkKnownException(statusCode))
+                failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
+
+            throw new Exception(exception);
+        }
+
         return orderDTO;
     }
 }

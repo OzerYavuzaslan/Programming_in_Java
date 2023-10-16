@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -59,10 +60,14 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     }
 
     @Override
-    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
+    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase) {
         FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList);
-        failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_2);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
+        failedOrderDTO.setRollbackPhase(rollbackPhase);
+
+        if (!Objects.isNull(orderDTO.getPaymentid()) && !orderDTO.getPaymentid().isEmpty())
+            failedOrderDTO.setPaymentid(orderDTO.getId());
+
         return failedOrderDTO;
     }
 

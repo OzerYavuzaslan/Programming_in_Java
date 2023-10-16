@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface SagaRollbackChain {
     int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList);
-    void insertFailedOrderAndRollbackPhase(List<ReservedStockDTO> reservedStockDTOList);
     int beginRollbackChainPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
-    void insertFailedOrderAndRollbackPhase(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
+    int beginRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
 }
