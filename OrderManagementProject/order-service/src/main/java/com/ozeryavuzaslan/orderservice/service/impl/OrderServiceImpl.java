@@ -71,7 +71,6 @@ public class OrderServiceImpl implements OrderService {
     // Yeni eklenen global DTO'ların validasyonlarını ekle
     // CircuitBreaker'a girerse de Saga Rollback implementasyonlarını yaz
     @Override
-    //  @Transactional
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
         Order order;
         List<ReservedStockDTO> reservedStockDTOList;

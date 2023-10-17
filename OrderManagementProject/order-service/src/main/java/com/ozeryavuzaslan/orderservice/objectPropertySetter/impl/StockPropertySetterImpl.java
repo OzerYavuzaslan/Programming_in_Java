@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,7 @@ public class StockPropertySetterImpl implements StockPropertySetter {
             StockDTO stockDTO = new StockDTO();
             modelMapper.map(reservedStockDTO.getStock(), stockDTO);
             stockDTO.setQuantity(stockDTO.getQuantity() + reservedStockDTO.getQuantity());
+            stockDTO.setUpdateDate(LocalDateTime.now());
             stockDTOList.add(stockDTO);
         }
 
