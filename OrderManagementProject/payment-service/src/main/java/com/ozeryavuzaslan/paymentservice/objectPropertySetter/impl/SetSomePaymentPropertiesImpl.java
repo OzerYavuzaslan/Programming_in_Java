@@ -55,10 +55,10 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
         if (stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripePaymentRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
-            stripePaymentResponseDTO.setTotalPriceWithDiscount(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithDiscount())));
-            stripePaymentResponseDTO.setTotalPriceWithDiscountWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithDiscountWithoutTax())));
-            stripePaymentResponseDTO.setTotalPrice(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice())));
-            stripePaymentResponseDTO.setTotalPriceWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax())));
+            stripePaymentResponseDTO.setTotalPriceWithDiscount(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithDiscount(), 2)));
+            stripePaymentResponseDTO.setTotalPriceWithDiscountWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithDiscountWithoutTax(), 2)));
+            stripePaymentResponseDTO.setTotalPrice(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPrice(), 2)));
+            stripePaymentResponseDTO.setTotalPriceWithoutTax(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentResponseDTO.getTotalPriceWithoutTax(), 2)));
         }
 
         return stripePaymentResponseDTO;
@@ -76,7 +76,7 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
         if (stripeRefundRequestDTO.getCurrencyType().equals(CurrencyType.USD)
                 || stripeRefundRequestDTO.getCurrencyType().equals(CurrencyType.EUR)) {
-            stripeRefundResponseDTO.setRefundRequestAmount(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundResponseDTO.getRefundRequestAmount())));
+            stripeRefundResponseDTO.setRefundRequestAmount(numericalTypeConversion.convertLongToProperDouble(numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundResponseDTO.getRefundRequestAmount(), 2)));
             stripeRefundResponseDTO.setRefundedAmount(numericalTypeConversion.convertLongToProperDouble(refund.getAmount()));
         }
 
@@ -106,9 +106,9 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
         stripeParams.put("customer", customerId);
 
         if (stripePaymentRequestDTO.getTotalPriceWithDiscount() < stripePaymentRequestDTO.getTotalPrice())
-            stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPriceWithDiscount()));
+            stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPriceWithDiscount(), 2));
         else
-            stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice()));
+            stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripePaymentRequestDTO.getTotalPrice(), 2));
 
         stripeParams.put("currency", stripePaymentRequestDTO.getCurrencyType());
         return stripeParams;
@@ -116,7 +116,7 @@ public class SetSomePaymentPropertiesImpl implements SetSomePaymentProperties {
 
     @Override
     public Map<String, Object> setSomeProperties(StripeRefundRequestDTO stripeRefundRequestDTO, PaymentInvoiceDTO paymentInvoiceDTO) {
-        stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount()));
+        stripeParams.put("amount", numericalTypeConversion.convertDoubleToLongWithoutLosingPrecision(stripeRefundRequestDTO.getRefundRequestAmount(), 2));
         stripeParams.put("charge", paymentInvoiceDTO.getPaymentid());
         return stripeParams;
     }

@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class PriceCalculationServiceImpl implements PriceCalculationService {
             double taxForProductWithoutDiscount = priceForTotalQuantity * (taxRate / 100);
             tmpTotalPrice += priceForTotalQuantity + taxForProductWithoutDiscount;
 
-            if (((reservedStock.getStock().getDiscountEndDate() != null )
+            if (((!Objects.isNull(reservedStock.getStock().getDiscountEndDate()) )
                     && (LocalDateTime.now().isBefore(reservedStock.getStock().getDiscountEndDate())
                     || LocalDateTime.now().isEqual(reservedStock.getStock().getDiscountEndDate())))
                     && reservedStock.getStock().getDiscountPercentage() > 0) {

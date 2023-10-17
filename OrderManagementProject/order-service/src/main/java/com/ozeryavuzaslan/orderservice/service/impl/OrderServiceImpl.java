@@ -107,7 +107,6 @@ public class OrderServiceImpl implements OrderService {
             throw new Exception(e);
         }
 
-        //TODO: Hesaplamada problem var, çöz.
         priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
         paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
 
