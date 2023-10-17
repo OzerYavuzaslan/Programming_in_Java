@@ -143,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
             transactionManager.commit(status);
             orderProducer.sendMessage(orderDTO);
         } catch (Exception exception) {
-            sagaRollbackChainService.preRollbackChainPhase3(orderDTO, reservedStockDTOList);
+            sagaRollbackChainService.rollbackChainPhase3(orderDTO, reservedStockDTOList);
 
             if (!status.isCompleted())
                 transactionManager.rollback(status);

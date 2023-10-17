@@ -61,7 +61,7 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
     }
 
     @Override
-    public void preRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
+    public void rollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
         int statusCode = beginRollbackChainPhase3(orderDTO, reservedStockDTOList);
 
         if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
