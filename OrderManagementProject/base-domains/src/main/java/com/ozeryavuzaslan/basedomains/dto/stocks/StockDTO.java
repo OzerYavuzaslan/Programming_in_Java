@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.basedomains.dto.stocks;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ozeryavuzaslan.basedomains.customValidations.FutureDate;
 import com.ozeryavuzaslan.basedomains.util.ValidateStock;
 import jakarta.validation.constraints.*;
@@ -60,11 +59,9 @@ public class StockDTO implements Serializable, ValidateStock {
     @NotNull(message = CATEGORY_NULL_MSG)
     private CategoryDTO category;
 
-    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addDate;
 
-    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
 

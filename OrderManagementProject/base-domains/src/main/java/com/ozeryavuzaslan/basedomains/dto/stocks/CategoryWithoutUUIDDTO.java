@@ -32,11 +32,9 @@ public class CategoryWithoutUUIDDTO implements Serializable {
     @Size(min = NAME_MIN_SIZE, max = NAME_MAX_SIZE, message = CATEGORY_NAME_SIZE_MSG)
     private String name;
 
-    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addDate;
 
-    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
 }

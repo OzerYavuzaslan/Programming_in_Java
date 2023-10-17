@@ -20,8 +20,8 @@ public final class HandledHTTPExceptions {
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.NOT_ACCEPTABLE.getHttpStatusCode());
     }
 
-    public static boolean checkKnownException(int statusCode) {
-        return knownExceptionHTTPCodes.contains(statusCode);
+    public static boolean checkHandledExceptionStatusCode(int statusCode) {
+        return knownExceptionHTTPCodes.contains(statusCode) || areNotKnownExceptionStatusAndHttpOKCodes(statusCode);
     }
 
     public static HttpStatus getProperHTTPStatus(int statusCode) {
@@ -41,9 +41,16 @@ public final class HandledHTTPExceptions {
             case 406 -> {
                 return HttpStatus.NOT_ACCEPTABLE;
             }
-            default -> {
+            case 400 -> {
                 return HttpStatus.BAD_REQUEST;
             }
+            default -> {
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+            }
         }
+    }
+
+    private static boolean areNotKnownExceptionStatusAndHttpOKCodes(int statusCode){
+        return statusCode != HttpStatus.OK.value() && !HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode);
     }
 }

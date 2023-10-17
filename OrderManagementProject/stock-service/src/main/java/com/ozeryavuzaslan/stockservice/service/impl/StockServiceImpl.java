@@ -93,10 +93,10 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<StockDTO> updateStocks(List<StockDTO> stockDTOList) {
-        Type stockListType = new TypeToken<List<ReservedStockDTO>>() {}.getType();
+        Type stockListType = new TypeToken<List<Stock>>() {}.getType();
         List<Stock> stockList = modelMapper.map(stockDTOList, stockListType);
         stockList = stockRepository.saveAll(stockList);
-        Type stockDTOListType = new TypeToken<List<ReservedStockDTO>>() {}.getType();
+        Type stockDTOListType = new TypeToken<List<StockDTO>>() {}.getType();
         stockDTOList = modelMapper.map(stockList, stockDTOListType);
         isCacheRefresh = false;
         return stockDTOList;

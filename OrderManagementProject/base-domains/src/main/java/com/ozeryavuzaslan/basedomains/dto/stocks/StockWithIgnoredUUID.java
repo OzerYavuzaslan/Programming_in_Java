@@ -61,11 +61,9 @@ public class StockWithIgnoredUUID implements Serializable, ValidateStock {
     @NotNull(message = CATEGORY_NULL_MSG)
     private CategoryWithoutUUIDDTO category;
 
-    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime addDate;
 
-    @JsonIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateDate;
 

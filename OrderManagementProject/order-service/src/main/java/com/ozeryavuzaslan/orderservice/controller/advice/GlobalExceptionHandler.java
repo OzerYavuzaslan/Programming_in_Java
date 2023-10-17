@@ -1,13 +1,11 @@
 package com.ozeryavuzaslan.orderservice.controller.advice;
 
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
+import com.ozeryavuzaslan.orderservice.exception.CustomServiceException;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
-import com.ozeryavuzaslan.orderservice.exception.PaymentServiceNotRunningException;
-import com.ozeryavuzaslan.orderservice.exception.ReserveStockServiceNotRunningException;
-import com.ozeryavuzaslan.orderservice.exception.RevenueServiceNotRunningException;
-import com.ozeryavuzaslan.orderservice.exception.StockServiceNotRunningException;
+import com.ozeryavuzaslan.orderservice.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(CustomServiceException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleExceptionsOfMicroservices(Exception exception, WebRequest request) {
         String[] microserviceResponse = exception.getMessage().split("_");
         String tmpExceptionMsg = exception.getMessage();
