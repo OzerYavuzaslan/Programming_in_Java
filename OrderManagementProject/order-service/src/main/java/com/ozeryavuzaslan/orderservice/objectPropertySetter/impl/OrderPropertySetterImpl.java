@@ -64,7 +64,6 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     public void setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, Order order) {
         order.setReserveType(ReserveType.RESERVED);
 
-        //Type erasure'dan dolayı kendi tipine cast etmek gerekir.
         reservedStockDTOList.sort(Comparator.comparing((ReservedStockDTO stockQuantityDTO) -> stockQuantityDTO.getProductCode().toString()).reversed());
         order.getOrderStockList().sort(Comparator.comparing((OrderStock orderStock) -> orderStock.getProductCode().toString()).reversed());
 

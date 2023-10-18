@@ -35,28 +35,36 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
     private final RefundRequestDTOForPaymentService refundRequestDTOForPaymentService;
 
     @Override
-    public void checkResponseAndBeginRollbackPhase1IfFailed(int statusCode, OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, Response response) throws IOException {
-        if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
-            statusCode = beginRollbackChainPhase1(reservedStockDTOList);
+    public void checkResponseAndBeginRollbackPhase1IfFailed(int statusCode, OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, Response response) throws Exception {
+        try {
+            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                statusCode = beginRollbackChainPhase1(reservedStockDTOList);
 
-            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
-                failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+                if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
+                    failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
 
-            ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
-            throw new CustomServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
+                throw new CustomServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+            }
+        } catch (IOException e) {
+            throw new Exception(e);
         }
     }
 
     @Override
-    public void checkResponseAndBeginRollbackPhase2IfFailed(int statusCode, OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, Response response) throws IOException {
-        if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
-            statusCode = beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
+    public void checkResponseAndBeginRollbackPhase2IfFailed(int statusCode, OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, Response response) throws Exception {
+        try {
+            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                statusCode = beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
 
-            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
-                failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
+                if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
+                    failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
 
-            ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
-            throw new CustomServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
+                throw new CustomServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+            }
+        } catch (IOException e) {
+            throw new Exception(e);
         }
     }
 
@@ -68,13 +76,15 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
             failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
     }
 
-    private int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList) {
+    @Override
+    public int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList) {
         try (Response responseRollbackReservedStocks = redirectAndFallbackHandler.redirectRollbackReservedStocks(reservedStockDTOList)) {
             return responseRollbackReservedStocks.status();
         }
     }
 
-    private int beginRollbackChainPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
+    @Override
+    public int beginRollbackChainPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
         paymentPropertySetter.setSomeProperties(orderDTO, refundRequestDTOForPaymentService);
 
         try (Response responseRollbackPayment = redirectAndFallbackHandler.redirectRollbackPayment(orderDTO, refundRequestDTOForPaymentService)) {
@@ -87,10 +97,11 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
         }
     }
 
-    private int beginRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
+    @Override
+    public int beginRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
         List<StockDTO> rollbackStockDTOList = stockPropertySetter.setSomeProperties(reservedStockDTOList);
 
-        try (Response stockResponse = redirectAndFallbackHandler.redirectStockIncrease(rollbackStockDTOList)) {
+        try (Response stockResponse = redirectAndFallbackHandler.redirectRollbackStock(rollbackStockDTOList)) {
             int statusCode = stockResponse.status();
 
             if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))

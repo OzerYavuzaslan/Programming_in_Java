@@ -10,11 +10,11 @@ import feign.Response;
 import java.util.List;
 
 public interface RedirectAndFallbackHandler {
-    Response redirectGetSpecificTaxRate();
+    Response redirectGetSpecificTaxRate(List<ReservedStockDTO> reservedStockDTOList);
     Response redirectReserveStocks(List<ReservedStockDTO> reservedStockDTOList);
-    Response redirectMakePayment(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService);
-    Response redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList);
+    Response redirectMakePayment(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService, List<ReservedStockDTO> reservedStockDTOList);
+    Response redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList ,OrderDTO orderDTO);
     Response redirectRollbackReservedStocks(List<ReservedStockDTO> reservedStockDTOList);
     Response redirectRollbackPayment(OrderDTO orderDTO, RefundRequestDTOForPaymentService refundRequestDTOForPaymentService);
-    Response redirectStockIncrease(List<StockDTO> stockDTOList);
+    Response redirectRollbackStock(List<StockDTO> stockDTOList);
 }

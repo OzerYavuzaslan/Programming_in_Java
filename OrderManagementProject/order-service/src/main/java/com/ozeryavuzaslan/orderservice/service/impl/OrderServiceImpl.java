@@ -29,7 +29,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
     /**
-     * Servisler arası haberleşme feignClient ile senkrondur. Email servis hariç
+     * Servisler arası haberleşme Email servis hariç feignClient ile senkrondur.
      * Her şey yolunda giderse, önce rezerv yapıyor (stock servisin reserv ile ilgili controllerına istek atıyor), sonra revenue servisten taxRate getiriyor
      * TaxRate'i aldıktan sonra ödenecek tutarı hesaplıyor. İndirim varsa ona göre hesaplıyor.
      * Ödeme yapıldıktan sonra Order'ın payment durumunu güncelliyor.
@@ -90,8 +89,6 @@ public class OrderServiceImpl implements OrderService {
                     throw new CustomServiceException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
 
                 reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
-            } catch (IOException e) {
-                throw new Exception(e);
             }
 
             orderPropertySetter.setSomeProperties(reservedStockDTOList, order);
@@ -99,17 +96,15 @@ public class OrderServiceImpl implements OrderService {
             orderRepository.save(order);
             TaxRateDTO taxRateDTO;
 
-            try (Response taxRateResponse = redirectAndFallbackHandler.redirectGetSpecificTaxRate()) {
+            try (Response taxRateResponse = redirectAndFallbackHandler.redirectGetSpecificTaxRate(reservedStockDTOList)) {
                 sagaRollbackChainService.checkResponseAndBeginRollbackPhase1IfFailed(taxRateResponse.status(), orderDTO, reservedStockDTOList, taxRateResponse);
                 taxRateDTO = objectMapper.readValue(taxRateResponse.body().asInputStream(), TaxRateDTO.class);
-            } catch (IOException e) {
-                throw new Exception(e);
             }
 
             priceCalculationService.calculateOrderPrice(reservedStockDTOList, taxRateDTO, orderDTO);
             paymentPropertySetter.setSomeProperties(orderDTO, paymentRequestDTOForPaymentService);
 
-            try (Response paymentResponse = redirectAndFallbackHandler.redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService)) {
+            try (Response paymentResponse = redirectAndFallbackHandler.redirectMakePayment(orderDTO, paymentRequestDTOForPaymentService, reservedStockDTOList)) {
                 switch (orderDTO.getPaymentProviderType()) {
                     case STRIPE -> {
                         sagaRollbackChainService.checkResponseAndBeginRollbackPhase1IfFailed(paymentResponse.status(), orderDTO, reservedStockDTOList, paymentResponse);
@@ -119,15 +114,11 @@ public class OrderServiceImpl implements OrderService {
                     case PAYPAL, CREDIT_CARD -> {
                     }
                 }
-            } catch (IOException e) {
-                throw new Exception(e);
             }
 
-            try (Response reserveStockResponse = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList)) {
+            try (Response reserveStockResponse = redirectAndFallbackHandler.redirectDecreaseStocks(reservedStockDTOList, orderDTO)) {
                 sagaRollbackChainService.checkResponseAndBeginRollbackPhase2IfFailed(reserveStockResponse.status(), orderDTO, reservedStockDTOList, reserveStockResponse);
                 reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
-            } catch (IOException e) {
-                throw new Exception(e);
             }
         } catch (Exception exception) {
             if (!status.isCompleted())

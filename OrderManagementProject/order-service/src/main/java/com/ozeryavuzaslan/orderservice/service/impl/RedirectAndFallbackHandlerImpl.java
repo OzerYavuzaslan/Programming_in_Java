@@ -6,6 +6,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentSer
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.client.PaymentServiceClient;
 import com.ozeryavuzaslan.orderservice.client.RevenueServiceClient;
 import com.ozeryavuzaslan.orderservice.client.StockServiceClient;
@@ -13,7 +14,9 @@ import com.ozeryavuzaslan.orderservice.exception.PaymentServiceNotRunningExcepti
 import com.ozeryavuzaslan.orderservice.exception.ReserveStockServiceNotRunningException;
 import com.ozeryavuzaslan.orderservice.exception.RevenueServiceNotRunningException;
 import com.ozeryavuzaslan.orderservice.exception.StockServiceNotRunningException;
+import com.ozeryavuzaslan.orderservice.service.FailedOrderService;
 import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
+import com.ozeryavuzaslan.orderservice.service.SagaRollbackChainService;
 import feign.Response;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +32,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandler {
     private final StockServiceClient stockServiceClient;
+    private final FailedOrderService failedOrderService;
     private final PaymentServiceClient paymentServiceClient;
     private final RevenueServiceClient revenueServiceClient;
+    private final SagaRollbackChainService sagaRollbackChainService;
 
     @Value("${reserve.stock.service.not.running.exception}" + "${base.service.not.running.exception.msg}")
     private String reserveStockServiceNotRunning;
@@ -52,8 +57,7 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getPaymentFallbackMethod")
-    public Response redirectMakePayment(OrderDTO orderDTO,
-                                        PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService) {
+    public Response redirectMakePayment(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService, List<ReservedStockDTO> reservedStockDTOList) {
         switch (orderDTO.getPaymentProviderType()) {
             case STRIPE -> {
                 return paymentServiceClient.payViaStripe(paymentRequestDTOForPaymentService.getStripePaymentRequestDTO());
@@ -66,13 +70,13 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getStockFallbackMethod")
-    public Response redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList) {
+    public Response redirectDecreaseStocks(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO) {
         return stockServiceClient.decreaseStocks(reservedStockDTOList);
     }
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getRevenueFallbackMethod")
-    public Response redirectGetSpecificTaxRate() {
+    public Response redirectGetSpecificTaxRate(List<ReservedStockDTO> reservedStockDTOList) {
         LocalDate currentDate = LocalDate.now();
         int taxYear = currentDate.getYear();
         int taxMonth = currentDate.getMonthValue();
@@ -100,19 +104,30 @@ public class RedirectAndFallbackHandlerImpl implements RedirectAndFallbackHandle
 
     @Override
     @CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getStockFallbackMethod")
-    public Response redirectStockIncrease(List<StockDTO> stockDTOList) {
+    public Response redirectRollbackStock(List<StockDTO> stockDTOList) {
         return stockServiceClient.rollbackDecreasedStocks(stockDTOList);
     }
 
-    private Response getRevenueFallbackMethod(Exception exception) {
+    private Response getRevenueFallbackMethod(List<ReservedStockDTO> reservedStockDTOList, Exception exception) {
+        int statusCode = sagaRollbackChainService.beginRollbackChainPhase1(reservedStockDTOList);
+
+        if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
+            failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+
         throw new RevenueServiceNotRunningException(revenueServiceNotRunning);
     }
 
-    private Response getStockFallbackMethod(Exception exception) {
+    private Response getStockFallbackMethod(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO, Exception exception) {
+        failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
         throw new StockServiceNotRunningException(stockServiceNotRunning);
     }
 
-    private Response getPaymentFallbackMethod(Exception exception) {
+    private Response getPaymentFallbackMethod(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService, List<ReservedStockDTO> reservedStockDTOList, Exception exception) {
+        int statusCode = sagaRollbackChainService.beginRollbackChainPhase1(reservedStockDTOList);
+
+        if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
+            failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
+
         throw new PaymentServiceNotRunningException(paymentServiceNotRunning);
     }
 
