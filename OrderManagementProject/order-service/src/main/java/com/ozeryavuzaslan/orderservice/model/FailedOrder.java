@@ -37,7 +37,7 @@ public class FailedOrder {
 
     @Column(unique = true, nullable = false)
     private long orderid;
-    private long paymentid;
+    private String paymentid;
 
     @OneToMany(mappedBy = "failedOrder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<FailedOrderStock> failedOrderStockList;

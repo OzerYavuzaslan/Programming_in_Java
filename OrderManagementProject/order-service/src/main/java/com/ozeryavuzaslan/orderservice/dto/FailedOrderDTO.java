@@ -16,7 +16,7 @@ import java.util.List;
 public class FailedOrderDTO {
     private long id;
     private long orderid;
-    private long paymentid;
+    private String paymentid;
     private boolean orderRollbackStatus;
     private PaymentRollbackState paymentRollbackState;
     private RollbackPhase rollbackPhase;

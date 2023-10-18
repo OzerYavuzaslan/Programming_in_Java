@@ -66,7 +66,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderDTO.setRollbackPhase(rollbackPhase);
 
         if (!Objects.isNull(orderDTO.getPaymentid()) && !orderDTO.getPaymentid().isEmpty())
-            failedOrderDTO.setPaymentid(orderDTO.getId());
+            failedOrderDTO.setPaymentid(orderDTO.getPaymentid());
 
         return failedOrderDTO;
     }
