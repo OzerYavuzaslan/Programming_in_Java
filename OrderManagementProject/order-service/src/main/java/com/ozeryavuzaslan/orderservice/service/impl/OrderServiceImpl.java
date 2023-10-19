@@ -65,7 +65,6 @@ public class OrderServiceImpl implements OrderService {
      * @throws Exception
      */
     //TODO: Bütün servislere loglama eklemeyi unutma
-    // Yeni eklenen global DTO'ların validasyonlarını ekle
     // failed_orders tablosuna eklenenleri rollback yapacak bir mekanizma yaz.
     @Override
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {

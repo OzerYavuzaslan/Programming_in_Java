@@ -37,4 +37,12 @@ public final class Constants {
     public final static String FUTURE_DATE_NOT_VALID = "The date must be in the future!";
     public final static String FUTURE_DATE_VALIDATION_REQUEST = "When discount is set, discountEndDate must be provided!";
     public final static String DISCOUNTS_NOT_VALID = "Discount amount and percentage must be zero or greater than zero!";
+    public final static String YEAR_NOT_VALID = "Year must be greater than 2022!";
+    public final static int MIN_YEAR = 2022;
+    public final static String MONTH_NOT_VALID = "Month cannot be less than 1 or greater than 12!";
+    public final static String TAX_RATE_NOT_VALID = "Tax rate cannot be null, negative or zero!";
+    public final static String ORDER_STOCK_LIST_NOT_VALID = "You can't order with an empty product list!";
+    public final static int ADDRESS_MAX_SIZE = 250;
+    public final static String ADDRESS_NOT_VALID = "Address info cannot be null, empty, blank and greater than 250 characters!";
+    public final static String QUANTITY_NOT_VALID = "product quantity cannot be null or less than 1!";
 }
