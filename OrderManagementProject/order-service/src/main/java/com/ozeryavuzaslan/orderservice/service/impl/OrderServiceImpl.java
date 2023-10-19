@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
      * Ödeme yapıldıktan sonra Order'ın payment durumunu güncelliyor.
      * Ödemeyi yaptıktan sonra bu sefer fiziki olarak stocktan miktar düşmek için tekrar stock servise gidiyor.
      * Bundan sonra siparişi kayıt edip asenkron bir şekilde email servisin dinlediği kuyruğa mesaj bırakıyor.
-     * <p>
+     *
      * Bu işlemler esnasında herhangi bir serviste exception alır ya da servislerden en az biri erişilemez olursa,
      * exception aldığı noktadan geriye doğru rollback işlemleri için bir zincirleme hareket başlatıyor.
      * Rollback esnasında da başka bir exception gelirse, bu sefer de DB'ye kayıt ediyor. Hangi phasedeyken rollback işlemleri başarısız olduysa onun kaydını tutuyor.
@@ -66,6 +66,8 @@ public class OrderServiceImpl implements OrderService {
      */
     //TODO: failed_orders tablosuna eklenenleri rollback yapacak bir mekanizma yaz.
 
+    //@Transactional anotasyonu varken exceptionları catchleyemiyordum. Dolayısla manuel transaction açıp kapıyorum :/
+    //Daha düzgün bir çözüm yönetimi olan bana haber versin lütfen :)
     @Override
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
         Order order;
