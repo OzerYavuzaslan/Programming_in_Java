@@ -52,14 +52,14 @@ public class LoggingAspect {
     @Around("applicationPackagePointcut() && springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         if (log.isDebugEnabled()) {
-            String message = ColorConstants.ANSI_GREEN
+            String enterMessage = ColorConstants.ANSI_GREEN
                     + String.format("Enter: %s.%s() with argument[s] = %s",
                     joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName(),
                     Arrays.toString(joinPoint.getArgs()))
                     + ColorConstants.ANSI_RESET;
 
-            log.debug(message);
+            log.debug(enterMessage);
         }
 
         try {
