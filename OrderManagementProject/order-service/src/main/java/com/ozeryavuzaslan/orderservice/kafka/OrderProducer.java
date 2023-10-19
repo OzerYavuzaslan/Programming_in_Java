@@ -21,6 +21,5 @@ public class OrderProducer {
 
     public void sendMessage(OrderDTO orderDTO){
         kafkaTemplate.send(orderTopic, orderDTO);
-        LOGGER.info(String.format("Order event has been sent --> %s", orderDTO));
     }
 }
