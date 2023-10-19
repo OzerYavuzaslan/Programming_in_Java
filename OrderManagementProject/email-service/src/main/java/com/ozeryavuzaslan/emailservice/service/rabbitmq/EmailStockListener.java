@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.service.rabbitmq;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.emailservice.dto.EmailDTO;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.emailservice.service.EmailManagementService;
 import com.ozeryavuzaslan.emailservice.model.Email;

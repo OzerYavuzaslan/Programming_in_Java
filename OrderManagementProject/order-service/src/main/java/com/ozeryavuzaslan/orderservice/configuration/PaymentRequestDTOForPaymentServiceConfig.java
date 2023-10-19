@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.orderservice.configuration;
 
 import com.ozeryavuzaslan.basedomains.dto.payments.CreditCardPaymentRequestDTO;
-import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.payments.PaypalPaymentRequestDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentRequestDTO;
 import org.springframework.context.annotation.Bean;

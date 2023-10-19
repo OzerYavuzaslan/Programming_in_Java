@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.orderservice.service.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
-import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;

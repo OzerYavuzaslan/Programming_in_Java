@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.emailservice.objectPropertySetter.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailStatus;
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.emailservice.dto.EmailDTO;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailStatus;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.basedomains.dto.payments.enums.PaymentType;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;

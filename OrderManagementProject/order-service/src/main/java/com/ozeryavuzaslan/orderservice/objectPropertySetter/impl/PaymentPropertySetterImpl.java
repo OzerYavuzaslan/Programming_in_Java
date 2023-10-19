@@ -2,6 +2,8 @@ package com.ozeryavuzaslan.orderservice.objectPropertySetter.impl;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.payments.*;
+import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

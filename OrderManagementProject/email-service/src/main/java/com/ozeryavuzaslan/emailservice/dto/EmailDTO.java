@@ -1,7 +1,7 @@
-package com.ozeryavuzaslan.basedomains.dto.emails;
+package com.ozeryavuzaslan.emailservice.dto;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailStatus;
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailStatus;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.service.kafka;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.emailservice.dto.EmailDTO;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailType;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;

@@ -1,6 +1,7 @@
 package com.ozeryavuzaslan.orderservice.configuration;
 
 import com.ozeryavuzaslan.basedomains.dto.payments.*;
+import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

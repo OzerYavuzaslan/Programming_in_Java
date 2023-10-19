@@ -1,6 +1,6 @@
 package com.ozeryavuzaslan.emailservice.service.impl;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.EmailDTO;
+import com.ozeryavuzaslan.emailservice.dto.EmailDTO;
 import com.ozeryavuzaslan.emailservice.model.Email;
 import com.ozeryavuzaslan.emailservice.objectPropertySetter.EmailPropertySetter;
 import com.ozeryavuzaslan.emailservice.repository.EmailRepository;

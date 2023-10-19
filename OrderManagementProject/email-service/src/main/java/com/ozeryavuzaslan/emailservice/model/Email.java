@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.emailservice.model;
 
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailStatus;
-import com.ozeryavuzaslan.basedomains.dto.emails.enums.EmailType;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailStatus;
+import com.ozeryavuzaslan.emailservice.dto.enums.EmailType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

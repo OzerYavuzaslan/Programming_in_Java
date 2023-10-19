@@ -3,11 +3,11 @@ package com.ozeryavuzaslan.orderservice.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
-import com.ozeryavuzaslan.orderservice.exception.CustomServiceException;
+import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.service.FailedOrderService;
@@ -44,7 +44,7 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
                     failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList);
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
-                throw new CustomServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+                throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
         } catch (IOException e) {
             throw new Exception(e);
@@ -61,7 +61,7 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
                     failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO, reservedStockDTOList);
 
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
-                throw new CustomServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+                throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
         } catch (IOException e) {
             throw new Exception(e);

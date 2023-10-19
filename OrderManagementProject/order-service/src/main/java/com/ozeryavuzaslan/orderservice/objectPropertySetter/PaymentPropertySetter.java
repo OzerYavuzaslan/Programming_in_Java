@@ -1,8 +1,8 @@
 package com.ozeryavuzaslan.orderservice.objectPropertySetter;
 
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
-import com.ozeryavuzaslan.basedomains.dto.payments.RefundRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 
 public interface PaymentPropertySetter {
     void setSomeProperties(OrderDTO orderDTO, PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService);

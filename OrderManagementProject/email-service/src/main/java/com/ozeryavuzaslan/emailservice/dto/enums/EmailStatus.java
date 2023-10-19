@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.dto.emails.enums;
+package com.ozeryavuzaslan.emailservice.dto.enums;
 
 public enum EmailStatus {
     SENT,

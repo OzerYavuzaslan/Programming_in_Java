@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.basedomains.dto.payments.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
-import com.ozeryavuzaslan.orderservice.exception.CustomServiceException;
+import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.model.OrderStock;
@@ -65,10 +65,8 @@ public class OrderServiceImpl implements OrderService {
      * @throws Exception
      */
     //TODO: Bütün servislere loglama eklemeyi unutma
-    // ErrorDetailsDTO'yu güncelle saga rollback yaparken birden fazla serviste exception olursa client tarafına bütün exceptionları dönecek şekilde olsun.
-    // Yani array şeklinde.
     // Yeni eklenen global DTO'ların validasyonlarını ekle
-    // CircuitBreaker'a girerse de Saga Rollback implementasyonlarını yaz
+    // failed_orders tablosuna eklenenleri rollback yapacak bir mekanizma yaz.
     @Override
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
         Order order;
@@ -86,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
                 statusCode = reserveStockResponse.status();
 
                 if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
-                    throw new CustomServiceException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
+                    throw new CustomOrderServiceException(objectMapper.readValue(reserveStockResponse.body().asInputStream(), ErrorDetailsDTO.class).getMessage() + "_" + statusCode);
 
                 reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
             }

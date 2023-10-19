@@ -1,7 +1,7 @@
 package com.ozeryavuzaslan.orderservice.controller.advice;
 
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
-import com.ozeryavuzaslan.orderservice.exception.CustomServiceException;
+import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler(CustomServiceException.class)
+    @ExceptionHandler(CustomOrderServiceException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleExceptionsOfMicroservices(Exception exception, WebRequest request) {
         String[] microserviceResponse = exception.getMessage().split("_");
         String tmpExceptionMsg = exception.getMessage();
