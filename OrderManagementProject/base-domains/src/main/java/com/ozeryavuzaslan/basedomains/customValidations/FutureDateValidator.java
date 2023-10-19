@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.basedomains.customValidations;
 
-import com.ozeryavuzaslan.basedomains.util.ValidateStock;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

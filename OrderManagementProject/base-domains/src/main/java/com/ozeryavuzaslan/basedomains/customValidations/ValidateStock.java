@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.basedomains.util;
+package com.ozeryavuzaslan.basedomains.customValidations;
 
 import java.time.LocalDateTime;
 

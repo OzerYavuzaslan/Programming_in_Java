@@ -2,7 +2,7 @@ package com.ozeryavuzaslan.basedomains.dto.stocks;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ozeryavuzaslan.basedomains.customValidations.FutureDate;
-import com.ozeryavuzaslan.basedomains.util.ValidateStock;
+import com.ozeryavuzaslan.basedomains.customValidations.ValidateStock;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
