@@ -77,9 +77,9 @@ public class LoggingAspect {
             }
 
             return result;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             String errorMessage = ColorConstants.ANSI_RED
-                    + String.format("Exception: %s in %s.%s()",
+                    + String.format("Illegal Argument Exception: %s in %s.%s()",
                     Arrays.toString(joinPoint.getArgs()),
                     joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName())
