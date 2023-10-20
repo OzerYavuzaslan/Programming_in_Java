@@ -95,6 +95,30 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
     @Value("${email.approved.order.body.details}")
     private String emailApprovedOrderBodyDetails;
 
+    @Value("${email.preparing.order.subject}")
+    private String emailPreparingOrderSubject;
+
+    @Value("${email.preparing.order.body}")
+    private String emailPreparingOrderBody;
+
+    @Value("${email.in.cargo.order.subject}")
+    private String emailInCargoOrderSubject;
+
+    @Value("${email.in.cargo.order.body}")
+    private String emailInCargoOrderBody;
+
+    @Value("${email.canceled.order.subject}")
+    private String emailCanceledOrderSubject;
+
+    @Value("${email.canceled.order.body}")
+    private String emailCanceledOrderBody;
+
+    @Value("${email.delivered.order.subject}")
+    private String emailDeliveredOrderSubject;
+
+    @Value("${email.delivered.order.body}")
+    private String emailDeliveredOrderBody;
+
     @Override
     public void setSomeProperties(EmailDTO emailDTO, HashMap<String, String> emailInfoMap, EmailType emailType, PaymentType paymentType) {
         emailDTO.setMailTo(emailInfoMap.get(mailToKey));
@@ -121,12 +145,22 @@ public class EmailPropertySetterImpl implements EmailPropertySetter {
 
                         tmpBody += String.format(emailApprovedOrderBodyDetails, emailInfoMap.get(orderID), tmpAddress);
                     }
-                    case PREPARING -> {}
-                    case IN_CARGO -> {}
-                    case CANCELED_BY_CUSTOMER -> {}
-                    case CANCELED_PAYMENT_FAILED -> {}
-                    case CANCELED_NOT_ENOUGH_STOCK -> {}
-                    case CANCELED_SERVICE_DOWN -> {}
+                    case PREPARING -> {
+                        tmpSubject = emailPreparingOrderSubject;
+                        tmpBody = String.format(emailPreparingOrderBody, emailInfoMap.get(fullName));
+                    }
+                    case IN_CARGO -> {
+                        tmpSubject = emailInCargoOrderSubject;
+                        tmpBody = String.format(emailInCargoOrderBody, emailInfoMap.get(fullName));
+                    }
+                    case CANCELED_BY_CUSTOMER -> {
+                        tmpSubject = emailCanceledOrderSubject;
+                        tmpBody = String.format(emailCanceledOrderBody, emailInfoMap.get(fullName));
+                    }
+                    case ORDER_DELIVERED -> { //Normally, cargo company notifies the delivery
+                        tmpSubject = emailDeliveredOrderSubject;
+                        tmpBody = String.format(emailDeliveredOrderBody, emailInfoMap.get(fullName));
+                    }
                 }
             }
             case PAYMENT -> {

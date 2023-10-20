@@ -14,4 +14,5 @@ public interface OrderPropertySetter {
     void setSomeProperties(OrderDTO orderDTO, StripePaymentResponseDTO stripePaymentResponseDTO);
     void setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, Order order);
     void setReserveType(OrderDTO orderDTO);
+    void setSomeProperties(Order order);
 }

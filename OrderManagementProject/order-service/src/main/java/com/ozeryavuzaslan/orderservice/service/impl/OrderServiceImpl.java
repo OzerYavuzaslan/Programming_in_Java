@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
+import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
 import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
+import com.ozeryavuzaslan.orderservice.exception.OrderNotApprovedException;
 import com.ozeryavuzaslan.orderservice.exception.OrderNotFoundException;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
@@ -52,6 +54,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Value("${order.not.found.exception}")
     private String orderNotFoundMsg;
+
+    @Value("${order.not.approved.exception}")
+    private String orderNotApprovedMsg;
 
     /**
      * Servisler arası haberleşme Email servis hariç feignClient ile senkrondur.
@@ -149,10 +154,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO getByOrderID(long orderid) {
-        return modelMapper
-                .map(orderRepository
-                        .findById(orderid)
-                        .orElseThrow(() -> new  OrderNotFoundException(orderNotFoundMsg)), OrderDTO.class);
+    public OrderDTO getByOrderID(long orderID) {
+        return modelMapper.map(getSpecificOrder(orderID), OrderDTO.class);
+    }
+
+    @Override
+    public OrderDTO prepareByOrderID(long orderID) {
+        Order order = getSpecificOrder(orderID);
+
+        if (order.getOrderStatusType().equals(OrderStatusType.APPROVED))
+            orderPropertySetter.setSomeProperties(order);
+        else
+            throw new OrderNotApprovedException(orderNotApprovedMsg + " " + order.getOrderStatusType());
+
+        orderRepository.save(order);
+        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+        orderProducer.sendMessage(orderDTO);
+        return orderDTO;
+    }
+
+    private Order getSpecificOrder(long orderID) {
+        return orderRepository
+                .findById(orderID)
+                .orElseThrow(() -> new OrderNotFoundException(orderNotFoundMsg));
     }
 }

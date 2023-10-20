@@ -9,6 +9,7 @@ import com.ozeryavuzaslan.orderservice.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -51,6 +53,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${order.not.found.exception}")
     private String orderNotFoundMsg;
 
+    @Value("${unique.constraint.violation.sql.code}")
+    private String uniqueConstraintViolationSQLStatusCode;
+
+    @Value("${unique.constraint.violation.order.service.impl}")
+    private String uniqueConstraintViolationFromOrderServiceImplClass;
+
+    @Value("${order.not.approved.exception}")
+    private String orderNotApprovedMsg;
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
@@ -59,6 +70,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         exception.getMessage(),
                         request.getDescription(false));
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(OrderNotApprovedException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleOrderNotApprovedException(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(orderNotApprovedMsg, exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(DataIntegrityViolationException exception, WebRequest request) {
+        Throwable rootCause = exception.getRootCause();
+        String tmpExceptionMsg = exception.getMessage();
+
+        if (rootCause instanceof SQLIntegrityConstraintViolationException &&
+                uniqueConstraintViolationSQLStatusCode.equals(((SQLIntegrityConstraintViolationException) rootCause).getSQLState())) {
+            tmpExceptionMsg = uniqueConstraintViolationFromOrderServiceImplClass;
+        }
+
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.CONFLICT);
     }
 
     @ResponseBody

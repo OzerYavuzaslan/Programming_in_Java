@@ -67,7 +67,7 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
         reservedStockDTOList.sort(Comparator.comparing((ReservedStockDTO stockQuantityDTO) -> stockQuantityDTO.getProductCode().toString()).reversed());
         order.getOrderStockList().sort(Comparator.comparing((OrderStock orderStock) -> orderStock.getProductCode().toString()).reversed());
 
-        for (int i = 0; i < reservedStockDTOList.size(); i++){
+        for (int i = 0; i < reservedStockDTOList.size(); i++) {
             order.getOrderStockList().get(i).setDiscountAmount(reservedStockDTOList.get(i).getStock().getDiscountAmount());
             order.getOrderStockList().get(i).setDiscountPercentage(reservedStockDTOList.get(i).getStock().getDiscountPercentage());
             order.getOrderStockList().get(i).setDiscountEndDate(reservedStockDTOList.get(i).getStock().getDiscountEndDate());
@@ -78,5 +78,10 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     @Override
     public void setReserveType(OrderDTO orderDTO) {
         orderDTO.setReserveType(ReserveType.STOCK_DECREASED);
+    }
+
+    @Override
+    public void setSomeProperties(Order order) {
+        order.setOrderStatusType(OrderStatusType.PREPARING);
     }
 }

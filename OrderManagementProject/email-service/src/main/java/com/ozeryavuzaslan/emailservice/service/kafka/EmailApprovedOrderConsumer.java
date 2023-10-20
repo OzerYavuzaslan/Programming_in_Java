@@ -48,7 +48,6 @@ public class EmailApprovedOrderConsumer {
 
     @KafkaListener(topics = "${kafka.approved.order.topic}", groupId = "${kafka.email.group}", containerFactory = "emailOrderEventListenerFactory")
     public void consume(ConsumerRecord<String, OrderDTO> orderPayload) {
-        System.err.println(orderPayload.value());
         OrderDTO orderDTO = orderPayload.value();
 
         HashMap<String, String> approvedOrderDTOMap = new HashMap<>();
