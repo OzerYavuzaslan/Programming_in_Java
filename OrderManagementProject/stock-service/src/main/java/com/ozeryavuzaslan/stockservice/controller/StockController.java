@@ -4,8 +4,8 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CustomLocation;
 import com.ozeryavuzaslan.stockservice.service.StockService;
-import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -23,7 +23,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/stocks")
 public class StockController {
     private final StockService stockService;
-    private final CustomLocation customLocation;
     private final CacheManagementService cacheManagementService;
 
     @Value("${stock.get.by.id.endpoint}")
@@ -34,7 +33,7 @@ public class StockController {
 
     @PostMapping
     public ResponseEntity<StockDTO> insertStock(@Valid @RequestBody StockWithIgnoredUUID stockWithIgnoredUUID){
-        return ResponseEntity.created(customLocation.getURILocation(stockGetEndpoint,
+        return ResponseEntity.created(CustomLocation.getURILocation(stockGetEndpoint,
                         stockService
                                 .saveOrUpdateStock(stockWithIgnoredUUID)
                                 .getId()))

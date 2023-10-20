@@ -1,13 +1,14 @@
-package com.ozeryavuzaslan.revenueservice.util;
+package com.ozeryavuzaslan.basedomains.util;
 
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
-@Component
-public class CustomLocation {
-    public URI getURILocation(String path, String build){
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CustomLocation {
+    public static URI getURILocation(String path, String build){
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path(path)
@@ -15,7 +16,7 @@ public class CustomLocation {
                 .toUri();
     }
 
-    public URI getURILocation(String path, long build){
+    public static URI getURILocation(String path, long build){
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path(path)

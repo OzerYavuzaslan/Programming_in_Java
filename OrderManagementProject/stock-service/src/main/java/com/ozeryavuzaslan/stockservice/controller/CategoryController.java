@@ -3,8 +3,8 @@ package com.ozeryavuzaslan.stockservice.controller;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.CustomLocation;
 import com.ozeryavuzaslan.stockservice.service.CategoryService;
-import com.ozeryavuzaslan.stockservice.util.CustomLocation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class CategoryController {
-    private final CustomLocation customLocation;
     private final CategoryService categoryService;
     private final CacheManagementService cacheManagementService;
 
@@ -31,7 +30,7 @@ public class CategoryController {
 
     @PostMapping("/categories")
     public ResponseEntity<CategoryDTO> insertCategory(@Valid @RequestBody CategoryWithoutUUIDDTO categoryWithoutUUIDDTO){
-        return ResponseEntity.created(customLocation.getURILocation(categoryGetEndpoint,
+        return ResponseEntity.created(CustomLocation.getURILocation(categoryGetEndpoint,
                         categoryService
                                 .saveCategory(categoryWithoutUUIDDTO)
                                 .getId()))

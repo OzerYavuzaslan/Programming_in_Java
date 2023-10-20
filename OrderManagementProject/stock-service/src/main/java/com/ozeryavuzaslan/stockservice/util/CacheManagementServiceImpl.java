@@ -4,9 +4,9 @@ import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class CacheManagementServiceImpl implements CacheManagementService {
     private final CacheManager cacheManager;
