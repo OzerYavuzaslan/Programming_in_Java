@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
-public class EmailApprovedOrderConsumer {
+public class EmailOrderConsumer {
     private final EmailDTO emailDTO;
     private final ModelMapper modelMapper;
     private final EmailRepository emailRepository;
