@@ -57,7 +57,7 @@ public class TaxRateController {
     }
 
     @GetMapping("/taxRate/getSpecificTaxRate")
-    private ResponseEntity<TaxRateDTO> getSpecificTaxRate(@RequestParam int taxYear,
+    public ResponseEntity<TaxRateDTO> getSpecificTaxRate(@RequestParam int taxYear,
                                                           @RequestParam int taxMonth,
                                                           @RequestParam TaxRateType taxRateType){
         return ResponseEntity.ok(taxRateService.getTaxRate(taxYear, taxMonth, taxRateType));

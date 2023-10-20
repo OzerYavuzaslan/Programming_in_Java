@@ -70,6 +70,5 @@ public class EmailRefundListener {
         emailManagementService.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
-        System.err.println("Refund Message --> " + refundResponseForAsyncMsgDTO);
     }
 }

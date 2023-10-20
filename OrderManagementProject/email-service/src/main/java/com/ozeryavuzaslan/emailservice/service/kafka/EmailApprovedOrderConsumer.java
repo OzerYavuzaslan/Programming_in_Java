@@ -67,6 +67,5 @@ public class EmailApprovedOrderConsumer {
         emailManagementService.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
-        System.err.println("Order Message --> " + orderDTO);
     }
 }

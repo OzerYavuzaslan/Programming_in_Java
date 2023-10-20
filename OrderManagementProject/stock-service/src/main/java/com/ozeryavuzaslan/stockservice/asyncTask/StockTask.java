@@ -1,4 +1,4 @@
-package com.ozeryavuzaslan.stockservice.util;
+package com.ozeryavuzaslan.stockservice.asyncTask;
 
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.stockservice.service.StockService;

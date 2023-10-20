@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+
 @Slf4j
 @Aspect
 @Component
@@ -22,8 +23,7 @@ public class LoggingAspect {
     public void springBeanPointcut() {
     }
 
-    @Pointcut("within(com.ozeryavuzaslan.stockservice..*)" +
-            " || within(com.ozeryavuzaslan.stockservice.configuration..*)" +
+    @Pointcut("within(com.ozeryavuzaslan.stockservice.configuration..*)" +
             " || within(com.ozeryavuzaslan.stockservice.controller..*)" +
             " || within(com.ozeryavuzaslan.stockservice.exception..*)" +
             " || within(com.ozeryavuzaslan.stockservice.model..*)" +

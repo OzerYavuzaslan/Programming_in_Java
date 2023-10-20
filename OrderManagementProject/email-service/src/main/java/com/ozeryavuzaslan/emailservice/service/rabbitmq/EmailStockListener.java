@@ -50,6 +50,5 @@ public class EmailStockListener {
         emailManagementService.sendEmail(emailDTO);
         emailPropertySetter.setSomeProperties(emailDTO);
         emailRepository.save(modelMapper.map(emailDTO, Email.class));
-        System.err.println("Stock Message --> " + stockDTO);
     }
 }
