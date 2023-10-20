@@ -48,17 +48,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Value("${revenue.service.not.running.exception}" + "${base.service.not.running.exception.msg}")
     private String revenueServiceNotRunning;
 
+    @Value("${order.not.found.exception}")
+    private String orderNotFoundMsg;
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ErrorDetailsDTO> handleAllException(Exception exception, WebRequest request) {
-        System.err.println("Exception: " + exception);
-        System.err.println("WebRequest: " + request);
-
         errorDetailsDTO
                 .setErrorDetailsProperties(LocalDateTime.now(),
                         exception.getMessage(),
                         request.getDescription(false));
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ResponseBody
+    @ExceptionHandler({OrderNotFoundException.class})
+    public final ResponseEntity<ErrorDetailsDTO> handleNotFoundExceptions(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler
+                        .returnProperMessage(orderNotFoundMsg, exception.getMessage()), request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
     }
 
     @ResponseBody
@@ -137,7 +147,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String tmpExceptionMsg = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
 
         errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
-                customMessageHandler.returnProperMessage(firstError, firstError)  +
+                customMessageHandler.returnProperMessage(firstError, firstError) +
                         customMessageHandler.returnProperMessage(tmpExceptionMsg, tmpExceptionMsg) + " | " +
                         customMessageHandler.returnProperMessage(totalErrors, totalErrors) +
                         exception.getErrorCount() + " --> " + customStringBuilder.getDefaultExceptionMessages(exception),

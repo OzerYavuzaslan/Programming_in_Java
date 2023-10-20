@@ -10,6 +10,7 @@ import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
+import com.ozeryavuzaslan.orderservice.exception.OrderNotFoundException;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.model.OrderStock;
@@ -24,6 +25,7 @@ import com.ozeryavuzaslan.orderservice.service.SagaRollbackChainService;
 import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -48,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final PaymentRequestDTOForPaymentService paymentRequestDTOForPaymentService;
 
+    @Value("${order.not.found.exception}")
+    private String orderNotFoundMsg;
+
     /**
      * Servisler arası haberleşme Email servis hariç feignClient ile senkrondur.
      * Her şey yolunda giderse, önce rezerv yapıyor (stock servisin reserv ile ilgili controllerına istek atıyor), sonra revenue servisten taxRate getiriyor
@@ -55,7 +60,6 @@ public class OrderServiceImpl implements OrderService {
      * Ödeme yapıldıktan sonra Order'ın payment durumunu güncelliyor.
      * Ödemeyi yaptıktan sonra bu sefer fiziki olarak stocktan miktar düşmek için tekrar stock servise gidiyor.
      * Bundan sonra siparişi kayıt edip asenkron bir şekilde email servisin dinlediği kuyruğa mesaj bırakıyor.
-     *
      * Bu işlemler esnasında herhangi bir serviste exception alır ya da servislerden en az biri erişilemez olursa,
      * exception aldığı noktadan geriye doğru rollback işlemleri için bir zincirleme hareket başlatıyor.
      * Rollback esnasında da başka bir exception gelirse, bu sefer de DB'ye kayıt ediyor. Hangi phasedeyken rollback işlemleri başarısız olduysa onun kaydını tutuyor.
@@ -142,5 +146,13 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderDTO;
+    }
+
+    @Override
+    public OrderDTO getByOrderID(long orderid) {
+        return modelMapper
+                .map(orderRepository
+                        .findById(orderid)
+                        .orElseThrow(() -> new  OrderNotFoundException(orderNotFoundMsg)), OrderDTO.class);
     }
 }
