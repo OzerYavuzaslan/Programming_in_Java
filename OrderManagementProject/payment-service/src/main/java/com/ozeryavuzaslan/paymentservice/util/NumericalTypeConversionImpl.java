@@ -2,16 +2,13 @@ package com.ozeryavuzaslan.paymentservice.util;
 
 import com.ozeryavuzaslan.basedomains.util.LocalSeparator;
 import com.ozeryavuzaslan.basedomains.util.NumericalTypeConversion;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NumericalTypeConversionImpl implements NumericalTypeConversion {
+public class NumericalTypeConversionImpl implements NumericalTypeConversion {
     @Override
     public long convertDoubleToLongWithoutLosingPrecision(double doubleValue, int places) {
         doubleValue = customRound(doubleValue, places);
