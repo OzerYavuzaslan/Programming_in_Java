@@ -5,6 +5,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.orderservice.dto.FailedOrderDTO;
 import com.ozeryavuzaslan.orderservice.model.FailedOrder;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
+import com.ozeryavuzaslan.orderservice.model.enums.RollbackReason;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.FailedOrderPropertySetter;
 import com.ozeryavuzaslan.orderservice.repository.FailedOrderRepository;
 import com.ozeryavuzaslan.orderservice.service.FailedOrderService;
@@ -30,28 +31,28 @@ public class FailedOrderServiceImpl implements FailedOrderService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void insertFailedOrderAndRollbackPhase(List<ReservedStockDTO> reservedStockDTOList) {
-        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(reservedStockDTOList, RollbackPhase.PHASE_1);
+        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(reservedStockDTOList, RollbackPhase.PHASE_1, RollbackReason.SERVICE_EXCEPTION);
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void insertFailedOrderAndRollbackPhase(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList) {
-        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, reservedStockDTOList, RollbackPhase.PHASE_2);
+        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, reservedStockDTOList, RollbackPhase.PHASE_2, RollbackReason.SERVICE_EXCEPTION);
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void insertFailedOrderAndRollbackPhase(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO) {
-        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, reservedStockDTOList, RollbackPhase.PHASE_3);
+        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, reservedStockDTOList, RollbackPhase.PHASE_3, RollbackReason.SERVICE_EXCEPTION);
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void insertFailedOrderAndRollbackPhase(OrderDTO orderDTO) {
-        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, RollbackPhase.PHASE_3);
+        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, RollbackPhase.PHASE_3, RollbackReason.CANCELED_BY_CUSTOMER);
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 

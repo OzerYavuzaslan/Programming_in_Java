@@ -8,6 +8,7 @@ import com.ozeryavuzaslan.orderservice.model.FailedOrder;
 import com.ozeryavuzaslan.orderservice.model.FailedOrderStock;
 import com.ozeryavuzaslan.orderservice.model.enums.PaymentRollbackState;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
+import com.ozeryavuzaslan.orderservice.model.enums.RollbackReason;
 import com.ozeryavuzaslan.orderservice.model.enums.StockRollbackState;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.FailedOrderPropertySetter;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     private final ModelMapper modelMapper;
 
     @Override
-    public FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase) {
+    public FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase, RollbackReason rollbackReason) {
         List<FailedOrderStockDTO> failedOrderStockDTOList = new ArrayList<>();
 
         for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
@@ -42,7 +43,9 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderDTO.setOrderRollbackStatus(false);
         failedOrderDTO.setRollbackPhase(rollbackPhase);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_NEEDED);
+        failedOrderDTO.setRollbackReason(RollbackReason.SERVICE_EXCEPTION);
         failedOrderDTO.setFailedOrderStockList(failedOrderStockDTOList);
+
         return failedOrderDTO;
     }
 
@@ -62,8 +65,8 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     }
 
     @Override
-    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase) {
-        FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList, rollbackPhase);
+    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase, RollbackReason rollbackReason) {
+        FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList, rollbackPhase, rollbackReason);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
         failedOrderDTO.setRollbackPhase(rollbackPhase);
 
@@ -74,7 +77,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     }
 
     @Override
-    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase) {
+    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase, RollbackReason rollbackReason) {
         FailedOrderDTO failedOrderDTO = new FailedOrderDTO();
 
         failedOrderDTO.setOrderRollbackStatus(false);
@@ -84,6 +87,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
         failedOrderDTO.setPaymentid(orderDTO.getPaymentid());
         failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_3);
+        failedOrderDTO.setRollbackReason(rollbackReason);
 
         return failedOrderDTO;
     }

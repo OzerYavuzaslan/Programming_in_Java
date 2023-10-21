@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.orderservice.model;
 
 import com.ozeryavuzaslan.orderservice.model.enums.PaymentRollbackState;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
+import com.ozeryavuzaslan.orderservice.model.enums.RollbackReason;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,6 +53,10 @@ public class FailedOrder {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RollbackPhase rollbackPhase;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RollbackReason rollbackReason;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

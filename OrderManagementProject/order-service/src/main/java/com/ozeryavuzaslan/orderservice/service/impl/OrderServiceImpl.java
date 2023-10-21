@@ -190,7 +190,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     //TODO: reservedStockDTOList için yeni bir method oluştur
-    //TODO: OrderFailed tablosuna orderStatusType fieldı ekle
     @Override
     public OrderDTO cancelByOrderID(long orderID) throws Exception {
         Order order = getSpecificOrder(orderID);
@@ -211,7 +210,6 @@ public class OrderServiceImpl implements OrderService {
             }
 
             orderRepository.save(order);
-            orderProducer.sendMessage(orderDTO);
             transactionManager.commit(transactionStatus);
         } catch (Exception exception) {
             if (!transactionStatus.isCompleted())
@@ -220,6 +218,7 @@ public class OrderServiceImpl implements OrderService {
             throw exception;
         }
 
+        orderProducer.sendMessage(orderDTO);
         return orderDTO;
     }
 
