@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.enums.OrderStatusType;
-import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
-import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
-import com.ozeryavuzaslan.orderservice.exception.OrderNotApprovedException;
-import com.ozeryavuzaslan.orderservice.exception.OrderNotFoundException;
+import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
+import com.ozeryavuzaslan.orderservice.exception.*;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
 import com.ozeryavuzaslan.orderservice.model.Order;
 import com.ozeryavuzaslan.orderservice.model.OrderStock;
@@ -58,6 +56,21 @@ public class OrderServiceImpl implements OrderService {
     @Value("${order.not.approved.exception}")
     private String orderNotApprovedMsg;
 
+    @Value("${order.not.canceled.exception}")
+    private String orderNotCanceledMsg;
+
+    @Value("${order.already.canceled.exception}")
+    private String orderAlreadyCanceledMsg;
+
+    @Value("${order.already.delivered.exception}")
+    private String orderAlreadyDeliveredMsg;
+
+    @Value("${order.not.delivered.exception}")
+    private String orderNotDeliveredMsg;
+
+    @Value("${order.not.given.to.cargo.company.exception}")
+    private String orderNotGivenToCargoCompanyMsg;
+
     /**
      * Servisler arası haberleşme Email servis hariç feignClient ile senkrondur.
      * Her şey yolunda giderse, önce rezerv yapıyor (stock servisin reserv ile ilgili controllerına istek atıyor), sonra revenue servisten taxRate getiriyor
@@ -81,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO takeOrder(OrderDTO orderDTO) throws Exception {
         Order order;
         List<ReservedStockDTO> reservedStockDTOList;
-        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try {
             order = orderPropertySetter.setSomeProperties(orderDTO);
@@ -129,8 +142,8 @@ public class OrderServiceImpl implements OrderService {
                 reservedStockDTOList = objectMapper.readValue(reserveStockResponse.body().asInputStream(), reservedStockDTOType);
             }
         } catch (Exception exception) {
-            if (!status.isCompleted())
-                transactionManager.rollback(status);
+            if (!transactionStatus.isCompleted())
+                transactionManager.rollback(transactionStatus);
 
             throw exception;
         }
@@ -139,13 +152,13 @@ public class OrderServiceImpl implements OrderService {
             orderPropertySetter.setReserveType(orderDTO);
             modelMapper.map(orderDTO, order);
             modelMapper.map(orderRepository.save(order), orderDTO);
-            transactionManager.commit(status);
+            transactionManager.commit(transactionStatus);
             orderProducer.sendMessage(orderDTO);
         } catch (Exception exception) {
             sagaRollbackChainService.rollbackChainPhase3(orderDTO, reservedStockDTOList);
 
-            if (!status.isCompleted())
-                transactionManager.rollback(status);
+            if (!transactionStatus.isCompleted())
+                transactionManager.rollback(transactionStatus);
 
             throw exception;
         }
@@ -163,13 +176,80 @@ public class OrderServiceImpl implements OrderService {
         Order order = getSpecificOrder(orderID);
 
         if (order.getOrderStatusType().equals(OrderStatusType.APPROVED))
-            orderPropertySetter.setSomeProperties(order);
+            orderPropertySetter.setOrderStatusAsPreparing(order);
         else
             throw new OrderNotApprovedException(orderNotApprovedMsg + " " + order.getOrderStatusType());
 
         orderRepository.save(order);
         OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
         orderProducer.sendMessage(orderDTO);
+        return orderDTO;
+    }
+
+    //TODO: OrderFailed tablosuna orderstatus ile ilgili bir sütun aç
+    @Override
+    public OrderDTO cancelByOrderID(long orderID) throws Exception {
+        Order order = getSpecificOrder(orderID);
+
+        if (order.getOrderStatusType().equals(OrderStatusType.ORDER_DELIVERED) || order.getOrderStatusType().equals(OrderStatusType.IN_CARGO))
+            throw new OrderNotCanceledException(orderNotCanceledMsg + " " + order.getOrderStatusType());
+        else if (order.getOrderStatusType().equals(OrderStatusType.CANCELED_BY_CUSTOMER))
+            throw new OrderNotCanceledException(orderAlreadyCanceledMsg);
+
+        TransactionStatus transactionStatus = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+
+        try {
+            orderPropertySetter.setOrderStatusAsCanceled(order);
+            List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
+            sagaRollbackChainService.beginRollbackChainPhase3(reservedStockDTOList, orderDTO);
+            orderRepository.save(order);
+            orderProducer.sendMessage(orderDTO);
+            transactionManager.commit(transactionStatus);
+        } catch (Exception exception) {
+            if (!transactionStatus.isCompleted())
+                transactionManager.rollback(transactionStatus);
+
+            throw exception;
+        }
+
+        return orderDTO;
+    }
+
+    @Override
+    public OrderDTO deliverByOrderID(long orderID) {
+        Order order = getSpecificOrder(orderID);
+
+        if (order.getOrderStatusType().equals(OrderStatusType.ORDER_DELIVERED)
+                || order.getOrderStatusType().equals(OrderStatusType.APPROVED)
+                || order.getOrderStatusType().equals(OrderStatusType.TAKEN))
+            throw new OrderNotDeliveredException(orderAlreadyDeliveredMsg);
+        else if (order.getOrderStatusType().equals(OrderStatusType.CANCELED_BY_CUSTOMER))
+            throw new OrderNotDeliveredException(orderNotDeliveredMsg);
+
+        orderPropertySetter.setOrderStatusAsDelivered(order);
+        orderRepository.save(order);
+        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+        orderProducer.sendMessage(orderDTO);
+
+        return orderDTO;
+    }
+
+    @Override
+    public OrderDTO giveToCargoCompanyByOrderID (long orderID) {
+        Order order = getSpecificOrder(orderID);
+
+        if (order.getOrderStatusType().equals(OrderStatusType.APPROVED)
+                || order.getOrderStatusType().equals(OrderStatusType.CANCELED_BY_CUSTOMER)
+                || order.getOrderStatusType().equals(OrderStatusType.TAKEN)
+                || order.getOrderStatusType().equals(OrderStatusType.ORDER_DELIVERED))
+            throw new OrderNotGivenToCargoCompanyException(orderNotGivenToCargoCompanyMsg);
+
+        orderPropertySetter.setOrderStatusAsInCargo(order);
+        orderRepository.save(order);
+        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+        orderProducer.sendMessage(orderDTO);
+
         return orderDTO;
     }
 

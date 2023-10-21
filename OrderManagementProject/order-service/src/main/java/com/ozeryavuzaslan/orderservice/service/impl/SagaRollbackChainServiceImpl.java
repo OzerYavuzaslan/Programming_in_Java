@@ -15,6 +15,7 @@ import com.ozeryavuzaslan.orderservice.service.RedirectAndFallbackHandler;
 import com.ozeryavuzaslan.orderservice.service.SagaRollbackChainService;
 import feign.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
     private final PaymentPropertySetter paymentPropertySetter;
     private final RedirectAndFallbackHandler redirectAndFallbackHandler;
     private final RefundRequestDTOForPaymentService refundRequestDTOForPaymentService;
+
+    @Value("${order.not.canceled.exception.v2}")
+    private String orderNotCanceledMsg;
 
     @Override
     public void checkResponseAndBeginRollbackPhase1IfFailed(int statusCode, OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, Response response) throws Exception {
@@ -74,6 +78,29 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
 
         if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode))
             failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
+    }
+
+    @Override
+    public void beginRollbackChainPhase3(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO) throws Exception {
+        List<StockDTO> rollbackStockDTOList = stockPropertySetter.setSomeProperties(reservedStockDTOList);
+
+        try (Response stockResponse = redirectAndFallbackHandler.redirectRollbackStock(rollbackStockDTOList)) {
+            int statusCode = stockResponse.status();
+
+            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(stockResponse.body().asInputStream(), ErrorDetailsDTO.class);
+                throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+            }
+
+            statusCode = beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
+
+            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
+                throw new CustomOrderServiceException(orderNotCanceledMsg + "_" + statusCode);
+            }
+        } catch (IOException e) {
+            throw new Exception(e);
+        }
     }
 
     @Override

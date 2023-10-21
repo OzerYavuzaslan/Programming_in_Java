@@ -51,6 +51,6 @@ public final class HandledHTTPExceptions {
     }
 
     private static boolean areNotKnownExceptionStatusAndHttpOKCodes(int statusCode){
-        return statusCode != HttpStatus.OK.value() && !HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode);
+        return statusCode != HttpStatus.OK.value() && !knownExceptionHTTPCodes.contains(statusCode);
     }
 }

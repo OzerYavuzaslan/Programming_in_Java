@@ -83,6 +83,36 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(OrderNotCanceledException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleOrderNotCanceledException(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(OrderNotDeliveredException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleOrderNotDeliveredException(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(OrderNotGivenToCargoCompanyException.class)
+    public final ResponseEntity<ErrorDetailsDTO> handleOrderNotGivenToCargoCompanyException(Exception exception, WebRequest request) {
+        errorDetailsDTO.setErrorDetailsProperties(LocalDateTime.now(),
+                customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+    }
+
+    @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
     public final ResponseEntity<ErrorDetailsDTO> handleUniqueConstraintViolationException(DataIntegrityViolationException exception, WebRequest request) {
         Throwable rootCause = exception.getRootCause();

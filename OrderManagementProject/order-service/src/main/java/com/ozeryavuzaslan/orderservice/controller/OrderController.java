@@ -27,7 +27,27 @@ public class OrderController {
     }
 
     @GetMapping("/getByOrderId/{orderid}")
-    public ResponseEntity<OrderDTO> getSpecificOrder(@PathVariable long orderid){
+    public ResponseEntity<OrderDTO> getSpecificOrder(@PathVariable long orderid) {
         return ResponseEntity.ok(orderService.getByOrderID(orderid));
+    }
+
+    @PatchMapping("/prepareByOrderId/{orderid}")
+    public ResponseEntity<OrderDTO> prepareByOrderID(@PathVariable long orderid) {
+        return ResponseEntity.ok(orderService.prepareByOrderID(orderid));
+    }
+
+    @PatchMapping("/cancelByOrderId/{orderid}")
+    private ResponseEntity<OrderDTO> cancelByOrderID(@PathVariable long orderid) throws Exception {
+        return ResponseEntity.ok(orderService.cancelByOrderID(orderid));
+    }
+
+    @PatchMapping("/deliveredByOrderId/{orderid}")
+    private ResponseEntity<OrderDTO> deliveredByOrderID(@PathVariable long orderid) {
+        return ResponseEntity.ok(orderService.deliverByOrderID(orderid));
+    }
+
+    @PatchMapping("/giveToCargoByOrderId/{orderid}")
+    private ResponseEntity<OrderDTO> giveToOrderCompanyByOrderID(@PathVariable long orderid) {
+        return ResponseEntity.ok(orderService.giveToCargoCompanyByOrderID(orderid));
     }
 }

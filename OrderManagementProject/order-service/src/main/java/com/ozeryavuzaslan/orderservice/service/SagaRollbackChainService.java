@@ -13,4 +13,5 @@ public interface SagaRollbackChainService {
     int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList);
     int beginRollbackChainPhase2(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
     int beginRollbackChainPhase3(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
+    void beginRollbackChainPhase3(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO) throws Exception;
 }

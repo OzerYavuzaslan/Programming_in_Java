@@ -81,7 +81,22 @@ public class OrderPropertySetterImpl implements OrderPropertySetter {
     }
 
     @Override
-    public void setSomeProperties(Order order) {
+    public void setOrderStatusAsPreparing(Order order) {
         order.setOrderStatusType(OrderStatusType.PREPARING);
+    }
+
+    @Override
+    public void setOrderStatusAsCanceled(Order order) {
+        order.setOrderStatusType(OrderStatusType.CANCELED_BY_CUSTOMER);
+    }
+
+    @Override
+    public void setOrderStatusAsInCargo(Order order) {
+        order.setOrderStatusType(OrderStatusType.IN_CARGO);
+    }
+
+    @Override
+    public void setOrderStatusAsDelivered(Order order) {
+        order.setOrderStatusType(OrderStatusType.ORDER_DELIVERED);
     }
 }
