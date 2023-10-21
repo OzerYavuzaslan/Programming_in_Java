@@ -88,6 +88,7 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
             int statusCode = stockResponse.status();
 
             if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(stockResponse.body().asInputStream(), ErrorDetailsDTO.class);
                 throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
