@@ -4,9 +4,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,4 +21,10 @@ public interface StockServiceClient {
 
     @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${stock.rollback.decreased.stock.endpoint}")
     Response rollbackDecreasedStocks(@RequestBody List<StockDTO> stockDTOList);
+
+    @PutMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${reserve.rollback.stock.and.reserved.stocks.by.order.id.endpoint}" + "${path.variable.order.id}")
+    Response rollbackStocksAndReservedStocksByOrderID(@PathVariable long orderid);
+
+    @GetMapping("${base.endpoint}" + "${stock.base.endpoint}" + "${reserve.stock.get.by.order.id.endpoint}" + "${path.variable.order.id}")
+    Response getReservedStocksByOrderID(@PathVariable long orderID);
 }

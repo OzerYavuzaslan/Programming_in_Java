@@ -1,6 +1,8 @@
 package com.ozeryavuzaslan.stockservice.objectPropertySetter.impl;
 
+import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.stockservice.model.ReservedStock;
+import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.ReservedStockPropertySetter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -23,5 +25,15 @@ public class ReservedPropertySetterImpl implements ReservedStockPropertySetter{
             tmpReservedStockMap.put(reservedStock.getStock().getProductCode(), reservedStock);
 
         return tmpReservedStockMap;
+    }
+
+    @Override
+    public void setSomeProperties(List<Stock> stockList, List<ReservedStock> reservedStockList) {
+        for (ReservedStock reservedStock : reservedStockList){
+            reservedStock.setReserveType(ReserveType.RESERVE_CANCELED);
+            reservedStock.getStock().setQuantity(reservedStock.getQuantity() + reservedStock.getStock().getQuantity());
+        }
+
+        reservedStockList.forEach(reservedStock -> stockList.add(reservedStock.getStock()));
     }
 }

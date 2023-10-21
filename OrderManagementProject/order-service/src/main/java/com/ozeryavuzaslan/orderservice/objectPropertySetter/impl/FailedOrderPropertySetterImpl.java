@@ -48,15 +48,17 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
 
     @Override
     public void setSomeProperties(FailedOrder failedOrder, FailedOrderDTO failedOrderDTO) {
-        List<FailedOrderStock> failedOrderStocks = new ArrayList<>();
+        if (!Objects.isNull(failedOrderDTO.getFailedOrderStockList())) {
+            List<FailedOrderStock> failedOrderStocks = new ArrayList<>();
 
-        for (FailedOrderStockDTO dto : failedOrderDTO.getFailedOrderStockList()) {
-            FailedOrderStock failedOrderStock = modelMapper.map(dto, FailedOrderStock.class);
-            failedOrderStock.setFailedOrder(failedOrder);
-            failedOrderStocks.add(failedOrderStock);
+            for (FailedOrderStockDTO dto : failedOrderDTO.getFailedOrderStockList()) {
+                FailedOrderStock failedOrderStock = modelMapper.map(dto, FailedOrderStock.class);
+                failedOrderStock.setFailedOrder(failedOrder);
+                failedOrderStocks.add(failedOrderStock);
+            }
+
+            failedOrder.setFailedOrderStockList(failedOrderStocks);
         }
-
-        failedOrder.setFailedOrderStockList(failedOrderStocks);
     }
 
     @Override
@@ -67,6 +69,21 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
 
         if (!Objects.isNull(orderDTO.getPaymentid()) && !orderDTO.getPaymentid().isEmpty())
             failedOrderDTO.setPaymentid(orderDTO.getPaymentid());
+
+        return failedOrderDTO;
+    }
+
+    @Override
+    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase) {
+        FailedOrderDTO failedOrderDTO = new FailedOrderDTO();
+
+        failedOrderDTO.setOrderRollbackStatus(false);
+        failedOrderDTO.setOrderid(orderDTO.getId());
+        failedOrderDTO.setOrderDate(orderDTO.getOrderDate());
+        failedOrderDTO.setUpdateDate(orderDTO.getUpdateDate());
+        failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
+        failedOrderDTO.setPaymentid(orderDTO.getPaymentid());
+        failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_3);
 
         return failedOrderDTO;
     }

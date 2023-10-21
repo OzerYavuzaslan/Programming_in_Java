@@ -1,12 +1,14 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.basedomains.dto.stocks.enums.ReserveType;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.TypeFactoryHelper;
 import com.ozeryavuzaslan.stockservice.exception.ReservedStockNotFound;
 import com.ozeryavuzaslan.stockservice.exception.StockNotFoundException;
 import com.ozeryavuzaslan.stockservice.model.Category;
@@ -27,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
     private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
     private final StockRepository stockRepository;
     private final CategoryRepository categoryRepository;
     private final StockPropertySetter stockPropertySetter;
@@ -93,10 +95,11 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<StockDTO> updateStocks(List<StockDTO> stockDTOList) {
-        Type stockListType = new TypeToken<List<Stock>>() {}.getType();
+        JavaType stockListType = TypeFactoryHelper.constructCollectionType(Stock.class, objectMapper);
         List<Stock> stockList = modelMapper.map(stockDTOList, stockListType);
         stockList = stockRepository.saveAll(stockList);
-        Type stockDTOListType = new TypeToken<List<StockDTO>>() {}.getType();
+
+        JavaType stockDTOListType = TypeFactoryHelper.constructCollectionType(StockDTO.class, objectMapper);
         stockDTOList = modelMapper.map(stockList, stockDTOListType);
         isCacheRefresh = false;
         return stockDTOList;

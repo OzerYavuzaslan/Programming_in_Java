@@ -9,4 +9,5 @@ public interface FailedOrderService {
     void insertFailedOrderAndRollbackPhase(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList);
     void insertFailedOrderAndRollbackPhase(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO);
     void insertFailedOrderAndRollbackPhase(List<ReservedStockDTO> reservedStockDTOList);
+    void insertFailedOrderAndRollbackPhase(OrderDTO orderDTO);
 }

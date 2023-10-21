@@ -48,6 +48,13 @@ public class FailedOrderServiceImpl implements FailedOrderService {
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void insertFailedOrderAndRollbackPhase(OrderDTO orderDTO) {
+        FailedOrderDTO failedOrderDTO = failedOrderPropertySetter.setSomeProperties(orderDTO, RollbackPhase.PHASE_3);
+        insertFailedOrderAndRollbackPhase(failedOrderDTO);
+    }
+
     private void insertFailedOrderAndRollbackPhase(FailedOrderDTO failedOrderDTO) {
         FailedOrder failedOrder = modelMapper.map(failedOrderDTO, FailedOrder.class);
         failedOrderPropertySetter.setSomeProperties(failedOrder, failedOrderDTO);

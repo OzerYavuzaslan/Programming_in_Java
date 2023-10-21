@@ -1,7 +1,6 @@
 package com.ozeryavuzaslan.orderservice.controller.advice;
 
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
-import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
 import com.ozeryavuzaslan.basedomains.util.CustomMessageHandler;
 import com.ozeryavuzaslan.basedomains.util.CustomStringBuilder;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -79,7 +80,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 customMessageHandler.returnProperMessage(orderNotApprovedMsg, exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ResponseBody
@@ -89,7 +90,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ResponseBody
@@ -99,7 +100,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ResponseBody
@@ -109,7 +110,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 customMessageHandler.returnProperMessage(exception.getMessage(), exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_MODIFIED);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ResponseBody
@@ -138,6 +139,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .returnProperMessage(orderNotFoundMsg, exception.getMessage()), request.getDescription(false));
 
         return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_FOUND);
+    }
+
+
+    @ResponseBody
+    @ExceptionHandler({UnknownHostException.class, ConnectException.class})
+    public final ResponseEntity<ErrorDetailsDTO> handleUnknownHostException(Exception exception, WebRequest request) {
+        String[] microserviceResponse = exception.getMessage().split("_");
+        String tmpExceptionMsg = exception.getMessage();
+        int httpStatusCode = HttpStatus.NOT_ACCEPTABLE.value();
+
+        if (microserviceResponse.length == 2) {
+            tmpExceptionMsg = microserviceResponse[0];
+            httpStatusCode = Integer.parseInt(microserviceResponse[1]);
+        }
+
+        errorDetailsDTO
+                .setErrorDetailsProperties(LocalDateTime.now(),
+                        tmpExceptionMsg,
+                        request.getDescription(false));
+        return new ResponseEntity<>(errorDetailsDTO, HandledHTTPExceptions.getProperHTTPStatus(httpStatusCode));
     }
 
     @ResponseBody

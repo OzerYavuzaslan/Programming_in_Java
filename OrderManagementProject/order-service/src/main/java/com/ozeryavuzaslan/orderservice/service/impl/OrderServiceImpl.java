@@ -9,6 +9,7 @@ import com.ozeryavuzaslan.basedomains.dto.payments.StripePaymentResponseDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
+import com.ozeryavuzaslan.basedomains.util.TypeFactoryHelper;
 import com.ozeryavuzaslan.orderservice.dto.PaymentRequestDTOForPaymentService;
 import com.ozeryavuzaslan.orderservice.exception.*;
 import com.ozeryavuzaslan.orderservice.kafka.OrderProducer;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.Comparator;
@@ -100,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
             order = orderPropertySetter.setSomeProperties(orderDTO);
             modelMapper.map(orderRepository.save(order), orderDTO);
             reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
-            JavaType reservedStockDTOType = objectMapper.getTypeFactory().constructCollectionType(List.class, ReservedStockDTO.class);
+            JavaType reservedStockDTOType = TypeFactoryHelper.constructCollectionType(ReservedStockDTO.class, objectMapper);
             int statusCode;
 
             try (Response reserveStockResponse = redirectAndFallbackHandler.redirectReserveStocks(reservedStockDTOList)) {
@@ -172,6 +174,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDTO prepareByOrderID(long orderID) {
         Order order = getSpecificOrder(orderID);
 
@@ -186,7 +189,8 @@ public class OrderServiceImpl implements OrderService {
         return orderDTO;
     }
 
-    //TODO: OrderFailed tablosuna orderstatus ile ilgili bir sütun aç
+    //TODO: reservedStockDTOList için yeni bir method oluştur
+    //TODO: OrderFailed tablosuna orderStatusType fieldı ekle
     @Override
     public OrderDTO cancelByOrderID(long orderID) throws Exception {
         Order order = getSpecificOrder(orderID);
@@ -201,8 +205,11 @@ public class OrderServiceImpl implements OrderService {
 
         try {
             orderPropertySetter.setOrderStatusAsCanceled(order);
-            List<ReservedStockDTO> reservedStockDTOList = stockPropertySetter.setSomeProperties(orderDTO);
-            sagaRollbackChainService.beginRollbackChainPhase3(reservedStockDTOList, orderDTO);
+
+            try (Response reservedStockListResponse = redirectAndFallbackHandler.redirectRollbackStocksAndReservedStocksByOrderID(orderDTO)) {
+                sagaRollbackChainService.beginOrderCancellation(orderDTO, reservedStockListResponse);
+            }
+
             orderRepository.save(order);
             orderProducer.sendMessage(orderDTO);
             transactionManager.commit(transactionStatus);
@@ -217,6 +224,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDTO deliverByOrderID(long orderID) {
         Order order = getSpecificOrder(orderID);
 
@@ -236,6 +244,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDTO giveToCargoCompanyByOrderID (long orderID) {
         Order order = getSpecificOrder(orderID);
 
@@ -243,7 +252,7 @@ public class OrderServiceImpl implements OrderService {
                 || order.getOrderStatusType().equals(OrderStatusType.CANCELED_BY_CUSTOMER)
                 || order.getOrderStatusType().equals(OrderStatusType.TAKEN)
                 || order.getOrderStatusType().equals(OrderStatusType.ORDER_DELIVERED))
-            throw new OrderNotGivenToCargoCompanyException(orderNotGivenToCargoCompanyMsg);
+            throw new OrderNotGivenToCargoCompanyException(orderNotGivenToCargoCompanyMsg + " " + order.getOrderStatusType());
 
         orderPropertySetter.setOrderStatusAsInCargo(order);
         orderRepository.save(order);

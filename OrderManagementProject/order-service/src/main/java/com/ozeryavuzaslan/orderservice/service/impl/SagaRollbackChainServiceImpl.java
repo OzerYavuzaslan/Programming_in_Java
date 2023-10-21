@@ -1,12 +1,14 @@
 package com.ozeryavuzaslan.orderservice.service.impl;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.ErrorDetailsDTO;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
-import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
+import com.ozeryavuzaslan.basedomains.util.TypeFactoryHelper;
+import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
@@ -81,30 +83,6 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
     }
 
     @Override
-    public void beginRollbackChainPhase3(List<ReservedStockDTO> reservedStockDTOList, OrderDTO orderDTO) throws Exception {
-        List<StockDTO> rollbackStockDTOList = stockPropertySetter.setSomeProperties(reservedStockDTOList);
-
-        try (Response stockResponse = redirectAndFallbackHandler.redirectRollbackStock(rollbackStockDTOList)) {
-            int statusCode = stockResponse.status();
-
-            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
-                failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
-                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(stockResponse.body().asInputStream(), ErrorDetailsDTO.class);
-                throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
-            }
-
-            statusCode = beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
-
-            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
-                failedOrderService.insertFailedOrderAndRollbackPhase(reservedStockDTOList, orderDTO);
-                throw new CustomOrderServiceException(orderNotCanceledMsg + "_" + statusCode);
-            }
-        } catch (IOException e) {
-            throw new Exception(e);
-        }
-    }
-
-    @Override
     public int beginRollbackChainPhase1(List<ReservedStockDTO> reservedStockDTOList) {
         try (Response responseRollbackReservedStocks = redirectAndFallbackHandler.redirectRollbackReservedStocks(reservedStockDTOList)) {
             return responseRollbackReservedStocks.status();
@@ -136,6 +114,35 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
                 return statusCode;
 
             return beginRollbackChainPhase2(orderDTO, reservedStockDTOList);
+        }
+    }
+
+    @Override
+    public void beginOrderCancellation(OrderDTO orderDTO, Response response) throws Exception {
+        int statusCode = response.status();
+
+        try {
+            if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
+                failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO);
+                throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+            }
+
+            JavaType reservedStockDTOType = TypeFactoryHelper.constructCollectionType(ReservedStockDTO.class, objectMapper);
+            List<ReservedStockDTO> reservedStockDTOList = objectMapper.readValue(response.body().asInputStream(), reservedStockDTOType);
+            paymentPropertySetter.setSomeProperties(orderDTO, refundRequestDTOForPaymentService);
+
+            try (Response responseRollbackPayment = redirectAndFallbackHandler.redirectRollbackPayment(orderDTO, refundRequestDTOForPaymentService)) {
+                statusCode = responseRollbackPayment.status();
+
+                if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
+                    failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO);
+                    ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
+                    throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
+                }
+            }
+        } catch (IOException e) {
+            throw new Exception(e);
         }
     }
 }

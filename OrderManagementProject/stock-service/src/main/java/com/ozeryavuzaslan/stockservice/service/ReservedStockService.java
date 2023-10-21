@@ -7,4 +7,6 @@ import java.util.List;
 public interface ReservedStockService {
     List<ReservedStockDTO> reserveStock(List<ReservedStockDTO> reservedStockDTOList);
     List<ReservedStockDTO> rollbackReserveStock(List<ReservedStockDTO> reservedStockDTOList);
+    List<ReservedStockDTO> rollbackStocksAndReserveStocks(long orderID);
+    List<ReservedStockDTO> getByOrderID(long orderid);
 }
