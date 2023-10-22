@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="stock-service" />
         <module name="base-domains" />
+        <module name="config-server" />
         <module name="payment-service" />
         <module name="email-service" />
         <module name="api-gateway" />
@@ -22,6 +23,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="base-domains" options="-parameters" />
+      <module name="config-server" options="-parameters" />
       <module name="email-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="payment-service" options="-parameters" />

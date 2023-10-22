@@ -8,7 +8,7 @@ import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
 public class KafkaTopicConfig {
-    @Value("${kafka.approved.order.topic}")
+    @Value("${kafka.order.topic}")
     private String orderTopic;
 
     @Bean

@@ -46,7 +46,7 @@ public class EmailOrderConsumer {
     @Value("${hash.map.order.statusType.key}")
     private String orderStatusType;
 
-    @KafkaListener(topics = "${kafka.approved.order.topic}", groupId = "${kafka.email.group}", containerFactory = "emailOrderEventListenerFactory")
+    @KafkaListener(topics = "${kafka.order.topic}", groupId = "${kafka.email.group}", containerFactory = "emailOrderEventListenerFactory")
     public void consume(ConsumerRecord<String, OrderDTO> orderPayload) {
         OrderDTO orderDTO = orderPayload.value();
 
