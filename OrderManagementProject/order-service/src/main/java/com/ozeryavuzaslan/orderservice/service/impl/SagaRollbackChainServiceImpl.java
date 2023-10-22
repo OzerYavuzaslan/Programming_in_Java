@@ -10,6 +10,7 @@ import com.ozeryavuzaslan.basedomains.util.HandledHTTPExceptions;
 import com.ozeryavuzaslan.basedomains.util.TypeFactoryHelper;
 import com.ozeryavuzaslan.orderservice.dto.RefundRequestDTOForPaymentService;
 import com.ozeryavuzaslan.orderservice.exception.CustomOrderServiceException;
+import com.ozeryavuzaslan.orderservice.model.enums.RollbackReason;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.PaymentPropertySetter;
 import com.ozeryavuzaslan.orderservice.objectPropertySetter.StockPropertySetter;
 import com.ozeryavuzaslan.orderservice.service.FailedOrderService;
@@ -124,7 +125,7 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
         try {
             if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
                 ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
-                failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO);
+                failedOrderService.insertFailedOrderAndRollbackPhase(RollbackReason.CANCELED_BY_CUSTOMER, orderDTO, null);
                 throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
             }
 
@@ -136,7 +137,7 @@ public class SagaRollbackChainServiceImpl implements SagaRollbackChainService {
                 statusCode = responseRollbackPayment.status();
 
                 if (HandledHTTPExceptions.checkHandledExceptionStatusCode(statusCode)) {
-                    failedOrderService.insertFailedOrderAndRollbackPhase(orderDTO);
+                    failedOrderService.insertFailedOrderAndRollbackPhase(RollbackReason.CANCELED_BY_CUSTOMER, orderDTO, reservedStockDTOList);
                     ErrorDetailsDTO errorDetailsDTO = objectMapper.readValue(response.body().asInputStream(), ErrorDetailsDTO.class);
                     throw new CustomOrderServiceException(errorDetailsDTO.getMessage() + "_" + statusCode);
                 }

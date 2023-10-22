@@ -31,21 +31,24 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
 
     @Override
     public FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase, RollbackReason rollbackReason) {
-        List<FailedOrderStockDTO> failedOrderStockDTOList = new ArrayList<>();
+        FailedOrderDTO failedOrderDTO = new FailedOrderDTO();
 
-        for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
-            FailedOrderStockDTO failedOrderStockDTO = getFailedOrderStockDTO(reservedStockDTO, rollbackPhase);
-            failedOrderStockDTOList.add(failedOrderStockDTO);
+        if (!Objects.isNull(reservedStockDTOList)) {
+            List<FailedOrderStockDTO> failedOrderStockDTOList = new ArrayList<>();
+
+            for (ReservedStockDTO reservedStockDTO : reservedStockDTOList) {
+                FailedOrderStockDTO failedOrderStockDTO = getFailedOrderStockDTO(reservedStockDTO, rollbackPhase);
+                failedOrderStockDTOList.add(failedOrderStockDTO);
+            }
+
+            failedOrderDTO.setFailedOrderStockList(failedOrderStockDTOList);
         }
 
-        FailedOrderDTO failedOrderDTO = new FailedOrderDTO();
         failedOrderDTO.setOrderid(reservedStockDTOList.get(0).getOrderid());
         failedOrderDTO.setOrderRollbackStatus(false);
         failedOrderDTO.setRollbackPhase(rollbackPhase);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_NEEDED);
-        failedOrderDTO.setRollbackReason(RollbackReason.SERVICE_EXCEPTION);
-        failedOrderDTO.setFailedOrderStockList(failedOrderStockDTOList);
-
+        failedOrderDTO.setRollbackReason(rollbackReason);
         return failedOrderDTO;
     }
 
@@ -68,7 +71,6 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase, RollbackReason rollbackReason) {
         FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList, rollbackPhase, rollbackReason);
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
-        failedOrderDTO.setRollbackPhase(rollbackPhase);
 
         if (!Objects.isNull(orderDTO.getPaymentid()) && !orderDTO.getPaymentid().isEmpty())
             failedOrderDTO.setPaymentid(orderDTO.getPaymentid());
@@ -77,8 +79,8 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
     }
 
     @Override
-    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase, RollbackReason rollbackReason) {
-        FailedOrderDTO failedOrderDTO = new FailedOrderDTO();
+    public FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase, RollbackReason rollbackReason, List<ReservedStockDTO> reservedStockDTOList) {
+        FailedOrderDTO failedOrderDTO = setSomeProperties(reservedStockDTOList, rollbackPhase, rollbackReason);
 
         failedOrderDTO.setOrderRollbackStatus(false);
         failedOrderDTO.setOrderid(orderDTO.getId());
@@ -86,7 +88,7 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderDTO.setUpdateDate(orderDTO.getUpdateDate());
         failedOrderDTO.setPaymentRollbackState(PaymentRollbackState.NOT_REFUNDED);
         failedOrderDTO.setPaymentid(orderDTO.getPaymentid());
-        failedOrderDTO.setRollbackPhase(RollbackPhase.PHASE_3);
+        failedOrderDTO.setRollbackPhase(rollbackPhase);
         failedOrderDTO.setRollbackReason(rollbackReason);
 
         return failedOrderDTO;
@@ -99,7 +101,6 @@ public class FailedOrderPropertySetterImpl implements FailedOrderPropertySetter 
         failedOrderStockDTO.setReserveStockID(reservedStockDTO.getId());
         failedOrderStockDTO.setFailedOrderID(reservedStockDTO.getOrderid());
         failedOrderStockDTO.setReserveType(reservedStockDTO.getReserveType());
-        failedOrderStockDTO.setReserveRollbackStatus(false);
         failedOrderStockDTO.setStockRollbackState(StockRollbackState.NOT_NEEDED);
 
         if (rollbackPhase.equals(RollbackPhase.PHASE_3))

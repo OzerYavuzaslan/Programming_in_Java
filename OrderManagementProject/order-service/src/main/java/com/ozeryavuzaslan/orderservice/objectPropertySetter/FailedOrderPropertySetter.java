@@ -13,5 +13,5 @@ public interface FailedOrderPropertySetter {
     FailedOrderDTO setSomeProperties(List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase, RollbackReason rollbackReason);
     void setSomeProperties(FailedOrder failedOrder, FailedOrderDTO failedOrderDTO);
     FailedOrderDTO setSomeProperties(OrderDTO orderDTO, List<ReservedStockDTO> reservedStockDTOList, RollbackPhase rollbackPhase, RollbackReason rollbackReason);
-    FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase, RollbackReason rollbackReason);
+    FailedOrderDTO setSomeProperties(OrderDTO orderDTO, RollbackPhase rollbackPhase, RollbackReason rollbackReason, List<ReservedStockDTO> reservedStockDTOList);
 }
