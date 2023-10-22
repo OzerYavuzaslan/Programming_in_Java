@@ -3,6 +3,7 @@ package com.ozeryavuzaslan.orderservice.service.impl;
 import com.ozeryavuzaslan.basedomains.dto.orders.OrderDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.orderservice.dto.FailedOrderDTO;
+import com.ozeryavuzaslan.orderservice.exception.OrderNotFoundException;
 import com.ozeryavuzaslan.orderservice.model.FailedOrder;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackPhase;
 import com.ozeryavuzaslan.orderservice.model.enums.RollbackReason;
@@ -11,6 +12,7 @@ import com.ozeryavuzaslan.orderservice.repository.FailedOrderRepository;
 import com.ozeryavuzaslan.orderservice.service.FailedOrderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class FailedOrderServiceImpl implements FailedOrderService {
     private final ModelMapper modelMapper;
     private final FailedOrderRepository failedOrderRepository;
     private final FailedOrderPropertySetter failedOrderPropertySetter;
+
+    @Value("${order.get.by.id.endpoint}")
+    private String orderNotFoundMsg;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -63,9 +68,19 @@ public class FailedOrderServiceImpl implements FailedOrderService {
         insertFailedOrderAndRollbackPhase(failedOrderDTO);
     }
 
+    @Override
+    public FailedOrderDTO getSpecificFailedOrder(long failedOrderID) {
+        FailedOrder failedOrder = getSpecificFailedOrderByID(failedOrderID);
+        return modelMapper.map(failedOrder, FailedOrderDTO.class);
+    }
+
     private void insertFailedOrderAndRollbackPhase(FailedOrderDTO failedOrderDTO) {
         FailedOrder failedOrder = modelMapper.map(failedOrderDTO, FailedOrder.class);
         failedOrderPropertySetter.setSomeProperties(failedOrder, failedOrderDTO);
         failedOrderRepository.save(failedOrder);
+    }
+
+    private FailedOrder getSpecificFailedOrderByID(long failedOrderID){
+        return failedOrderRepository.findById(failedOrderID).orElseThrow(() -> new OrderNotFoundException(orderNotFoundMsg + " --> " + failedOrderID));
     }
 }

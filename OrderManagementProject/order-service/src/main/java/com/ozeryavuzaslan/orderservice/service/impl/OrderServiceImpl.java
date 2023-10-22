@@ -88,8 +88,6 @@ public class OrderServiceImpl implements OrderService {
      * @return orderDTO
      * @throws Exception
      */
-    //TODO: failed_orders tablosuna eklenenleri rollback yapacak bir mekanizma yaz.
-
     //@Transactional anotasyonu varken exceptionları catchleyemiyordum. Dolayısla manuel transaction açıp kapıyorum :/
     //Daha düzgün bir çözüm yönetimi olan bana haber versin lütfen :)
     @Override
