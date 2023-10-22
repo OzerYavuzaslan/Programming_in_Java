@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
@@ -29,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -95,11 +95,11 @@ public class StockServiceImpl implements StockService {
 
     @Override
     public List<StockDTO> updateStocks(List<StockDTO> stockDTOList) {
-        JavaType stockListType = TypeFactoryHelper.constructCollectionType(Stock.class, objectMapper);
+        Type stockListType = TypeFactoryHelper.constructCollectionType(Stock.class);
         List<Stock> stockList = modelMapper.map(stockDTOList, stockListType);
         stockList = stockRepository.saveAll(stockList);
 
-        JavaType stockDTOListType = TypeFactoryHelper.constructCollectionType(StockDTO.class, objectMapper);
+        Type stockDTOListType = TypeFactoryHelper.constructCollectionType(StockDTO.class);
         stockDTOList = modelMapper.map(stockList, stockDTOListType);
         isCacheRefresh = false;
         return stockDTOList;

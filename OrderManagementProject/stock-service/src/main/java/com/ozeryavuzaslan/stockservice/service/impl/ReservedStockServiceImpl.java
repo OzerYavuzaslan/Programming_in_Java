@@ -1,6 +1,5 @@
 package com.ozeryavuzaslan.stockservice.service.impl;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.stocks.ReservedStockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -119,17 +119,17 @@ public class ReservedStockServiceImpl implements ReservedStockService {
         reservedStockPropertySetter.setSomeProperties(stockList, reservedStockList);
         reservedStockRepository.saveAll(reservedStockList);
 
-        JavaType stockDTOType = TypeFactoryHelper.constructCollectionType(StockDTO.class, objectMapper);
+        Type stockDTOType = TypeFactoryHelper.constructCollectionType(StockDTO.class);
         stockService.updateStocks(modelMapper.map(stockList, stockDTOType));
 
-        JavaType reserveStockListDTOType = TypeFactoryHelper.constructCollectionType(ReservedStockDTO.class, objectMapper);
+        Type reserveStockListDTOType = TypeFactoryHelper.constructCollectionType(ReservedStockDTO.class);
         return modelMapper.map(reservedStockList, reserveStockListDTOType);
     }
 
     @Override
     public List<ReservedStockDTO> getByOrderID(long orderID) {
         List<ReservedStock> reservedStockList = getReservedStocks(orderID);
-        JavaType reserveStockListDTOType = TypeFactoryHelper.constructCollectionType(ReservedStockDTO.class, objectMapper);
+        Type reserveStockListDTOType = TypeFactoryHelper.constructCollectionType(ReservedStockDTO.class);
         return modelMapper.map(reservedStockList, reserveStockListDTOType);
     }
 
