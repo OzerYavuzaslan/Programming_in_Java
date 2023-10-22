@@ -6,9 +6,11 @@ import com.ozeryavuzaslan.orderservice.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RefreshScope
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
