@@ -189,7 +189,6 @@ public class OrderServiceImpl implements OrderService {
         return orderDTO;
     }
 
-    //TODO: reservedStockDTOList için yeni bir method oluştur
     @Override
     public OrderDTO cancelByOrderID(long orderID) throws Exception {
         Order order = getSpecificOrder(orderID);
