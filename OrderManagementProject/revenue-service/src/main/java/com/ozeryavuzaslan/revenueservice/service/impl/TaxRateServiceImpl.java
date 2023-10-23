@@ -53,7 +53,7 @@ public class TaxRateServiceImpl implements TaxRateService {
 
     @Override
     @Transactional
-    @Cacheable("taxes")
+    @Cacheable(value = "taxes")
     public List<TaxRateDTO> taxRateBulkInsert(List<TaxRateDTO> taxRateDTOList) {
         List<TaxRate> taxRateList = new ArrayList<>();
 
