@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,15 +81,13 @@ public class TaxRateServiceImpl implements TaxRateService {
     @CacheEvict(value = "taxes", allEntries = true)
     public List<TaxRateDTO> taxRateBulkUpdate(List<TaxRateDTO> taxRateDTOList) {
         List<Long> taxRateIds = taxRateDTOList.stream().map(TaxRateDTO::getId).collect(Collectors.toList());
-        Optional<List<TaxRate>> optionalTaxRateList = taxRateRepository.findByIdIn(taxRateIds);
+        List<TaxRate> taxRateList = taxRateRepository.findByIdIn(taxRateIds);
 
-        if (optionalTaxRateList.isEmpty())
+        if (taxRateList.isEmpty())
             throw new TaxRateNotFoundException(taxRatesNotFound);
 
-        List<TaxRate> existingTaxRates = optionalTaxRateList.get();
-
-        if (existingTaxRates.size() != taxRateDTOList.size()) {
-            List<TaxRateDTO> existingDTOs = existingTaxRates.stream().map(taxRate -> modelMapper.map(taxRate, TaxRateDTO.class)).toList();
+        if (taxRateList.size() != taxRateDTOList.size()) {
+            List<TaxRateDTO> existingDTOs = taxRateList.stream().map(taxRate -> modelMapper.map(taxRate, TaxRateDTO.class)).toList();
 
             for (TaxRateDTO dto : taxRateDTOList) {
                 if (!existingDTOs.contains(dto)) {
@@ -102,12 +99,12 @@ public class TaxRateServiceImpl implements TaxRateService {
 
         Map<Long, TaxRateDTO> dtoMap = taxRateDTOList.stream().collect(Collectors.toMap(TaxRateDTO::getId, dto -> dto));
 
-        for (TaxRate taxRate : existingTaxRates)
+        for (TaxRate taxRate : taxRateList)
             modelMapper.map(dtoMap.get(taxRate.getId()), taxRate);
 
-        taxRateRepository.saveAll(existingTaxRates);
+        taxRateRepository.saveAll(taxRateList);
         isCacheRefresh = true;
-        return existingTaxRates.stream().map(taxRate -> modelMapper.map(taxRate, TaxRateDTO.class)).collect(Collectors.toList());
+        return taxRateList.stream().map(taxRate -> modelMapper.map(taxRate, TaxRateDTO.class)).collect(Collectors.toList());
     }
 
     @Override

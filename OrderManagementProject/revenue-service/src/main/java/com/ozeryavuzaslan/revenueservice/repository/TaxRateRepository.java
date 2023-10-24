@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaxRateRepository extends JpaRepository<TaxRate, Long> {
-    Optional<List<TaxRate>> findByIdIn(List<Long> taxRateDTOList);
+    List<TaxRate> findByIdIn(List<Long> taxRateDTOList);
     Optional<TaxRate> findByYearAndMonthAndTaxRateType(int taxYear, int taxMonth, TaxRateType taxRateType);
 }
