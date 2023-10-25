@@ -116,8 +116,6 @@ public class TaxRateServiceImpl implements TaxRateService {
         return taxRateDTO;
     }
 
-
-
     @Override
     @Cacheable(value = "taxes")
     @SuppressWarnings("ConstantConditions")
