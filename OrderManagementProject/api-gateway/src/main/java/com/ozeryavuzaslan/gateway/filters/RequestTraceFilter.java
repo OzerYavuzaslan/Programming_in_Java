@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class RequestTraceFilter implements GlobalFilter {
-    final FilterUtility filterUtility;
+    private final FilterUtility filterUtility;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 @RequiredArgsConstructor
 public class ResponseTraceFilter {
-    final FilterUtility filterUtility;
+    private final FilterUtility filterUtility;
 
     @Bean
     public GlobalFilter postGlobalFilter() {
