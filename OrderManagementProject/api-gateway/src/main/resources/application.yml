@@ -1,6 +1,12 @@
 server:
   port: 9191
 
+logging:
+  level:
+    org.springframework.web: INFO
+    org.hibernate: ERROR
+    com.ozeryavuzaslan.gateway: DEBUG
+
 spring:
   application:
     name: API-GATEWAY
@@ -44,7 +50,7 @@ management:
 
 info:
   app:
-    name: "GATEWAY-API"
+    name: "API-GATEWAY"
     description: "Order Management Gateway Server Application"
     version: "1.0.0"
 
@@ -52,6 +58,9 @@ resilience4j.circuitbreaker:
   configs:
     default:
       slidingWindowSize: 10
-      permittedNumberOfCallsInHalfOpenState: 2
-      failureRateThreshold: 50
-      waitDurationInOpenState: 10000
+      slidingWindowType: COUNT_BASED
+      permittedNumberOfCallsInHalfOpenState: 3
+      failureRateThreshold: 65
+      waitDurationInOpenState: 5000
+      minimumNumberOfCalls: 4
+      automaticTransitionFromOpenToHalfOpenEnabled: true
