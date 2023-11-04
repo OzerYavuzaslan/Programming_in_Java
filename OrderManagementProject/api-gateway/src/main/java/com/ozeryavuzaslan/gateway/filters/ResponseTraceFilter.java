@@ -1,8 +1,6 @@
 package com.ozeryavuzaslan.gateway.filters;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +11,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ResponseTraceFilter {
     final FilterUtility filterUtility;
-    private static final Logger logger = LoggerFactory.getLogger(ResponseTraceFilter.class);
 
     @Bean
     public GlobalFilter postGlobalFilter() {
@@ -22,10 +19,8 @@ public class ResponseTraceFilter {
                 HttpHeaders requestHeaders = exchange.getRequest().getHeaders();
                 String correlationId = filterUtility.getCorrelationId(requestHeaders);
 
-                if(!(exchange.getResponse().getHeaders().containsKey(FilterUtility.CORRELATION_ID))) {
-                    logger.debug("Updated the correlation id to the outbound headers: {}", correlationId);
+                if(!(exchange.getResponse().getHeaders().containsKey(FilterUtility.CORRELATION_ID)))
                     exchange.getResponse().getHeaders().add(FilterUtility.CORRELATION_ID, correlationId);
-                }
             }));
         };
     }

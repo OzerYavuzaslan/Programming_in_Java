@@ -1,8 +1,6 @@
 package com.ozeryavuzaslan.gateway.filters;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.annotation.Order;
@@ -16,19 +14,17 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class RequestTraceFilter implements GlobalFilter {
     final FilterUtility filterUtility;
-    private static final Logger logger = LoggerFactory.getLogger(RequestTraceFilter.class);
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         HttpHeaders requestHeaders = exchange.getRequest().getHeaders();
-        if (isCorrelationIdPresent(requestHeaders)) {
-            logger.debug("my-order-correlation-id found in RequestTraceFilter : {}",
-                    filterUtility.getCorrelationId(requestHeaders));
-        } else {
+        if (isCorrelationIdPresent(requestHeaders))
+            filterUtility.getCorrelationId(requestHeaders);
+        else {
             String correlationID = generateCorrelationId();
             exchange = filterUtility.setCorrelationId(exchange, correlationID);
-            logger.debug("my-order-correlation-id generated in RequestTraceFilter : {}", correlationID);
         }
+
         return chain.filter(exchange);
     }
 
