@@ -14,14 +14,12 @@ public class ResponseTraceFilter {
 
     @Bean
     public GlobalFilter postGlobalFilter() {
-        return (exchange, chain) -> {
-            return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-                HttpHeaders requestHeaders = exchange.getRequest().getHeaders();
-                String correlationId = filterUtility.getCorrelationId(requestHeaders);
+        return (exchange, chain) -> chain.filter(exchange).then(Mono.fromRunnable(() -> {
+            HttpHeaders requestHeaders = exchange.getRequest().getHeaders();
+            String correlationId = filterUtility.getCorrelationId(requestHeaders);
 
-                if(!(exchange.getResponse().getHeaders().containsKey(FilterUtility.CORRELATION_ID)))
-                    exchange.getResponse().getHeaders().add(FilterUtility.CORRELATION_ID, correlationId);
-            }));
-        };
+            if(!(exchange.getResponse().getHeaders().containsKey(FilterUtility.CORRELATION_ID)))
+                exchange.getResponse().getHeaders().add(FilterUtility.CORRELATION_ID, correlationId);
+        }));
     }
 }
