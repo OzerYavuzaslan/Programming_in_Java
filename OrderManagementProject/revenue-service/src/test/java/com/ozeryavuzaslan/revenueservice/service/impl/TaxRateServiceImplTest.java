@@ -29,8 +29,7 @@ public class TaxRateServiceImplTest {
 
     @Test
     public void with_correct_inputs_should_get_correct_tax_rate() {
-        TaxRateDTO actualTaxRateDTO = new TaxRateDTO();
-        actualTaxRateDTO = taxRateService.getTaxRate(2023, 10, TaxRateType.KDV);
+        TaxRateDTO actualTaxRateDTO = taxRateService.getTaxRate(2023, 10, TaxRateType.KDV);
         TaxRateDTO expectedTaxRateDTO = new TaxRateDTO(261, 2023, 10, 20D, TaxRateType.KDV);
         assertEquals(expectedTaxRateDTO, actualTaxRateDTO);
     }
