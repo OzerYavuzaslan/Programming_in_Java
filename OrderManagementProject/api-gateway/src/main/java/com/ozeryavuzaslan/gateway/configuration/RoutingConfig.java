@@ -16,26 +16,26 @@ public class RoutingConfig {
                         .path("/api/v1/orders/**")
                         .filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("orderServiceCircuitBreaker")
-                                        .setFallbackUri("forward:/contactSupport")))
+                                        .setFallbackUri("forward:/fallback/orders")))
                         .uri("lb://order-service"))
                 .route(p -> p
                         .path("/api/v1/stocks/**")
                         .filters(f -> f.rewritePath("/api/v1/stocks/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker((config -> config.setName("stockServiceCircuitBreaker")
-                                        .setFallbackUri("forward:/contactSupport"))))
+                                        .setFallbackUri("forward:/fallback/stocks"))))
                         .uri("lb://stock-service"))
                 .route(p -> p
                         .path("/api/v1/payments/**")
                         .filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker((config -> config.setName("paymentServiceCircuitBreaker")
-                                        .setFallbackUri("forward:/contactSupport"))))
+                                        .setFallbackUri("forward:/fallback/payments"))))
                         .uri("lb://payment-service"))
                 .route(p -> p
                         .path("/api/v1/revenues/**")
                         .filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("revenueServiceCircuitBreaker")
-                                        .setFallbackUri("forward:/contactSupport")))
+                                        .setFallbackUri("forward:/fallback/revenues")))
                         .uri("lb://revenue-service")).build();
     }
 }
