@@ -18,6 +18,7 @@ public final class HandledHTTPExceptions {
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.NOT_FOUND.getHttpStatusCode());
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.UNPROCESSABLE_ENTITY.getHttpStatusCode());
         knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.NOT_ACCEPTABLE.getHttpStatusCode());
+        knownExceptionHTTPCodes.add(KnownExceptionHTTPStatusCodes.SERVICE_UNAVAILABLE.getHttpStatusCode());
     }
 
     public static boolean checkHandledExceptionStatusCode(int statusCode) {
@@ -43,6 +44,9 @@ public final class HandledHTTPExceptions {
             }
             case 400 -> {
                 return HttpStatus.BAD_REQUEST;
+            }
+            case 503 -> {
+                return HttpStatus.SERVICE_UNAVAILABLE;
             }
             default -> {
                 return HttpStatus.INTERNAL_SERVER_ERROR;

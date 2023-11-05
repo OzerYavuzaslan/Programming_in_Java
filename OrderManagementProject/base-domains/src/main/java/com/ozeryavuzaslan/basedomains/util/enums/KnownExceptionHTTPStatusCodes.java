@@ -9,7 +9,8 @@ public enum KnownExceptionHTTPStatusCodes {
     UNPROCESSABLE_ENTITY(422),
     NOT_MODIFIED(304),
     NOT_ACCEPTABLE(406),
-    BAD_REQUEST(400);
+    BAD_REQUEST(400),
+    SERVICE_UNAVAILABLE(503);
 
     private final int httpStatusCode;
 

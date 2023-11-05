@@ -189,7 +189,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ResponseBody
@@ -201,7 +201,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ResponseBody
@@ -213,7 +213,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ResponseBody
@@ -225,7 +225,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 exception.getMessage()),
                 request.getDescription(false));
 
-        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorDetailsDTO, HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @Override
