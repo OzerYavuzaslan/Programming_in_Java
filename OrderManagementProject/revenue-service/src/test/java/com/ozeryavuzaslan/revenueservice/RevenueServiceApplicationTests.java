@@ -9,5 +9,4 @@ class RevenueServiceApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
