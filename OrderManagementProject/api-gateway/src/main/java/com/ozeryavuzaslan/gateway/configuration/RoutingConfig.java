@@ -20,8 +20,7 @@ public class RoutingConfig {
                         .uri("lb://order-service"))
                 .route(p -> p
                         .path("/api/v1/stocks/**")
-                        .filters(f -> f.rewritePath("/api/v1/stocks/(?<segment>.*)", "/${segment}")
-                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                        .filters(f -> f.addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker((config -> config.setName("stockServiceCircuitBreaker")
                                         .setFallbackUri("forward:/fallback/stocks"))))
                         .uri("lb://stock-service"))
