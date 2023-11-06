@@ -170,7 +170,7 @@ public class TaxRateServiceImplTest {
      * service.shutdown(); ile ExecutorService'i kapatmak için shutdown çağrısı yapılır.
      * Bu, havuzdaki tüm iş parçacıklarının tamamlandığından emin olmak ve kaynakları serbest bırakmak içindir.
      ****
-     * Runnable ve Callable Java'da belirli bir görevi temsil eden iki farklı arayüzdür (interface).
+     * Runnable ve Callable Java'da belirli bir görevi temsil eden iki farklı interfacedir.
      * Bunlar metodlar veya işler olarak düşünülebilir ve bir iş parçacığının (thread) çalıştırabileceği işin ne olacağını tanımlarlar.
      * Bu interfacelerin kendileri iş parçacığı/thread değildir, ancak iş parçacığı/thread tarafından çalıştırılan kodu tanımlarlar.
      * Runnable --> void run() methodu içinde threadin çalıştıracağı işi tanımlar. Exception fırlatmaz; return yapmaz.
