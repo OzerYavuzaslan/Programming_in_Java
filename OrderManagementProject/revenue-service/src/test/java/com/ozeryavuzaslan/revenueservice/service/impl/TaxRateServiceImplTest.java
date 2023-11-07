@@ -7,6 +7,8 @@ import com.ozeryavuzaslan.revenueservice.exception.TaxRateNotFoundException;
 import com.ozeryavuzaslan.revenueservice.model.TaxRate;
 import com.ozeryavuzaslan.revenueservice.repository.TaxRateRepository;
 import com.ozeryavuzaslan.revenueservice.service.TaxRateService;
+import com.ozeryavuzaslan.revenueservice.util.CacheManagementServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +34,11 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class TaxRateServiceImplTest {
     private final TaxRateService taxRateService;
+    TaxRateRepository taxRateRepositoryMock = mock(TaxRateRepository.class);
+    ModelMapper modelMapperMock = mock(ModelMapper.class);
+    CacheManagementService cacheManagementServiceMock = mock(CacheManagementServiceImpl.class);
+    TaxRateService taxRateServiceMock = new TaxRateServiceImpl(modelMapperMock, taxRateRepositoryMock, cacheManagementServiceMock);
+    List<TaxRate> taxRateEntityList = new ArrayList<>();
 
     @Value("${tax.rate.not.found}")
     private String taxRateNotFoundMsg;
@@ -38,6 +46,23 @@ public class TaxRateServiceImplTest {
     @Autowired
     public TaxRateServiceImplTest(TaxRateService taxRateService) {
         this.taxRateService = taxRateService;
+    }
+
+    @BeforeEach
+    public void beforeEach(){
+        taxRateEntityList.clear();
+
+        //for yerine böyle yapmayı uygun gördüm (rangeClosed ile 1 ve 12 dâhil oluyor)
+        taxRateEntityList = IntStream.rangeClosed(1, 12)
+                .mapToObj(idAndMonth -> new TaxRate(
+                        (long) idAndMonth,
+                        2023,
+                        idAndMonth,
+                        idAndMonth <= 6 ? 18D : 20D,
+                        TaxRateType.KDV,
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
+                )).toList(); // collect(Collectors.toList());
     }
 
     @Test
@@ -96,23 +121,6 @@ public class TaxRateServiceImplTest {
      */
     @Test
     public void should_get_all_tax_rates() {
-        TaxRateRepository taxRateRepositoryMock = mock(TaxRateRepository.class);
-        ModelMapper modelMapperMock = mock(ModelMapper.class);
-        CacheManagementService cacheManagementServiceMock = mock(CacheManagementService.class);
-        TaxRateService taxRateService = new TaxRateServiceImpl(modelMapperMock, taxRateRepositoryMock, cacheManagementServiceMock);
-
-        //for yerine böyle yapmayı uygun gördüm (rangeClosed ile 1 ve 12 dâhil oluyor)
-        List<TaxRate> taxRateEntityList = IntStream.rangeClosed(1, 12)
-                .mapToObj(idAndMonth -> new TaxRate(
-                        (long) idAndMonth,
-                        2023,
-                        idAndMonth,
-                        idAndMonth <= 6 ? 18D : 20D,
-                        TaxRateType.KDV,
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
-                )).toList(); // collect(Collectors.toList());
-
         Pageable pageable = PageRequest.of(0, 25);
         Page<TaxRate> taxRatePage = new PageImpl<>(taxRateEntityList, pageable, taxRateEntityList.size());
         when(taxRateRepositoryMock.findAll(pageable)).thenReturn(taxRatePage);
@@ -127,7 +135,7 @@ public class TaxRateServiceImplTest {
                                 TaxRateType.valueOf(taxRateEntity.getTaxRateType().toString())
                         )));
 
-        List<TaxRateDTO> taxRateDTOList = taxRateService.getAllTaxRates(pageable);
+        List<TaxRateDTO> taxRateDTOList = taxRateServiceMock.getAllTaxRates(pageable);
         assertNotNull(taxRateDTOList);
         assertEquals(taxRateEntityList.size(), taxRateDTOList.size());
 
@@ -181,22 +189,6 @@ public class TaxRateServiceImplTest {
      */
     @Test
     public void should_handle_multiple_requests_concurrently_to_get_all_tax_rates_for_each_request() throws InterruptedException {
-        TaxRateRepository taxRateRepositoryMock = mock(TaxRateRepository.class);
-        ModelMapper modelMapperMock = mock(ModelMapper.class);
-        CacheManagementService cacheManagementServiceMock = mock(CacheManagementService.class);
-        TaxRateService taxRateService = new TaxRateServiceImpl(modelMapperMock, taxRateRepositoryMock, cacheManagementServiceMock);
-
-        List<TaxRate> taxRateEntityList = IntStream.rangeClosed(1, 12)
-                .mapToObj(idAndMonth -> new TaxRate(
-                        (long) idAndMonth,
-                        2023,
-                        idAndMonth,
-                        idAndMonth <= 6 ? 18D : 20D,
-                        TaxRateType.KDV,
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
-                )).toList();
-
         Pageable pageable = PageRequest.of(0, 25);
         Page<TaxRate> taxRatePage = new PageImpl<>(taxRateEntityList, pageable, taxRateEntityList.size());
         when(taxRateRepositoryMock.findAll(pageable)).thenReturn(taxRatePage);
@@ -211,13 +203,13 @@ public class TaxRateServiceImplTest {
                                 TaxRateType.valueOf(taxRateEntity.getTaxRateType().toString())
                         )));
 
-        int threadCount = 10;
+        int threadCount = 32;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
         IntStream.range(0, threadCount).forEach(i -> executorService.submit(() -> {
             try {
-                List<TaxRateDTO> taxRateDTOList = taxRateService.getAllTaxRates(pageable);
+                List<TaxRateDTO> taxRateDTOList = taxRateServiceMock.getAllTaxRates(pageable);
                 assertNotNull(taxRateDTOList);
                 assertEquals(taxRateEntityList.size(), taxRateDTOList.size());
 

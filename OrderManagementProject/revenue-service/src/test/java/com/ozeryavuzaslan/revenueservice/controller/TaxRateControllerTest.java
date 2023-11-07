@@ -2,6 +2,7 @@ package com.ozeryavuzaslan.revenueservice.controller;
 
 import com.ozeryavuzaslan.basedomains.dto.revenues.TaxRateDTO;
 import com.ozeryavuzaslan.basedomains.dto.revenues.enums.TaxRateType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * webEnvironment özelliği dört değer alabilir:
@@ -35,10 +36,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TaxRateControllerTest {
     private final TestRestTemplate testRestTemplate;
+    int threadCount;
+    int[] taxMonthRange;
 
     @Autowired
     public TaxRateControllerTest(TestRestTemplate testRestTemplate) {
         this.testRestTemplate = testRestTemplate;
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        threadCount = 5000;
+        taxMonthRange = new int[]{12, 1};
     }
 
     @Test
@@ -47,17 +56,13 @@ public class TaxRateControllerTest {
 
     @Test
     public void should_handle_multiple_requests_concurrently_to_get_specific_tax_rate_for_each_request_with_correct_inputs_db_dependent() throws InterruptedException {
-        int threadCount = 5000;
         int taxYear = 2023;
-        int[] taxMonthRange = {12, 1};
         runGetSpecificTaxRateConcurrently(taxYear, taxMonthRange, TaxRateType.KDV, threadCount, HttpStatus.OK);
     }
 
     @Test
     public void should_handle_multiple_requests_concurrently_to_get_not_found_exception_for_each_request_with_wrong_inputs_db_dependent() throws InterruptedException {
-        int threadCount = 5000;
         int taxYear = 2024;
-        int[] taxMonthRange = {12, 1};
         runGetSpecificTaxRateConcurrently(taxYear, taxMonthRange, TaxRateType.KDV, threadCount, HttpStatus.NOT_FOUND);
     }
 
