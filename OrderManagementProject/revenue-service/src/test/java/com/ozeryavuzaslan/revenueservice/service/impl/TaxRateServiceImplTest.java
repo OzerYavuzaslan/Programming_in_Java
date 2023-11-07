@@ -145,7 +145,7 @@ public class TaxRateServiceImplTest {
     }
 
     /**
-     * should_get_all_tax_rates() test methodunun multithreaded versiyonu.
+     * should_get_all_tax_rates() test methodunun kısmi multithreaded versiyonu.
      * Bu senaryoda aynı anda servis katmanına 10 isteğin geldiğini varsaydım.
      * <p>
      * Belirttiğim sayıda iş parçacığını yönetmek için ExecutorService kullandım. newFixedThreadPool static methodu
