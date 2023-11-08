@@ -9,6 +9,7 @@ import com.ozeryavuzaslan.revenueservice.repository.TaxRateRepository;
 import com.ozeryavuzaslan.revenueservice.service.TaxRateService;
 import com.ozeryavuzaslan.revenueservice.util.CacheManagementServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,12 +34,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@DisplayName("Some of the TaxRateService test cases")
 public class TaxRateServiceImplTest {
     private final TaxRateService taxRateService;
-    TaxRateRepository taxRateRepositoryMock = mock(TaxRateRepository.class);
-    ModelMapper modelMapperMock = mock(ModelMapper.class);
-    CacheManagementService cacheManagementServiceMock = mock(CacheManagementServiceImpl.class);
-    TaxRateService taxRateServiceMock = new TaxRateServiceImpl(modelMapperMock, taxRateRepositoryMock, cacheManagementServiceMock);
+    TaxRateRepository taxRateRepositoryMock;
+    ModelMapper modelMapperMock;
+    CacheManagementService cacheManagementServiceMock;
+    TaxRateService taxRateServiceMock;
     List<TaxRate> taxRateEntityList = new ArrayList<>();
 
     @Value("${tax.rate.not.found}")
@@ -49,7 +52,11 @@ public class TaxRateServiceImplTest {
     }
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
+        taxRateRepositoryMock = mock(TaxRateRepository.class);
+        modelMapperMock = mock(ModelMapper.class);
+        cacheManagementServiceMock = mock(CacheManagementServiceImpl.class);
+        taxRateServiceMock = new TaxRateServiceImpl(modelMapperMock, taxRateRepositoryMock, cacheManagementServiceMock);
         taxRateEntityList.clear();
 
         //for yerine böyle yapmayı uygun gördüm (rangeClosed ile 1 ve 12 dâhil oluyor)
@@ -84,6 +91,27 @@ public class TaxRateServiceImplTest {
                 () -> taxRateService.getTaxRate(2024, 1, TaxRateType.KDV));
 
         assertEquals(taxRateNotFoundMsg, thrownException.getMessage());
+    }
+
+    @Test
+    public void should_get_correct_tax_rate_with_valid_inputs() {
+        TaxRate taxRate = new TaxRate(1L, 2023, 9, 20.0, TaxRateType.KDV, LocalDateTime.now(), LocalDateTime.now());
+        Optional<TaxRate> taxRateOptional = Optional.of(taxRate);
+        when(taxRateRepositoryMock.findByYearAndMonthAndTaxRateType(2023, 9, TaxRateType.KDV)).thenReturn(taxRateOptional);
+
+        TaxRateDTO expectedTaxRateDTO = new TaxRateDTO(1L, 2023, 9, 20.0, TaxRateType.KDV);
+        when(modelMapperMock.map(taxRate, TaxRateDTO.class)).thenReturn(expectedTaxRateDTO);
+        TaxRateDTO actualTaxRateDTO = taxRateServiceMock.getTaxRate(2023, 9, TaxRateType.KDV);
+
+        assertNotNull(actualTaxRateDTO);
+        assertEquals(expectedTaxRateDTO, actualTaxRateDTO);
+    }
+
+    @Test
+    public void should_throw_tax_rate_not_found_exception_when_inputs_are_invalid() {
+        Class<TaxRateNotFoundException> expectedExceptionType = TaxRateNotFoundException.class;
+        assertThrows(expectedExceptionType,
+                () -> taxRateServiceMock.getTaxRate(2023, 1, TaxRateType.KDV));
     }
 
     /**
@@ -177,14 +205,15 @@ public class TaxRateServiceImplTest {
      * <p>
      * service.shutdown(); ile ExecutorService'i kapatmak için shutdown çağrısı yapılır.
      * Bu, havuzdaki tüm iş parçacıklarının tamamlandığından emin olmak ve kaynakları serbest bırakmak içindir.
-     ****
+     * ***
      * Runnable ve Callable Java'da belirli bir görevi temsil eden iki farklı interfacedir.
      * Bunlar metodlar veya işler olarak düşünülebilir ve bir iş parçacığının (thread) çalıştırabileceği işin ne olacağını tanımlarlar.
      * Bu interfacelerin kendileri iş parçacığı/thread değildir, ancak iş parçacığı/thread tarafından çalıştırılan kodu tanımlarlar.
      * Runnable --> void run() methodu içinde threadin çalıştıracağı işi tanımlar. Exception fırlatmaz; return yapmaz.
      * Callable --> hangi tipte dönüş yapacaksak Callable'mızı ona göre oluştururuz. Ör: Callable<String> run() gibi...
      * Exception fırlatabilir, return yapar.
-     ****
+     * ***
+     *
      * @throws InterruptedException
      */
     @Test
