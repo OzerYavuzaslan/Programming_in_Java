@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,6 +43,11 @@ public class TaxRateServiceImplTest {
     CacheManagementService cacheManagementServiceMock;
     TaxRateService taxRateServiceMock;
     List<TaxRate> taxRateEntityList = new ArrayList<>();
+    int threadCount;
+    ExecutorService executorService;
+    CountDownLatch countDownLatch;
+    Random random;
+    int[] taxMonthRange;
 
     @Value("${tax.rate.not.found}")
     private String taxRateNotFoundMsg;
@@ -57,7 +63,13 @@ public class TaxRateServiceImplTest {
         modelMapperMock = mock(ModelMapper.class);
         cacheManagementServiceMock = mock(CacheManagementServiceImpl.class);
         taxRateServiceMock = new TaxRateServiceImpl(modelMapperMock, taxRateRepositoryMock, cacheManagementServiceMock);
+
         taxRateEntityList.clear();
+        threadCount = 32;
+        executorService = Executors.newFixedThreadPool(threadCount);
+        countDownLatch = new CountDownLatch(threadCount);
+        random = new Random();
+        taxMonthRange = new int[]{12, 1};
 
         //for yerine böyle yapmayı uygun gördüm (rangeClosed ile 1 ve 12 dâhil oluyor)
         taxRateEntityList = IntStream.rangeClosed(1, 12)
@@ -232,10 +244,6 @@ public class TaxRateServiceImplTest {
                                 TaxRateType.valueOf(taxRateEntity.getTaxRateType().toString())
                         )));
 
-        int threadCount = 32;
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
-
         IntStream.range(0, threadCount).forEach(i -> executorService.submit(() -> {
             try {
                 List<TaxRateDTO> taxRateDTOList = taxRateServiceMock.getAllTaxRates(pageable);
@@ -253,6 +261,30 @@ public class TaxRateServiceImplTest {
                             () -> assertEquals(taxRateEntity.getRate(), taxRateDTO.getRate(), "Rates should match"),
                             () -> assertEquals(taxRateEntity.getTaxRateType(), taxRateDTO.getTaxRateType(), "Tax rate types should match"));
                 }
+            } finally {
+                countDownLatch.countDown();
+            }
+        }));
+
+        countDownLatch.await();
+        executorService.shutdown();
+    }
+
+    @Test
+    public void should_handle_multiple_requests_concurrently_to_correct_tax_rate_with_valid_inputs() throws InterruptedException {
+        IntStream.range(0, threadCount).forEach(i -> executorService.submit(() -> {
+            try {
+                int month = random.nextInt(taxMonthRange[0]) + taxMonthRange[1];
+                TaxRate taxRate = new TaxRate(1L, 2023, month, 20.0, TaxRateType.KDV, LocalDateTime.now(), LocalDateTime.now());
+                Optional<TaxRate> taxRateOptional = Optional.of(taxRate);
+                when(taxRateRepositoryMock.findByYearAndMonthAndTaxRateType(2023, month, TaxRateType.KDV)).thenReturn(taxRateOptional);
+
+                TaxRateDTO expectedTaxRateDTO = new TaxRateDTO(1L, 2023, month, 20.0, TaxRateType.KDV);
+                when(modelMapperMock.map(taxRate, TaxRateDTO.class)).thenReturn(expectedTaxRateDTO);
+                TaxRateDTO actualTaxRateDTO = taxRateServiceMock.getTaxRate(2023, month, TaxRateType.KDV);
+
+                assertNotNull(actualTaxRateDTO);
+                assertEquals(expectedTaxRateDTO, actualTaxRateDTO);
             } finally {
                 countDownLatch.countDown();
             }
