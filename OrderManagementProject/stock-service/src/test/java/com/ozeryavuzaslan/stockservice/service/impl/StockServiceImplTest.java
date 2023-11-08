@@ -103,7 +103,7 @@ public class StockServiceImplTest {
      * <p>
      * Kod Kapsamını Sağlamak:
      * Testler sırasında belirli kod parçalarının çalıştırıldığından emin olmak için verify kullanılabilir.
-     * Bu, testlerinizin beklenen kapsama sahip olduğundan emin olmanıza yardımcı olur.
+     * Bu, testlerimizin beklenen kapsama sahip olduğundan emin olmamıza yardımcı olur.
      * <p>
      * Çağrı Sırasını Doğrulamak:
      * Bazı durumlarda, methodların belirli bir sırada çağrılması gerekebilir.
@@ -113,6 +113,12 @@ public class StockServiceImplTest {
      * Bir metodun hiç çağrılmaması gerekiyorsa, verify(mock, never()).method(); şeklinde kullanabiliriz.
      * Yani method imzası verir gibi, test ettiğimiz spesifik methodun içinde hiçbir şekilde çağırılmamasını istediğimiz
      * methodları kontrol etmek için verify kullanabiliriz.
+     * <p>
+     * any() --> Aşağıdaki kodtan örneklersek Stock.class'ından türemiş herhangi bir nesneyi alabileceğini ifade ederiz.
+     * Yani any() fonksiyonu, herhangi bir argümanı kabul etmek için kullanılır.
+     * <p>
+     * eq() fonksiyonu, belirli bir argümanın eşleşmesi gerektiğini belirtir.
+     * Aşağıdaki örneğe göre StockDTO.class ile tam olarak eşleşen nesneleri kabul eder.
      */
     @Test
     public void should_get_stock_with_the_correct_product_id() {
