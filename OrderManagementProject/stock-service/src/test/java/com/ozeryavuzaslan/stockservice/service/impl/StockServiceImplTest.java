@@ -2,11 +2,15 @@ package com.ozeryavuzaslan.stockservice.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
+import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.model.Stock;
+import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.StockPropertySetter;
+import com.ozeryavuzaslan.stockservice.objectPropertySetter.impl.StockPropertySetterImpl;
 import com.ozeryavuzaslan.stockservice.repository.CategoryRepository;
 import com.ozeryavuzaslan.stockservice.repository.ReservedStockRepository;
 import com.ozeryavuzaslan.stockservice.repository.StockRepository;
@@ -14,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -27,8 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 //@SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -43,13 +45,13 @@ public class StockServiceImplTest {
     @Mock
     CategoryRepository categoryRepositoryMock;
     @Mock
-    StockPropertySetter stockPropertySetterMock;
-    @Mock
-    CacheManagementService cacheManagementService;
+    CacheManagementService cacheManagementServiceMock;
     @Mock
     ReservedStockRepository reservedStockRepositoryMock;
-    @InjectMocks
-    StockServiceImpl stockServiceImpl;
+    @Mock
+    CategoryPropertySetter categoryPropertySetterMock;
+    private StockPropertySetter stockPropertySetter;
+    private StockServiceImpl stockServiceImpl;
 
     long productID;
     long categoryID;
@@ -60,9 +62,21 @@ public class StockServiceImplTest {
     UUID mockStockUUID;
     UUID mockCategoryUUID;
     LocalDateTime updateAndInsertDates;
+    StockWithIgnoredUUID mockStockWithIgnoredUUID;
+    CategoryWithoutUUIDDTO mockCategoryWithoutUUIDDTO;
 
     @BeforeEach
     public void beforeEach() {
+        stockPropertySetter = new StockPropertySetterImpl(categoryPropertySetterMock);
+        stockServiceImpl = new StockServiceImpl(
+                modelMapperMock,
+                objectMapperMock,
+                stockRepositoryMock,
+                categoryRepositoryMock,
+                stockPropertySetter,
+                cacheManagementServiceMock,
+                reservedStockRepositoryMock);
+
         productID = 2404L;
         categoryID = 2102L;
         updateAndInsertDates = LocalDateTime.now();
@@ -71,19 +85,25 @@ public class StockServiceImplTest {
         String productName = "RTX 4090 Graphic Card";
         String brandName = "ASUS";
         String brandCompanyEmail = "night_of_elf@hotmail.com";
+        String categoryName = "Elektronik Eşya";
         int quantity = 1111;
         double price = 2500D;
         double discountAmount = 0D;
         double discountPercentage = 0D;
 
-        mockCategory = new Category(categoryID, mockCategoryUUID, "Elektronik Eşya", updateAndInsertDates, updateAndInsertDates);
+        mockCategory = new Category(categoryID, mockCategoryUUID, categoryName, updateAndInsertDates, updateAndInsertDates);
         mockStock = new Stock(productID, mockStockUUID, productName, brandName,
-                brandCompanyEmail, quantity, price, discountAmount,discountPercentage,
+                brandCompanyEmail, quantity, price, discountAmount, discountPercentage,
                 null, mockCategory, updateAndInsertDates, updateAndInsertDates);
 
-        mockCategoryDTO = new CategoryDTO(categoryID, mockCategoryUUID, "Elektronik Eşya", updateAndInsertDates, updateAndInsertDates);
+        mockCategoryDTO = new CategoryDTO(categoryID, mockCategoryUUID, categoryName, updateAndInsertDates, updateAndInsertDates);
         mockStockDTO = new StockDTO(productID, mockStockUUID, productName, brandName, brandCompanyEmail, quantity, price,
-                discountAmount, discountPercentage ,mockCategoryDTO, updateAndInsertDates, updateAndInsertDates,
+                discountAmount, discountPercentage, mockCategoryDTO, updateAndInsertDates, updateAndInsertDates,
+                null);
+
+        mockCategoryWithoutUUIDDTO = new CategoryWithoutUUIDDTO(null, null, categoryName, updateAndInsertDates, updateAndInsertDates);
+        mockStockWithIgnoredUUID = new StockWithIgnoredUUID(null, null, productName, brandName, brandCompanyEmail, quantity, price,
+                discountAmount, discountPercentage, mockCategoryWithoutUUIDDTO, updateAndInsertDates, updateAndInsertDates,
                 null);
     }
 
@@ -132,5 +152,27 @@ public class StockServiceImplTest {
 
         verify(modelMapperMock).map(any(), eq(StockDTO.class));
         verify(stockRepositoryMock).findById(productID);
+    }
+
+    @Test
+    @DisplayName("Test saveOrUpdateStock with new stock entry and new category")
+    void should_insert_new_stock_with_new_category() {
+        when(stockRepositoryMock.findByProductCode(mockStockWithIgnoredUUID.getProductCode())).thenReturn(Optional.empty());
+        when(categoryRepositoryMock.findByName(mockStockWithIgnoredUUID.getCategory().getName())).thenReturn(Optional.empty());
+        when(categoryRepositoryMock.save(any(Category.class))).thenReturn(mockCategory);
+        when(modelMapperMock.map(any(CategoryWithoutUUIDDTO.class), eq(Category.class))).thenReturn(mockCategory);
+        when(modelMapperMock.map(eq(mockCategory), eq(CategoryWithoutUUIDDTO.class))).thenReturn(mockCategoryWithoutUUIDDTO);
+        when(modelMapperMock.map(eq(mockStockWithIgnoredUUID), eq(Stock.class))).thenReturn(mockStock);
+        when(stockRepositoryMock.save(any(Stock.class))).thenReturn(mockStock);
+        when(modelMapperMock.map(any(Stock.class), eq(StockDTO.class))).thenReturn(mockStockDTO);
+
+        StockDTO actualStockDTO = stockServiceImpl.saveOrUpdateStock(mockStockWithIgnoredUUID);
+
+        assertNotNull(actualStockDTO);
+        assertEquals(mockStockDTO, actualStockDTO);
+        verify(stockRepositoryMock).save(any(Stock.class));
+        verify(categoryRepositoryMock).findByName(mockStockWithIgnoredUUID.getCategory().getName());
+        verify(categoryRepositoryMock).save(any(Category.class));
+        verify(categoryPropertySetterMock).setSomeProperties(any(CategoryWithoutUUIDDTO.class), anyBoolean(), anyBoolean());
     }
 }
