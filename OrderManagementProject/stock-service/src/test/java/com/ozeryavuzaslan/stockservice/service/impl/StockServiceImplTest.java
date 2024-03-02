@@ -6,6 +6,7 @@ import com.ozeryavuzaslan.basedomains.dto.stocks.CategoryWithoutUUIDDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockDTO;
 import com.ozeryavuzaslan.basedomains.dto.stocks.StockWithIgnoredUUID;
 import com.ozeryavuzaslan.basedomains.util.CacheManagementService;
+import com.ozeryavuzaslan.basedomains.util.TypeFactoryHelper;
 import com.ozeryavuzaslan.stockservice.model.Category;
 import com.ozeryavuzaslan.stockservice.model.Stock;
 import com.ozeryavuzaslan.stockservice.objectPropertySetter.CategoryPropertySetter;
@@ -22,7 +23,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,20 +54,25 @@ public class StockServiceImplTest {
     ReservedStockRepository reservedStockRepositoryMock;
     @Mock
     CategoryPropertySetter categoryPropertySetterMock;
-    private StockPropertySetter stockPropertySetter;
-    private StockServiceImpl stockServiceImpl;
+    StockPropertySetter stockPropertySetter;
+    StockServiceImpl stockServiceImpl;
 
     long productID;
     long categoryID;
-    Stock mockStock;
+    Stock mockStock1;
+    Stock mockStock2;
     Category mockCategory;
-    StockDTO mockStockDTO;
+    StockDTO mockStockDTO1;
+    StockDTO mockStockDTO2;
     CategoryDTO mockCategoryDTO;
     UUID mockStockUUID;
     UUID mockCategoryUUID;
     LocalDateTime updateAndInsertDates;
     StockWithIgnoredUUID mockStockWithIgnoredUUID;
     CategoryWithoutUUIDDTO mockCategoryWithoutUUIDDTO;
+    String stockDTOCannotBeNullMsg;
+    List<StockDTO> mockStockDTOList;
+    List<Stock> mockStockList;
 
     @BeforeEach
     public void beforeEach() {
@@ -90,14 +99,15 @@ public class StockServiceImplTest {
         double price = 2500D;
         double discountAmount = 0D;
         double discountPercentage = 0D;
+        stockDTOCannotBeNullMsg = "The retrieved StockDTO should not be null!";
 
         mockCategory = new Category(categoryID, mockCategoryUUID, categoryName, updateAndInsertDates, updateAndInsertDates);
-        mockStock = new Stock(productID, mockStockUUID, productName, brandName,
+        mockStock1 = new Stock(productID, mockStockUUID, productName, brandName,
                 brandCompanyEmail, quantity, price, discountAmount, discountPercentage,
                 null, mockCategory, updateAndInsertDates, updateAndInsertDates);
 
         mockCategoryDTO = new CategoryDTO(categoryID, mockCategoryUUID, categoryName, updateAndInsertDates, updateAndInsertDates);
-        mockStockDTO = new StockDTO(productID, mockStockUUID, productName, brandName, brandCompanyEmail, quantity, price,
+        mockStockDTO1 = new StockDTO(productID, mockStockUUID, productName, brandName, brandCompanyEmail, quantity, price,
                 discountAmount, discountPercentage, mockCategoryDTO, updateAndInsertDates, updateAndInsertDates,
                 null);
 
@@ -105,6 +115,16 @@ public class StockServiceImplTest {
         mockStockWithIgnoredUUID = new StockWithIgnoredUUID(null, null, productName, brandName, brandCompanyEmail, quantity, price,
                 discountAmount, discountPercentage, mockCategoryWithoutUUIDDTO, updateAndInsertDates, updateAndInsertDates,
                 null);
+
+        mockStockDTO2 = mockStockDTO1;
+        mockStock2 = mockStock1;
+        mockStockList = new ArrayList<>();
+        mockStockDTOList = new ArrayList<>();
+
+        mockStockDTOList.add(mockStockDTO1);
+        mockStockDTOList.add(mockStockDTO2);
+        mockStockList.add(mockStock1);
+        mockStockList.add(mockStock2);
     }
 
     @Test
@@ -143,14 +163,14 @@ public class StockServiceImplTest {
     @Test
     public void should_get_stock_with_the_correct_product_id() {
         //productID'si (stockID) olan bir mockStock yaratmıştık. O yüzden burada stockID setlemiyoruz.
-        when(stockRepositoryMock.findById(productID)).thenReturn(Optional.of(mockStock));
-        when(modelMapperMock.map(any(Stock.class), eq(StockDTO.class))).thenReturn(mockStockDTO);
+        when(stockRepositoryMock.findById(productID)).thenReturn(Optional.of(mockStock1));
+        when(modelMapperMock.map(any(Stock.class), eq(StockDTO.class))).thenReturn(mockStockDTO1);
         StockDTO actualStockDTO = stockServiceImpl.getByProductID(productID);
 
-        assertNotNull(actualStockDTO, "The retrieved StockDTO should not be null!");
-        assertEquals(mockStockDTO, actualStockDTO);
+        assertNotNull(actualStockDTO, stockDTOCannotBeNullMsg);
+        assertEquals(mockStockDTO1, actualStockDTO);
 
-        verify(modelMapperMock).map(any(), eq(StockDTO.class));
+        verify(modelMapperMock).map(any(Stock.class), eq(StockDTO.class));
         verify(stockRepositoryMock).findById(productID);
     }
 
@@ -162,17 +182,46 @@ public class StockServiceImplTest {
         when(categoryRepositoryMock.save(any(Category.class))).thenReturn(mockCategory);
         when(modelMapperMock.map(any(CategoryWithoutUUIDDTO.class), eq(Category.class))).thenReturn(mockCategory);
         when(modelMapperMock.map(eq(mockCategory), eq(CategoryWithoutUUIDDTO.class))).thenReturn(mockCategoryWithoutUUIDDTO);
-        when(modelMapperMock.map(eq(mockStockWithIgnoredUUID), eq(Stock.class))).thenReturn(mockStock);
-        when(stockRepositoryMock.save(any(Stock.class))).thenReturn(mockStock);
-        when(modelMapperMock.map(any(Stock.class), eq(StockDTO.class))).thenReturn(mockStockDTO);
+        when(modelMapperMock.map(eq(mockStockWithIgnoredUUID), eq(Stock.class))).thenReturn(mockStock1);
+        when(stockRepositoryMock.save(any(Stock.class))).thenReturn(mockStock1);
+        when(modelMapperMock.map(any(Stock.class), eq(StockDTO.class))).thenReturn(mockStockDTO1);
 
         StockDTO actualStockDTO = stockServiceImpl.saveOrUpdateStock(mockStockWithIgnoredUUID);
 
-        assertNotNull(actualStockDTO);
-        assertEquals(mockStockDTO, actualStockDTO);
+        assertNotNull(actualStockDTO, stockDTOCannotBeNullMsg);
+        assertEquals(mockStockDTO1, actualStockDTO);
         verify(stockRepositoryMock).save(any(Stock.class));
         verify(categoryRepositoryMock).findByName(mockStockWithIgnoredUUID.getCategory().getName());
         verify(categoryRepositoryMock).save(any(Category.class));
         verify(categoryPropertySetterMock).setSomeProperties(any(CategoryWithoutUUIDDTO.class), anyBoolean(), anyBoolean());
     }
+
+    @Test
+    @DisplayName("Test updateStocks")
+    void should_update_stocks_with_correct_input() {
+        Type stockListType = TypeFactoryHelper.constructCollectionType(Stock.class);
+        when(modelMapperMock.map(eq(mockStockDTOList), eq(stockListType))).thenReturn(mockStockList);
+
+        List<Stock> actualStockList = modelMapperMock.map(mockStockDTOList, stockListType);
+
+        assertEquals(mockStockList, actualStockList);
+        verify(modelMapperMock).map(eq(mockStockDTOList), eq(stockListType));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

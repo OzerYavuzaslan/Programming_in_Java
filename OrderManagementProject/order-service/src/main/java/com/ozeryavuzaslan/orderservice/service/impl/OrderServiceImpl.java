@@ -241,7 +241,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderDTO giveToCargoCompanyByOrderID (long orderID) {
+    public OrderDTO giveToCargoCompanyByOrderID(long orderID) {
         Order order = getSpecificOrder(orderID);
 
         if (order.getOrderStatusType().equals(OrderStatusType.APPROVED)
