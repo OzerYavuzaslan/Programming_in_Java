@@ -1,0 +1,15 @@
+
+I
+java:S2699ƒ"-Add at least one assertion to this test case.(áùêÌùÿÿÿÿ
+:
+java:S5786¤"Remove this 'public' modifier.(Åê¾ûÿÿÿÿ
+4
+java:S5786*"Remove this 'public' modifier.(¿ª–
+t
+java:S6068¸"XRemove this and every subsequent useless "eq(...)" invocation; pass the values directly.(°ƒéÿÿÿÿÿ
+t
+java:S6068¹"XRemove this and every subsequent useless "eq(...)" invocation; pass the values directly.(ï„§Ùùÿÿÿÿ
+t
+java:S6068Ë"XRemove this and every subsequent useless "eq(...)" invocation; pass the values directly.(–ôÀëşÿÿÿÿ
+t
+java:S6068Ğ"XRemove this and every subsequent useless "eq(...)" invocation; pass the values directly.(Í…ƒŞüÿÿÿÿ

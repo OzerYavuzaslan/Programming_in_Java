@@ -1,0 +1,13 @@
+
+Q
+java:S2696V"6Make the enclosing method "static" or remove this set.(…ÍËõøÿÿÿÿ
+Q
+java:S2696h"6Make the enclosing method "static" or remove this set.(…ÍËõøÿÿÿÿ
+h
+java:S6204t"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ã¤£’
+R
+java:S2696™"6Make the enclosing method "static" or remove this set.(…ÍËõøÿÿÿÿ
+R
+java:S2696Ì"6Make the enclosing method "static" or remove this set.(…ÍËõøÿÿÿÿ
+M
+java:S2696Ñ"6Make the enclosing method "static" or remove this set.(©¬¿‹
