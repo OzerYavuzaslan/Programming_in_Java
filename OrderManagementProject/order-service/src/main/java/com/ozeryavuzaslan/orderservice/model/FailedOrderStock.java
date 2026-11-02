@@ -48,6 +48,7 @@ public class FailedOrderStock {
     private boolean reserveRollbackStatus;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StockRollbackState stockRollbackState;
 
     @CreationTimestamp

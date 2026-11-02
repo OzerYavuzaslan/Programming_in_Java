@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PACKAGE})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Constraint(validatedBy = CurrencyValidator.class)
 public @interface ValidCurrency {
     Class<?>[] groups() default {};

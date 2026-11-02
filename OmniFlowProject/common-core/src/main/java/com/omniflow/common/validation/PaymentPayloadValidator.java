@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 
 public class PaymentPayloadValidator implements ConstraintValidator<ValidPaymentPayload, PaymentPayloadAware> {
+    private static final String CREDIT_CARD = "CREDIT_CARD";
     private static final String SEPA_DIRECT_DEBIT = "SEPA_DIRECT_DEBIT";
 
     @Override
@@ -17,8 +18,12 @@ public class PaymentPayloadValidator implements ConstraintValidator<ValidPayment
 
         String tmpMethod = paymentPayloadAware.getPaymentMethod();
 
-        if (!StringUtils.hasLength(tmpMethod)) {
-            if (!StringUtils.hasLength(paymentPayloadAware.getCardNumber()) || !StringUtils.hasLength(paymentPayloadAware.getCvv())) {
+        if (!StringUtils.hasText(tmpMethod)) {
+            return true;
+        }
+
+        if (tmpMethod.equalsIgnoreCase(CREDIT_CARD)) {
+            if (!StringUtils.hasText(paymentPayloadAware.getCardNumber()) || !StringUtils.hasText(paymentPayloadAware.getCvv())) {
                 constraintValidatorContext.disableDefaultConstraintViolation();
 
                 constraintValidatorContext
@@ -29,7 +34,7 @@ public class PaymentPayloadValidator implements ConstraintValidator<ValidPayment
                 return false;
             }
         } else if (tmpMethod.equalsIgnoreCase(SEPA_DIRECT_DEBIT)) {
-            if (!StringUtils.hasLength(paymentPayloadAware.getIban())) {
+            if (!StringUtils.hasText(paymentPayloadAware.getIban())) {
                 constraintValidatorContext.disableDefaultConstraintViolation();
 
                 constraintValidatorContext

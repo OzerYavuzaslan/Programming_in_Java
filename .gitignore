@@ -1,0 +1,15 @@
+# Build and compiled files
+**/target/
+**/*.class
+
+# IDE and Editor files
+**/.idea/
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.vscode/
+
+# Logs and OS files
+**/*.log
+.DS_Store
+Thumbs.db
