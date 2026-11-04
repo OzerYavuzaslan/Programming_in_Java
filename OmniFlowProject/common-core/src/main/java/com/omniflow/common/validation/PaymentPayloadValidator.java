@@ -7,8 +7,14 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 
 public class PaymentPayloadValidator implements ConstraintValidator<ValidPaymentPayload, PaymentPayloadAware> {
+    private static final String PROPERTY_IBAN = "iban";
     private static final String CREDIT_CARD = "CREDIT_CARD";
+    private static final String PROPERTY_CARD_NUMBER = "cardNumber";
     private static final String SEPA_DIRECT_DEBIT = "SEPA_DIRECT_DEBIT";
+    private static final String PROPERTY_PAYMENT_METHOD = "paymentMethod";
+    private static final String MSG_UNSUPPORTED_METHOD_PREFIX = "Unsupported payment method: ";
+    private static final String MSG_IBAN_MANDATORY = "IBAN is mandatory for SEPA_DIRECT_DEBIT payments";
+    private static final String MSG_CARD_MANDATORY = "Card number and CVV are mandatory for CREDIT_CARD payments";
 
     @Override
     public boolean isValid(PaymentPayloadAware paymentPayloadAware, ConstraintValidatorContext constraintValidatorContext) {
@@ -27,8 +33,8 @@ public class PaymentPayloadValidator implements ConstraintValidator<ValidPayment
                 constraintValidatorContext.disableDefaultConstraintViolation();
 
                 constraintValidatorContext
-                        .buildConstraintViolationWithTemplate("Card number and CVV are mandatory for CREDIT_CARD payments")
-                        .addPropertyNode("cardNumber")
+                        .buildConstraintViolationWithTemplate(MSG_CARD_MANDATORY)
+                        .addPropertyNode(PROPERTY_CARD_NUMBER)
                         .addConstraintViolation();
 
                 return false;
@@ -38,8 +44,8 @@ public class PaymentPayloadValidator implements ConstraintValidator<ValidPayment
                 constraintValidatorContext.disableDefaultConstraintViolation();
 
                 constraintValidatorContext
-                        .buildConstraintViolationWithTemplate("IBAN is mandatory for SEPA_DIRECT_DEBIT payments")
-                        .addPropertyNode("iban")
+                        .buildConstraintViolationWithTemplate(MSG_IBAN_MANDATORY)
+                        .addPropertyNode(PROPERTY_IBAN)
                         .addConstraintViolation();
 
                 return false;
@@ -48,8 +54,8 @@ public class PaymentPayloadValidator implements ConstraintValidator<ValidPayment
             constraintValidatorContext.disableDefaultConstraintViolation();
 
             constraintValidatorContext
-                    .buildConstraintViolationWithTemplate("Unsupported payment method: " + tmpMethod)
-                    .addPropertyNode("paymentMethod")
+                    .buildConstraintViolationWithTemplate(MSG_UNSUPPORTED_METHOD_PREFIX + tmpMethod)
+                    .addPropertyNode(PROPERTY_PAYMENT_METHOD)
                     .addConstraintViolation();
 
             return false;
