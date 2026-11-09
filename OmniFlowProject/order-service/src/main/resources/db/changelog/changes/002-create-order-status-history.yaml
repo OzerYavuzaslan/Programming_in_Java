@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2026-11-07-09-create-order-status-history-table
+      author: ozer.yavuzaslan
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: order_status_history
+      changes:
+        - createTable:
+            tableName: order_status_history
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_order_status_history
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_status_history_order
+                    references: orders(id)
+                    deleteCascade: true
+              - column:
+                  name: from_status
+                  type: VARCHAR(32)
+              - column:
+                  name: to_status
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reason
+                  type: VARCHAR(64)
+              - column:
+                  name: changed_by
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: changed_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 2026-11-07-10-create-order-status-history-order-changed-index
+      author: ozer.yavuzaslan
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists:
+                indexName: idx_order_status_history_order_changed
+                tableName: order_status_history
+      changes:
+        - createIndex:
+            indexName: idx_order_status_history_order_changed
+            tableName: order_status_history
+            columns:
+              - column:
+                  name: order_id
+              - column:
+                  name: changed_at
