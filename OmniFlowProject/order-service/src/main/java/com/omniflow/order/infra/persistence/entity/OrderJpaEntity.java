@@ -44,15 +44,19 @@ public class OrderJpaEntity extends BaseJpaEntity {
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<com.omniflow.order.infra.persistence.entity.OrderItemJpaEntity> orderItemList = new ArrayList<>();
+    private List<OrderItemJpaEntity> orderItemList = new ArrayList<>();
 
-    public void addOrderItem(com.omniflow.order.infra.persistence.entity.OrderItemJpaEntity orderItem) {
-        this.orderItemList.add(orderItem);
-        orderItem.setOrder(this);
+    public void addOrderItem(OrderItemJpaEntity orderItemJpaEntity) {
+        this.orderItemList.add(orderItemJpaEntity);
+        orderItemJpaEntity.setOrder(this);
     }
 
-    public void removeOrderItem(com.omniflow.order.infra.persistence.entity.OrderItemJpaEntity orderItem) {
-        this.orderItemList.remove(orderItem);
-        orderItem.setOrder(null);
+    public void removeOrderItem(OrderItemJpaEntity orderItemJpaEntity) {
+        this.orderItemList.remove(orderItemJpaEntity);
+        orderItemJpaEntity.setOrder(null);
+    }
+
+    public static OrderJpaEntity getNewOrderJpaEntity() {
+        return new OrderJpaEntity();
     }
 }

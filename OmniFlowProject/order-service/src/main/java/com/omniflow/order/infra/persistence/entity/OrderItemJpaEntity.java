@@ -40,4 +40,8 @@ public class OrderItemJpaEntity {
 
     @Column(name = "currency", nullable = false, updatable = false, length = 3)
     private String currency;
+
+    public static OrderItemJpaEntity getOrderItemJpaEntity() {
+        return new OrderItemJpaEntity();
+    }
 }

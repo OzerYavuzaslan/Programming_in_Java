@@ -44,21 +44,21 @@ public record Order(
     private static final String REASON_ORDER_CREATED = "ORDER_CREATED";
     private static final String REASON_PAYMENT_SETTLED = "PAYMENT_SETTLED";
     private static final String MSG_ITEM_NULL = "Order item cannot be null";
-    private static final String REASON_PAYMENT_INITIATED = "PAYMENT_INITIATED";
     private static final String MSG_ORDER_ID_NULL = "Order ID cannot be null";
+    private static final String REASON_PAYMENT_INITIATED = "PAYMENT_INITIATED";
     private static final String MSG_STATUS_NULL = "Order status cannot be null";
     private static final String MSG_CUSTOMER_ID_NULL = "Customer ID cannot be null";
     private static final String MSG_TOTAL_AMOUNT_NULL = "Total amount cannot be null";
     private static final String MSG_DUPLICATE_PRODUCT = "Duplicate product in order: ";
     private static final String MSG_ITEMS_EMPTY = "Order items cannot be empty or null";
+    private static final String MSG_CANNOT_CANCEL_ORDER = "Cannot cancel order in status: ";
     private static final String MSG_STATUS_CHANGES_NULL = "Status changes list cannot be null";
     private static final String MSG_TOTAL_MISMATCH = "Total amount does not match sum of items";
-    private static final String MSG_CANNOT_INITIATE_PAYMENT = "Cannot initiate payment for order in status: ";
+    private static final String MSG_CANNOT_SETTLE_PAYMENT = "Cannot settle payment for order in status: ";
     private static final String MSG_TENANT_ID_INVALID = "Tenant ID cannot be blank or exceed 32 characters";
+    private static final String MSG_CANNOT_INITIATE_PAYMENT = "Cannot initiate payment for order in status: ";
     private static final String MSG_CURRENCY_MISMATCH = "Order item currency does not match order currency: ";
     private static final String MSG_IDEMPOTENCY_KEY_INVALID = "Idempotency key cannot be blank or exceed 64 characters";
-    private static final String MSG_CANNOT_CANCEL_ORDER = "Cannot cancel order in status: ";
-    private static final String MSG_CANNOT_SETTLE_PAYMENT = "Cannot settle payment for order in status: ";
     private static final String MSG_INVALID_CANCELLATION_REASON = "Cancellation reason cannot be blank or exceed 64 characters";
 
     public Order {

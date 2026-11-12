@@ -59,4 +59,8 @@ public class OrderStatusHistoryJpaEntity implements Persistable<UUID> {
     public boolean isNew() {
         return true;
     }
+
+    public static OrderStatusHistoryJpaEntity getNewOrderStatusHistoryJpaEntity() {
+        return new OrderStatusHistoryJpaEntity();
+    }
 }
