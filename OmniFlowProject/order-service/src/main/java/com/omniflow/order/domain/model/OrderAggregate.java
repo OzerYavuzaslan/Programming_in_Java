@@ -31,7 +31,7 @@ import java.util.*;
  * @author Özer Yavuzaslan
  * @version 1.1.0
  */
-public record Order(
+public record OrderAggregate(
         UUID id,
         String tenantId,
         UUID customerId,
@@ -61,7 +61,7 @@ public record Order(
     private static final String MSG_IDEMPOTENCY_KEY_INVALID = "Idempotency key cannot be blank or exceed 64 characters";
     private static final String MSG_INVALID_CANCELLATION_REASON = "Cancellation reason cannot be blank or exceed 64 characters";
 
-    public Order {
+    public OrderAggregate {
         if (Objects.isNull(id)) {
             throw new IllegalArgumentException(MSG_ORDER_ID_NULL);
         }
@@ -122,7 +122,7 @@ public record Order(
     }
 
     /**
-     * Factory method to create a new Order in {@link OrderStatus.Created} state.
+     * Factory method to create a new OrderAggregate in {@link OrderStatus.Created} state.
      * Computes the total amount from items and initializes status change history.
      *
      * @param id             the unique identifier
@@ -130,9 +130,9 @@ public record Order(
      * @param customerId     the customer identifier
      * @param idempotencyKey the idempotency token
      * @param orderItemList  the non-empty list of order items
-     * @return a newly initialized Order aggregate
+     * @return a newly initialized OrderAggregate
      */
-    public static Order create(UUID id, String tenantId, UUID customerId, String idempotencyKey, List<OrderItem> orderItemList) {
+    public static OrderAggregate create(UUID id, String tenantId, UUID customerId, String idempotencyKey, List<OrderItem> orderItemList) {
         if (CollectionUtils.isEmpty(orderItemList)) {
             throw new IllegalArgumentException(MSG_ITEMS_EMPTY);
         }
@@ -154,7 +154,7 @@ public record Order(
                 Instant.now()
         );
 
-        return new Order(
+        return new OrderAggregate(
                 id,
                 tenantId,
                 customerId,
@@ -167,7 +167,7 @@ public record Order(
     }
 
     /**
-     * Factory method to reconstitute an existing Order aggregate from the persistence layer.
+     * Factory method to reconstitute an existing OrderAggregate from the persistence layer.
      *
      * @param id             the order identifier
      * @param tenantId       the tenant identifier
@@ -176,9 +176,9 @@ public record Order(
      * @param items          the items list
      * @param status         the persisted order status
      * @param totalAmount    the persisted total amount
-     * @return the reconstituted Order aggregate
+     * @return the reconstituted OrderAggregate
      */
-    public static Order reconstitute(
+    public static OrderAggregate reconstitute(
             UUID id,
             String tenantId,
             UUID customerId,
@@ -187,7 +187,7 @@ public record Order(
             OrderStatus status,
             Money totalAmount
     ) {
-        return new Order(
+        return new OrderAggregate(
                 id,
                 tenantId,
                 customerId,
@@ -202,9 +202,9 @@ public record Order(
     /**
      * Transitions order state from {@link OrderStatus.Created} to {@link OrderStatus.PaymentPending}.
      *
-     * @return Result containing updated Order or OrderError if transition is invalid
+     * @return Result containing updated OrderAggregate or OrderError if transition is invalid
      */
-    public Result<Order, OrderError> markPaymentPending() {
+    public Result<OrderAggregate, OrderError> markPaymentPending() {
         if (!(this.orderStatus instanceof OrderStatus.Created)) {
             return Result.failure(new OrderError.InvalidStateTransition(this.orderStatus, new OrderStatus.PaymentPending(),
                     MSG_CANNOT_INITIATE_PAYMENT + this.orderStatus.getClass().getSimpleName()));
@@ -222,7 +222,7 @@ public record Order(
         List<OrderStatusChange> updatedHistory = new java.util.ArrayList<>(this.statusChangeList);
         updatedHistory.add(change);
 
-        return Result.success(new Order(
+        return Result.success(new OrderAggregate(
                 this.id,
                 this.tenantId,
                 this.customerId,
@@ -237,9 +237,9 @@ public record Order(
     /**
      * Transitions order state from {@link OrderStatus.PaymentPending} to {@link OrderStatus.Paid}.
      *
-     * @return Result containing updated Order or OrderError if transition is invalid
+     * @return Result containing updated OrderAggregate or OrderError if transition is invalid
      */
-    public Result<Order, OrderError> markPaid() {
+    public Result<OrderAggregate, OrderError> markPaid() {
         if (!(this.orderStatus instanceof OrderStatus.PaymentPending)) {
             return Result.failure(new OrderError.InvalidStateTransition(this.orderStatus, new OrderStatus.Paid(),
                     MSG_CANNOT_SETTLE_PAYMENT + this.orderStatus.getClass().getSimpleName()));
@@ -257,7 +257,7 @@ public record Order(
         List<OrderStatusChange> orderStatusChangeList = new java.util.ArrayList<>(this.statusChangeList);
         orderStatusChangeList.add(orderStatusChange);
 
-        return Result.success(new Order(
+        return Result.success(new OrderAggregate(
                 this.id,
                 this.tenantId,
                 this.customerId,
@@ -273,9 +273,9 @@ public record Order(
      * Cancels the order if it is in {@link OrderStatus.Created} or {@link OrderStatus.PaymentPending} state.
      *
      * @param cancelReason the business justification for cancellation
-     * @return Result containing updated Order or OrderError if cancellation is invalid
+     * @return Result containing updated OrderAggregate or OrderError if cancellation is invalid
      */
-    public Result<Order, OrderError> cancel(String cancelReason) {
+    public Result<OrderAggregate, OrderError> cancel(String cancelReason) {
         if (Objects.isNull(cancelReason) || cancelReason.isBlank() || cancelReason.length() > 64) {
             return Result.failure(new OrderError.InvalidCancellationReason(MSG_INVALID_CANCELLATION_REASON));
         }
@@ -299,7 +299,7 @@ public record Order(
         List<OrderStatusChange> updatedHistory = new java.util.ArrayList<>(this.statusChangeList);
         updatedHistory.add(change);
 
-        return Result.success(new Order(
+        return Result.success(new OrderAggregate(
                 this.id,
                 this.tenantId,
                 this.customerId,

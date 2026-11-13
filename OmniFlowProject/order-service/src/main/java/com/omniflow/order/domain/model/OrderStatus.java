@@ -1,7 +1,7 @@
 package com.omniflow.order.domain.model;
 
 /**
- * Represents the lifecycle status of an {@link Order} within the system.
+ * Represents the lifecycle status of an {@link OrderAggregate} within the system.
  * <p>
  * Implemented as a Java 21 sealed interface to restrict state variations
  * to an exhaustive, strictly controlled state machine.

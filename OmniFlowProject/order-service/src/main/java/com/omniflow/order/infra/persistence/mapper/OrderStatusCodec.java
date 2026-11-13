@@ -2,6 +2,8 @@ package com.omniflow.order.infra.persistence.mapper;
 
 import com.omniflow.order.domain.model.OrderStatus;
 
+import java.util.Objects;
+
 /**
  * Type-safe codec converting between sealed {@link OrderStatus} domain representations
  * and database-level status string codes.
@@ -20,6 +22,10 @@ public final class OrderStatusCodec {
     }
 
     public static String toCode(OrderStatus orderStatus) {
+        if (Objects.isNull(orderStatus)) {
+            throw new IllegalArgumentException("OrderStatus cannot be null");
+        }
+
         return switch (orderStatus) {
             case OrderStatus.Created c -> CODE_CREATED;
             case OrderStatus.PaymentPending pp -> CODE_PAYMENT_PENDING;
@@ -29,6 +35,10 @@ public final class OrderStatusCodec {
     }
 
     public static OrderStatus fromCode(String code) {
+        if (Objects.isNull(code) || code.isBlank()) {
+            throw new IllegalArgumentException("Status code cannot be null or blank");
+        }
+
         return switch (code) {
             case CODE_CREATED -> new OrderStatus.Created();
             case CODE_PAYMENT_PENDING -> new OrderStatus.PaymentPending();

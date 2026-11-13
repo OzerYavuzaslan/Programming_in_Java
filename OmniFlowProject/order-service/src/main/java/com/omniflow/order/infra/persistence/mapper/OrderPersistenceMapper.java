@@ -11,11 +11,12 @@ import java.util.*;
 
 @Component
 public class OrderPersistenceMapper {
-    public OrderJpaEntity toNewEntity(Order order) {
-        OrderJpaEntity orderJpaEntity = getOrderJpaEntity(order);
+    public OrderJpaEntity toNewEntity(OrderAggregate orderAggregate) {
+        Objects.requireNonNull(orderAggregate, "OrderAggregate cannot be null");
+        OrderJpaEntity orderJpaEntity = getOrderJpaEntity(orderAggregate);
 
-        if (order.orderItemList() != null) {
-            for (OrderItem item : order.orderItemList()) {
+        if (CollectionUtils.isNotEmpty(orderAggregate.orderItemList())) {
+            for (OrderItem item : orderAggregate.orderItemList()) {
                 OrderItemJpaEntity orderItemJpaEntity = OrderItemJpaEntity.getOrderItemJpaEntity();
                 orderItemJpaEntity.setId(item.id());
                 orderItemJpaEntity.setProductId(item.productId());
@@ -30,26 +31,24 @@ public class OrderPersistenceMapper {
         return orderJpaEntity;
     }
 
-    public Order toDomain(OrderJpaEntity orderJpaEntity) {
+    public OrderAggregate toDomain(OrderJpaEntity orderJpaEntity) {
         List<OrderItem> orderItemList = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(orderJpaEntity.getOrderItemList())) {
-            orderItemList = orderJpaEntity
-                    .getOrderItemList()
+            orderItemList = orderJpaEntity.getOrderItemList()
                     .stream()
                     .map(item -> new OrderItem(
                             item.getId(),
                             item.getProductId(),
                             item.getProductName(),
                             item.getQuantity(),
-                            new Money(item.getUnitPrice(), item.getCurrency())))
-                    .toList();
+                            new Money(item.getUnitPrice(), item.getCurrency()))).toList();
         }
 
         Money totalAmount = new Money(orderJpaEntity.getTotalAmount(), orderJpaEntity.getCurrency());
         OrderStatus orderStatus = OrderStatusCodec.fromCode(orderJpaEntity.getStatus());
 
-        return Order.reconstitute(
+        return OrderAggregate.reconstitute(
                 orderJpaEntity.getId(),
                 orderJpaEntity.getTenantId(),
                 orderJpaEntity.getCustomerId(),
@@ -59,8 +58,8 @@ public class OrderPersistenceMapper {
                 totalAmount);
     }
 
-    public void applyChanges(Order order, OrderJpaEntity orderJpaEntity) {
-        orderJpaEntity.setStatus(OrderStatusCodec.toCode(order.orderStatus()));
+    public void applyChanges(OrderAggregate orderAggregate, OrderJpaEntity orderJpaEntity) {
+        orderJpaEntity.setStatus(OrderStatusCodec.toCode(orderAggregate.orderStatus()));
     }
 
     public List<OrderStatusHistoryJpaEntity> toHistoryEntities(UUID orderId, List<OrderStatusChange> orderStatusChangeList) {
@@ -74,7 +73,7 @@ public class OrderPersistenceMapper {
                     OrderStatusHistoryJpaEntity newOrderStatusHistoryJpaEntity = OrderStatusHistoryJpaEntity.getNewOrderStatusHistoryJpaEntity();
                     newOrderStatusHistoryJpaEntity.setId(change.id());
                     newOrderStatusHistoryJpaEntity.setOrderId(orderId);
-                    newOrderStatusHistoryJpaEntity.setFromStatus(Objects.isNull(change.fromStatus()) ? null : OrderStatusCodec.toCode(change.fromStatus()));
+                    newOrderStatusHistoryJpaEntity.setFromStatus(change.fromStatus() == null ? null : OrderStatusCodec.toCode(change.fromStatus()));
                     newOrderStatusHistoryJpaEntity.setToStatus(OrderStatusCodec.toCode(change.toStatus()));
                     newOrderStatusHistoryJpaEntity.setReason(change.reason());
                     newOrderStatusHistoryJpaEntity.setChangedAt(change.changedAt());
@@ -83,16 +82,15 @@ public class OrderPersistenceMapper {
                 }).toList();
     }
 
-    private OrderJpaEntity getOrderJpaEntity(Order order) {
+    private OrderJpaEntity getOrderJpaEntity(OrderAggregate orderAggregate) {
         OrderJpaEntity orderJpaEntity = OrderJpaEntity.getNewOrderJpaEntity();
-        orderJpaEntity.setId(order.id());
-        orderJpaEntity.setTenantId(order.tenantId());
-        orderJpaEntity.setCustomerId(order.customerId());
-        orderJpaEntity.setIdempotencyKey(order.idempotencyKey());
-        orderJpaEntity.setStatus(OrderStatusCodec.toCode(order.orderStatus()));
-        orderJpaEntity.setTotalAmount(order.totalAmount().amount());
-        orderJpaEntity.setCurrency(order.totalAmount().currency());
-
+        orderJpaEntity.setId(orderAggregate.id());
+        orderJpaEntity.setTenantId(orderAggregate.tenantId());
+        orderJpaEntity.setCustomerId(orderAggregate.customerId());
+        orderJpaEntity.setIdempotencyKey(orderAggregate.idempotencyKey());
+        orderJpaEntity.setStatus(OrderStatusCodec.toCode(orderAggregate.orderStatus()));
+        orderJpaEntity.setTotalAmount(orderAggregate.totalAmount().amount());
+        orderJpaEntity.setCurrency(orderAggregate.totalAmount().currency());
         return orderJpaEntity;
     }
 }

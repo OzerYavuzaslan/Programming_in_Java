@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Domain record tracking individual lifecycle state transition events of an {@link Order}.
+ * Domain record tracking individual lifecycle state transition events of an {@link OrderAggregate}.
  * <p>
  * Forms the immutable audit timeline required for operational observability
  * and dispute resolution in distributed commerce environments.

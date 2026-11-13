@@ -70,6 +70,10 @@ public record Money(BigDecimal amount, String currency) {
     }
 
     public static Money zero(String currency) {
+        if (Objects.isNull(currency) || currency.isBlank()) {
+            throw new IllegalArgumentException("Currency cannot be blank");
+        }
+
         int fractionDigits = Currency.getInstance(currency.trim().toUpperCase(Locale.ROOT)).getDefaultFractionDigits();
         int scale = Math.max(fractionDigits, 0);
         BigDecimal zeroAmount = BigDecimal.ZERO.setScale(scale, RoundingMode.UNNECESSARY);

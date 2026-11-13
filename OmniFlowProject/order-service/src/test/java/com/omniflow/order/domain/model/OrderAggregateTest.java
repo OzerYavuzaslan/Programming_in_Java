@@ -49,7 +49,7 @@ class OrderAggregateTest {
         Money totalAmount = new Money(new BigDecimal("5.00"), CURRENCY_EUR);
         OrderStatus status = new OrderStatus.Created();
 
-        Order order = new Order(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item1), status, totalAmount, List.of());
+        OrderAggregate order = new OrderAggregate(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item1), status, totalAmount, List.of());
 
         assertEquals(orderId, order.id());
         assertEquals(TENANT_ID, order.tenantId());
@@ -68,7 +68,7 @@ class OrderAggregateTest {
         UUID customerId = UUID.randomUUID();
         OrderItem item1 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, QUANTITY_2, new Money(PRICE_2_50, CURRENCY_EUR));
 
-        Order order = Order.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item1));
+        OrderAggregate order = OrderAggregate.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item1));
 
         assertEquals(orderId, order.id());
         assertEquals(TENANT_ID, order.tenantId());
@@ -89,7 +89,7 @@ class OrderAggregateTest {
         OrderItem item1 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
         OrderItem item2 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_2, 1, new Money(PRICE_2_50, CURRENCY_EUR));
 
-        assertThrows(IllegalArgumentException.class, () -> Order.create(
+        assertThrows(IllegalArgumentException.class, () -> OrderAggregate.create(
                 orderId,
                 "",
                 customerId,
@@ -106,7 +106,7 @@ class OrderAggregateTest {
         OrderItem item1 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
         OrderItem item2 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_2, 1, new Money(PRICE_2_50, CURRENCY_EUR));
 
-        assertThrows(IllegalArgumentException.class, () -> Order.create(
+        assertThrows(IllegalArgumentException.class, () -> OrderAggregate.create(
                 orderId,
                 TENANT_ID,
                 customerId,
@@ -123,7 +123,7 @@ class OrderAggregateTest {
         OrderItem item1 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
         OrderItem item2 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_2, 1, new Money(PRICE_2_50, CURRENCY_EUR));
 
-        assertThrows(IllegalArgumentException.class, () -> Order.create(
+        assertThrows(IllegalArgumentException.class, () -> OrderAggregate.create(
                 orderId,
                 TENANT_ID,
                 customerId,
@@ -139,7 +139,7 @@ class OrderAggregateTest {
         UUID customerId = UUID.randomUUID();
         OrderItem item1 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
 
-        assertThrows(IllegalArgumentException.class, () -> Order.create(
+        assertThrows(IllegalArgumentException.class, () -> OrderAggregate.create(
                 orderId,
                 TENANT_ID,
                 customerId,
@@ -156,7 +156,7 @@ class OrderAggregateTest {
         OrderItem item = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, QUANTITY_2, new Money(PRICE_2_50, CURRENCY_EUR));
         Money wrongTotal = new Money(new BigDecimal("99.99"), CURRENCY_EUR);
 
-        assertThrows(IllegalArgumentException.class, () -> new Order(
+        assertThrows(IllegalArgumentException.class, () -> new OrderAggregate(
                 orderId,
                 TENANT_ID,
                 customerId,
@@ -174,13 +174,13 @@ class OrderAggregateTest {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         OrderItem item = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
-        Order order = Order.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
+        OrderAggregate order = OrderAggregate.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
 
-        Result<Order, OrderError> blankResult = order.cancel("");
-        assertTrue(blankResult instanceof Result.Failure<Order, OrderError>);
+        Result<OrderAggregate, OrderError> blankResult = order.cancel("");
+        assertTrue(blankResult instanceof Result.Failure<OrderAggregate, OrderError>);
 
-        Result<Order, OrderError> lengthExceededResult = order.cancel("A".repeat(65));
-        assertTrue(lengthExceededResult instanceof Result.Failure<Order, OrderError>);
+        Result<OrderAggregate, OrderError> lengthExceededResult = order.cancel("A".repeat(65));
+        assertTrue(lengthExceededResult instanceof Result.Failure<OrderAggregate, OrderError>);
     }
 
     @Test
@@ -191,7 +191,7 @@ class OrderAggregateTest {
         OrderItem item1 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
         OrderItem item2 = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_2, 1, new Money(PRICE_2_50, CURRENCY_EUR));
 
-        assertThrows(IllegalArgumentException.class, () -> Order.create(
+        assertThrows(IllegalArgumentException.class, () -> OrderAggregate.create(
                 orderId,
                 TENANT_ID,
                 customerId,
@@ -208,7 +208,7 @@ class OrderAggregateTest {
         OrderItem itemEur = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
         OrderItem itemUsd = new OrderItem(UUID.randomUUID(), PRODUCT_ID_2, PRODUCT_NAME_2, 1, new Money(PRICE_3_00, CURRENCY_USD));
 
-        assertThrows(IllegalArgumentException.class, () -> Order.create(
+        assertThrows(IllegalArgumentException.class, () -> OrderAggregate.create(
                 orderId,
                 TENANT_ID,
                 customerId,
@@ -225,7 +225,7 @@ class OrderAggregateTest {
         List<OrderItem> mutableList = new ArrayList<>();
         mutableList.add(new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR)));
 
-        Order order = Order.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, mutableList);
+        OrderAggregate order = OrderAggregate.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, mutableList);
         mutableList.clear();
 
         assertEquals(1, order.orderItemList().size());
@@ -240,17 +240,17 @@ class OrderAggregateTest {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         OrderItem item = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
-        Order order = Order.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
+        OrderAggregate order = OrderAggregate.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
 
-        Result<Order, OrderError> pendingResult = order.markPaymentPending();
+        Result<OrderAggregate, OrderError> pendingResult = order.markPaymentPending();
         assertTrue(pendingResult.isSuccess());
-        Order pendingOrder = pendingResult.getOrThrow(err -> new RuntimeException(err.toString()));
+        OrderAggregate pendingOrder = pendingResult.getOrThrow(err -> new RuntimeException(err.toString()));
         assertTrue(pendingOrder.orderStatus() instanceof OrderStatus.PaymentPending);
         assertEquals(2, pendingOrder.statusChangeList().size());
 
-        Result<Order, OrderError> paidResult = pendingOrder.markPaid();
+        Result<OrderAggregate, OrderError> paidResult = pendingOrder.markPaid();
         assertTrue(paidResult.isSuccess());
-        Order paidOrder = paidResult.getOrThrow(err -> new RuntimeException(err.toString()));
+        OrderAggregate paidOrder = paidResult.getOrThrow(err -> new RuntimeException(err.toString()));
         assertTrue(paidOrder.orderStatus() instanceof OrderStatus.Paid);
         assertEquals(3, paidOrder.statusChangeList().size());
     }
@@ -261,11 +261,11 @@ class OrderAggregateTest {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         OrderItem item = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
-        Order order = Order.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
+        OrderAggregate order = OrderAggregate.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
 
-        Result<Order, OrderError> paidResult = order.markPaid();
+        Result<OrderAggregate, OrderError> paidResult = order.markPaid();
         assertTrue(paidResult.isFailure());
-        OrderError error = ((Result.Failure<Order, OrderError>) paidResult).error();
+        OrderError error = ((Result.Failure<OrderAggregate, OrderError>) paidResult).error();
         assertTrue(error instanceof OrderError.InvalidStateTransition);
     }
 
@@ -275,14 +275,14 @@ class OrderAggregateTest {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         OrderItem item = new OrderItem(UUID.randomUUID(), PRODUCT_ID_1, PRODUCT_NAME_1, 1, new Money(PRICE_2_50, CURRENCY_EUR));
-        Order order = Order.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
+        OrderAggregate order = OrderAggregate.create(orderId, TENANT_ID, customerId, IDEMPOTENCY_KEY, List.of(item));
 
-        Result<Order, OrderError> cancelResult = order.cancel("CUSTOMER_CHANGED_MIND");
+        Result<OrderAggregate, OrderError> cancelResult = order.cancel("CUSTOMER_CHANGED_MIND");
         assertTrue(cancelResult.isSuccess());
-        Order cancelledOrder = cancelResult.getOrThrow(err -> new RuntimeException(err.toString()));
+        OrderAggregate cancelledOrder = cancelResult.getOrThrow(err -> new RuntimeException(err.toString()));
         assertTrue(cancelledOrder.orderStatus() instanceof OrderStatus.Cancelled);
 
-        Result<Order, OrderError> payCancelled = cancelledOrder.markPaymentPending();
+        Result<OrderAggregate, OrderError> payCancelled = cancelledOrder.markPaymentPending();
         assertTrue(payCancelled.isFailure());
     }
 }

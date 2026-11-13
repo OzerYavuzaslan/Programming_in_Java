@@ -26,13 +26,13 @@ class OrderPersistenceMapperTest {
     }
 
     @Test
-    @DisplayName("Should map Domain Order to new OrderJpaEntity with bidirectional item references")
+    @DisplayName("Should map Domain OrderAggregate to new OrderJpaEntity with bidirectional item references")
     void shouldMapDomainOrderToNewEntity() {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
         OrderItem item1 = new OrderItem(UUID.randomUUID(), "PROD-1", "Laptop", 1, new Money(new BigDecimal("1000.0000"), "EUR"));
         OrderItem item2 = new OrderItem(UUID.randomUUID(), "PROD-2", "Mouse", 2, new Money(new BigDecimal("25.0000"), "EUR"));
-        Order domainOrder = Order.create(orderId, "tenant-amsterdam", customerId, "idemp-key-1", List.of(item1, item2));
+        OrderAggregate domainOrder = OrderAggregate.create(orderId, "tenant-amsterdam", customerId, "idemp-key-1", List.of(item1, item2));
 
         OrderJpaEntity entity = mapper.toNewEntity(domainOrder);
 
@@ -55,7 +55,7 @@ class OrderPersistenceMapperTest {
     }
 
     @Test
-    @DisplayName("Should map OrderJpaEntity back to Domain Order maintaining complete parity")
+    @DisplayName("Should map OrderJpaEntity back to Domain OrderAggregate maintaining complete parity")
     void shouldMapEntityToDomainOrder() {
         OrderJpaEntity entity = OrderJpaEntity.getNewOrderJpaEntity();
         UUID orderId = UUID.randomUUID();
@@ -77,7 +77,7 @@ class OrderPersistenceMapperTest {
         itemEntity.setCurrency("EUR");
         entity.addOrderItem(itemEntity);
 
-        Order domainOrder = mapper.toDomain(entity);
+        OrderAggregate domainOrder = mapper.toDomain(entity);
 
         assertNotNull(domainOrder);
         assertEquals(orderId, domainOrder.id());
@@ -105,7 +105,7 @@ class OrderPersistenceMapperTest {
                 new Money(new BigDecimal("100.00"), "EUR")
         );
 
-        Order domainOrder = Order.reconstitute(
+        OrderAggregate domainOrder = OrderAggregate.reconstitute(
                 UUID.randomUUID(),
                 "tenant-1",
                 UUID.randomUUID(),

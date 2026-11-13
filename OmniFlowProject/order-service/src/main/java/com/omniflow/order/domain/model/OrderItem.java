@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Domain entity representing an individual item line within an {@link Order}.
+ * Domain entity representing an individual item line within an {@link OrderAggregate}.
  * <p>
  * Enforces domain invariants:
  * <ul>
