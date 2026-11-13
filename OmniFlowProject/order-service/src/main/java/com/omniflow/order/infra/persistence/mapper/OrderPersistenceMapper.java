@@ -7,10 +7,7 @@ import com.omniflow.order.infra.persistence.entity.OrderStatusHistoryJpaEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class OrderPersistenceMapper {
@@ -37,14 +34,16 @@ public class OrderPersistenceMapper {
         List<OrderItem> orderItemList = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(orderJpaEntity.getOrderItemList())) {
-            orderItemList = orderJpaEntity.getOrderItemList()
+            orderItemList = orderJpaEntity
+                    .getOrderItemList()
                     .stream()
                     .map(item -> new OrderItem(
                             item.getId(),
                             item.getProductId(),
                             item.getProductName(),
                             item.getQuantity(),
-                            new Money(item.getUnitPrice(), item.getCurrency()))).toList();
+                            new Money(item.getUnitPrice(), item.getCurrency())))
+                    .toList();
         }
 
         Money totalAmount = new Money(orderJpaEntity.getTotalAmount(), orderJpaEntity.getCurrency());
@@ -75,7 +74,7 @@ public class OrderPersistenceMapper {
                     OrderStatusHistoryJpaEntity newOrderStatusHistoryJpaEntity = OrderStatusHistoryJpaEntity.getNewOrderStatusHistoryJpaEntity();
                     newOrderStatusHistoryJpaEntity.setId(change.id());
                     newOrderStatusHistoryJpaEntity.setOrderId(orderId);
-                    newOrderStatusHistoryJpaEntity.setFromStatus(change.fromStatus() == null ? null : OrderStatusCodec.toCode(change.fromStatus()));
+                    newOrderStatusHistoryJpaEntity.setFromStatus(Objects.isNull(change.fromStatus()) ? null : OrderStatusCodec.toCode(change.fromStatus()));
                     newOrderStatusHistoryJpaEntity.setToStatus(OrderStatusCodec.toCode(change.toStatus()));
                     newOrderStatusHistoryJpaEntity.setReason(change.reason());
                     newOrderStatusHistoryJpaEntity.setChangedAt(change.changedAt());
