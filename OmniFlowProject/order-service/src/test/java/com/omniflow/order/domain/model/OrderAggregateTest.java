@@ -184,7 +184,7 @@ class OrderAggregateTest {
     }
 
     @Test
-    @DisplayName("Should fail when order items contain duplicate products")
+    @DisplayName("Should fail when order createOrderItemCommandList contain duplicate products")
     void shouldFailWhenOrderHasDuplicateProduct() {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();
@@ -218,7 +218,7 @@ class OrderAggregateTest {
     }
 
     @Test
-    @DisplayName("Should protect immutability via defensive copy of items and status changes")
+    @DisplayName("Should protect immutability via defensive copy of createOrderItemCommandList and status changes")
     void shouldProtectImmutabilityViaDefensiveCopy() {
         UUID orderId = UUID.randomUUID();
         UUID customerId = UUID.randomUUID();

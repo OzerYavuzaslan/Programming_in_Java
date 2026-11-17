@@ -14,9 +14,9 @@ import java.util.*;
  *   <li>Identifiers (ID, Customer ID) and critical attributes cannot be null.</li>
  *   <li>Tenant ID must not be blank and cannot exceed 32 characters.</li>
  *   <li>Idempotency Key must not be blank and cannot exceed 64 characters.</li>
- *   <li>Order items list cannot be null or empty, with no null elements or duplicate products.</li>
- *   <li>Currency consistency across all items and order total is strictly validated.</li>
- *   <li>Total amount must equal the exact sum of line items (calculated via banker's rounding).</li>
+ *   <li>Order createOrderItemCommandList list cannot be null or empty, with no null elements or duplicate products.</li>
+ *   <li>Currency consistency across all createOrderItemCommandList and order total is strictly validated.</li>
+ *   <li>Total amount must equal the exact sum of line createOrderItemCommandList (calculated via banker's rounding).</li>
  *   <li>Defensive copying is applied to immutable collections to safeguard against external mutation.</li>
  * </ul>
  *
@@ -24,7 +24,7 @@ import java.util.*;
  * @param tenantId         the multi-tenant partition identifier
  * @param customerId       the identifier of the ordering customer
  * @param idempotencyKey   the client-supplied idempotency token for duplicate suppression
- * @param orderItemList    the immutable list of order items
+ * @param orderItemList    the immutable list of order createOrderItemCommandList
  * @param orderStatus      the current state machine status of the order
  * @param totalAmount      the total monetary amount of the order
  * @param statusChangeList the immutable timeline of order lifecycle status changes
@@ -50,10 +50,10 @@ public record OrderAggregate(
     private static final String MSG_CUSTOMER_ID_NULL = "Customer ID cannot be null";
     private static final String MSG_TOTAL_AMOUNT_NULL = "Total amount cannot be null";
     private static final String MSG_DUPLICATE_PRODUCT = "Duplicate product in order: ";
-    private static final String MSG_ITEMS_EMPTY = "Order items cannot be empty or null";
+    private static final String MSG_ITEMS_EMPTY = "Order createOrderItemCommandList cannot be empty or null";
     private static final String MSG_CANNOT_CANCEL_ORDER = "Cannot cancel order in status: ";
     private static final String MSG_STATUS_CHANGES_NULL = "Status changes list cannot be null";
-    private static final String MSG_TOTAL_MISMATCH = "Total amount does not match sum of items";
+    private static final String MSG_TOTAL_MISMATCH = "Total amount does not match sum of createOrderItemCommandList";
     private static final String MSG_CANNOT_SETTLE_PAYMENT = "Cannot settle payment for order in status: ";
     private static final String MSG_TENANT_ID_INVALID = "Tenant ID cannot be blank or exceed 32 characters";
     private static final String MSG_CANNOT_INITIATE_PAYMENT = "Cannot initiate payment for order in status: ";
@@ -123,13 +123,13 @@ public record OrderAggregate(
 
     /**
      * Factory method to create a new OrderAggregate in {@link OrderStatus.Created} state.
-     * Computes the total amount from items and initializes status change history.
+     * Computes the total amount from createOrderItemCommandList and initializes status change history.
      *
      * @param id             the unique identifier
      * @param tenantId       the tenant identifier
      * @param customerId     the customer identifier
      * @param idempotencyKey the idempotency token
-     * @param orderItemList  the non-empty list of order items
+     * @param orderItemList  the non-empty list of order createOrderItemCommandList
      * @return a newly initialized OrderAggregate
      */
     public static OrderAggregate create(UUID id, String tenantId, UUID customerId, String idempotencyKey, List<OrderItem> orderItemList) {
@@ -173,7 +173,7 @@ public record OrderAggregate(
      * @param tenantId       the tenant identifier
      * @param customerId     the customer identifier
      * @param idempotencyKey the idempotency token
-     * @param items          the items list
+     * @param items          the createOrderItemCommandList list
      * @param status         the persisted order status
      * @param totalAmount    the persisted total amount
      * @return the reconstituted OrderAggregate

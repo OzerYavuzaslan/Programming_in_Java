@@ -166,7 +166,7 @@ databaseChangeLog:
                   name: idempotency_key
 
   - changeSet:
-      id: 2026-11-07-06-create-order-items-table
+      id: 2026-11-07-06-create-order-createOrderItemCommandList-table
       author: ozer.yavuzaslan
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       preConditions:
@@ -220,7 +220,7 @@ databaseChangeLog:
                     nullable: false
 
   - changeSet:
-      id: 2026-11-07-07-add-order-items-check-constraints
+      id: 2026-11-07-07-add-order-createOrderItemCommandList-check-constraints
       author: ozer.yavuzaslan
       dbms: postgresql
       preConditions:
@@ -244,7 +244,7 @@ databaseChangeLog:
                 DROP CONSTRAINT IF EXISTS chk_order_items_currency_iso4217;
 
   - changeSet:
-      id: 2026-11-07-08-create-order-items-order-product-unique-index
+      id: 2026-11-07-08-create-order-createOrderItemCommandList-order-product-unique-index
       author: ozer.yavuzaslan
       objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
       preConditions:
