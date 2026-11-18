@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Application command carrying the full intent of creating a new order.
  *
@@ -18,10 +20,6 @@ import java.util.UUID;
  */
 public record CreateOrderCommand(String tenantId, UUID customerId, String idempotencyKey,
                                  List<CreateOrderItemCommand> createOrderItemCommandList) {
-    private static final String MSG_TENANT_ID_NULL = "Tenant ID cannot be null";
-    private static final String MSG_CUSTOMER_ID_NULL = "Customer ID cannot be null";
-    private static final String MSG_IDEMPOTENCY_KEY_NULL = "Idempotency key cannot be null";
-    private static final String MSG_ITEMS_EMPTY = "Order createOrderItemCommandList cannot be null or empty";
 
     public CreateOrderCommand {
         if (Objects.isNull(tenantId)) {

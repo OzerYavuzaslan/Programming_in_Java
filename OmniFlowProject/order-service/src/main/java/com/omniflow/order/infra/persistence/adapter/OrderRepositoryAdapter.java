@@ -26,6 +26,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.MSG_ORDER_NULL;
+
 /**
  * Infrastructure persistence adapter implementing {@link OrderRepositoryPort}.
  *
@@ -43,7 +45,7 @@ public class OrderRepositoryAdapter implements OrderRepositoryPort {
 
     @Override
     public OrderAggregate save(OrderAggregate orderAggregate) {
-        Objects.requireNonNull(orderAggregate, "OrderAggregate cannot be null");
+        Objects.requireNonNull(orderAggregate, MSG_ORDER_NULL);
         Optional<OrderJpaEntity> existingEntityOpt = springDataOrderJpaRepository.findById(orderAggregate.id());
 
         OrderJpaEntity entityToPersist;
@@ -92,8 +94,7 @@ public class OrderRepositoryAdapter implements OrderRepositoryPort {
                 .stream()
                 .map(projection -> new OrderSummaryDTO(projection.id(),
                         new Money(projection.totalAmount(), projection.currency()), projection.createdAt()
-                ))
-                .toList();
+                )).toList();
     }
 
     private boolean isIdempotencyConstraintViolation(DataIntegrityViolationException dataIntegrityViolationException) {

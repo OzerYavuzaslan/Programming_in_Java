@@ -2,6 +2,8 @@ package com.omniflow.common.result;
 
 import java.util.function.Function;
 
+import static com.omniflow.common.constant.CommonErrorMessages.MSG_UNEXPECTED_RESULT_STATE;
+
 /**
  * Represents the outcome of an operation that can either succeed with a value of type {@code T}
  * or fail with an error of type {@code E}.
@@ -40,7 +42,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Failure {
         } else if (this instanceof Result.Failure<T, E> failure) {
             throw exceptionSupplier.apply(failure.error());
         } else {
-            throw new IllegalStateException("Unexpected state");
+            throw new IllegalStateException(MSG_UNEXPECTED_RESULT_STATE);
         }
     }
 
@@ -50,7 +52,7 @@ public sealed interface Result<T, E> permits Result.Success, Result.Failure {
         } else if (this instanceof Result.Failure<T, E> failure) {
             return Result.failure(failure.error());
         } else {
-            throw new IllegalStateException("Unexpected state");
+            throw new IllegalStateException(MSG_UNEXPECTED_RESULT_STATE);
         }
     }
 }

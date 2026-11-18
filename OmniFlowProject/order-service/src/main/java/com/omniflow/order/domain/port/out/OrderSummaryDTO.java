@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Domain-level summary DTO for paginated order queries.
  *
@@ -17,8 +19,8 @@ import java.util.UUID;
  */
 public record OrderSummaryDTO(UUID id, Money totalAmount, Instant createdAt) {
     public OrderSummaryDTO {
-        Objects.requireNonNull(id, "id cannot be null");
-        Objects.requireNonNull(totalAmount, "totalAmount cannot be null");
-        Objects.requireNonNull(createdAt, "createdAt cannot be null");
+        Objects.requireNonNull(id, MSG_ID_NULL);
+        Objects.requireNonNull(totalAmount, MSG_TOTAL_AMOUNT_NULL);
+        Objects.requireNonNull(createdAt, MSG_CREATED_AT_NULL);
     }
 }

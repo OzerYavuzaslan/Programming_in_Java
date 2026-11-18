@@ -3,6 +3,9 @@ package com.omniflow.order.application.command;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.MSG_ORDER_ID_NULL;
+import static com.omniflow.order.domain.constant.OrderErrorMessages.MSG_TENANT_ID_NULL;
+
 /**
  * Application command carrying the intent of cancelling an existing order.
  *
@@ -13,8 +16,6 @@ import java.util.UUID;
  * @version 1.0.0
  */
 public record CancelOrderCommand(String tenantId, UUID orderId, String reason) {
-    private static final String MSG_ORDER_ID_NULL = "Order ID cannot be null";
-    private static final String MSG_TENANT_ID_NULL = "Tenant ID cannot be null";
 
     public CancelOrderCommand {
         if (Objects.isNull(tenantId)) {

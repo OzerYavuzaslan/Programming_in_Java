@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Domain record tracking individual lifecycle state transition events of an {@link OrderAggregate}.
  * <p>
@@ -19,10 +21,6 @@ import java.util.UUID;
  * @version 1.0.0
  */
 public record OrderStatusChange(UUID id, OrderStatus fromStatus, OrderStatus toStatus, String reason, Instant changedAt) {
-    private static final String MSG_ID_NULL = "ID cannot be null";
-    private static final String MSG_TO_STATUS_BLANK = "Target status cannot be null";
-    private static final String MSG_REASON = "Reason cannot exceed 64 characters";
-    private static final String MSG_CHANGE_AT_ID_NULL = "Changed at timestamp cannot be null";
 
     public OrderStatusChange {
         if (Objects.isNull(id)) {
@@ -30,15 +28,15 @@ public record OrderStatusChange(UUID id, OrderStatus fromStatus, OrderStatus toS
         }
 
         if (Objects.isNull(toStatus)) {
-            throw new IllegalArgumentException(MSG_TO_STATUS_BLANK);
+            throw new IllegalArgumentException(MSG_TARGET_STATUS_NULL);
         }
 
         if (Objects.nonNull(reason) && reason.length() > 64) {
-            throw new IllegalArgumentException(MSG_REASON);
+            throw new IllegalArgumentException(MSG_REASON_TOO_LONG);
         }
 
         if (Objects.isNull(changedAt)) {
-            throw new IllegalArgumentException(MSG_CHANGE_AT_ID_NULL);
+            throw new IllegalArgumentException(MSG_CHANGED_AT_NULL);
         }
     }
 }

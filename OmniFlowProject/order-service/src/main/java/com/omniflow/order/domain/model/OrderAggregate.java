@@ -6,6 +6,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.time.Instant;
 import java.util.*;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Domain-Driven Design (DDD) Aggregate Root representing an Order.
  * <p>
@@ -14,9 +16,9 @@ import java.util.*;
  *   <li>Identifiers (ID, Customer ID) and critical attributes cannot be null.</li>
  *   <li>Tenant ID must not be blank and cannot exceed 32 characters.</li>
  *   <li>Idempotency Key must not be blank and cannot exceed 64 characters.</li>
- *   <li>Order createOrderItemCommandList list cannot be null or empty, with no null elements or duplicate products.</li>
- *   <li>Currency consistency across all createOrderItemCommandList and order total is strictly validated.</li>
- *   <li>Total amount must equal the exact sum of line createOrderItemCommandList (calculated via banker's rounding).</li>
+ *   <li>Order items list cannot be null or empty, with no null elements or duplicate products.</li>
+ *   <li>Currency consistency across all items and order total is strictly validated.</li>
+ *   <li>Total amount must equal the exact sum of line items (calculated via banker's rounding).</li>
  *   <li>Defensive copying is applied to immutable collections to safeguard against external mutation.</li>
  * </ul>
  *
@@ -24,7 +26,7 @@ import java.util.*;
  * @param tenantId         the multi-tenant partition identifier
  * @param customerId       the identifier of the ordering customer
  * @param idempotencyKey   the client-supplied idempotency token for duplicate suppression
- * @param orderItemList    the immutable list of order createOrderItemCommandList
+ * @param orderItemList    the immutable list of order items
  * @param orderStatus      the current state machine status of the order
  * @param totalAmount      the total monetary amount of the order
  * @param statusChangeList the immutable timeline of order lifecycle status changes
@@ -43,23 +45,7 @@ public record OrderAggregate(
 ) {
     private static final String REASON_ORDER_CREATED = "ORDER_CREATED";
     private static final String REASON_PAYMENT_SETTLED = "PAYMENT_SETTLED";
-    private static final String MSG_ITEM_NULL = "Order item cannot be null";
-    private static final String MSG_ORDER_ID_NULL = "Order ID cannot be null";
     private static final String REASON_PAYMENT_INITIATED = "PAYMENT_INITIATED";
-    private static final String MSG_STATUS_NULL = "Order status cannot be null";
-    private static final String MSG_CUSTOMER_ID_NULL = "Customer ID cannot be null";
-    private static final String MSG_TOTAL_AMOUNT_NULL = "Total amount cannot be null";
-    private static final String MSG_DUPLICATE_PRODUCT = "Duplicate product in order: ";
-    private static final String MSG_ITEMS_EMPTY = "Order createOrderItemCommandList cannot be empty or null";
-    private static final String MSG_CANNOT_CANCEL_ORDER = "Cannot cancel order in status: ";
-    private static final String MSG_STATUS_CHANGES_NULL = "Status changes list cannot be null";
-    private static final String MSG_TOTAL_MISMATCH = "Total amount does not match sum of createOrderItemCommandList";
-    private static final String MSG_CANNOT_SETTLE_PAYMENT = "Cannot settle payment for order in status: ";
-    private static final String MSG_TENANT_ID_INVALID = "Tenant ID cannot be blank or exceed 32 characters";
-    private static final String MSG_CANNOT_INITIATE_PAYMENT = "Cannot initiate payment for order in status: ";
-    private static final String MSG_CURRENCY_MISMATCH = "Order item currency does not match order currency: ";
-    private static final String MSG_IDEMPOTENCY_KEY_INVALID = "Idempotency key cannot be blank or exceed 64 characters";
-    private static final String MSG_INVALID_CANCELLATION_REASON = "Cancellation reason cannot be blank or exceed 64 characters";
 
     public OrderAggregate {
         if (Objects.isNull(id)) {
@@ -107,7 +93,7 @@ public record OrderAggregate(
             }
 
             if (!item.unitPrice().currency().equals(totalAmount.currency())) {
-                throw new IllegalArgumentException(MSG_CURRENCY_MISMATCH + item.unitPrice().currency());
+                throw new IllegalArgumentException(MSG_ITEM_CURRENCY_MISMATCH + item.unitPrice().currency());
             }
 
             calculatedTotal = calculatedTotal.add(item.lineTotal());
@@ -123,13 +109,13 @@ public record OrderAggregate(
 
     /**
      * Factory method to create a new OrderAggregate in {@link OrderStatus.Created} state.
-     * Computes the total amount from createOrderItemCommandList and initializes status change history.
+     * Computes the total amount from items and initializes status change history.
      *
      * @param id             the unique identifier
      * @param tenantId       the tenant identifier
      * @param customerId     the customer identifier
      * @param idempotencyKey the idempotency token
-     * @param orderItemList  the non-empty list of order createOrderItemCommandList
+     * @param orderItemList  the non-empty list of order items
      * @return a newly initialized OrderAggregate
      */
     public static OrderAggregate create(UUID id, String tenantId, UUID customerId, String idempotencyKey, List<OrderItem> orderItemList) {
@@ -173,7 +159,7 @@ public record OrderAggregate(
      * @param tenantId       the tenant identifier
      * @param customerId     the customer identifier
      * @param idempotencyKey the idempotency token
-     * @param items          the createOrderItemCommandList list
+     * @param items          the items list
      * @param status         the persisted order status
      * @param totalAmount    the persisted total amount
      * @return the reconstituted OrderAggregate

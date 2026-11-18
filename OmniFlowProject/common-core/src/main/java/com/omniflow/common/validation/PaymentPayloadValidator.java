@@ -6,15 +6,14 @@ import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
+import static com.omniflow.common.constant.CommonErrorMessages.*;
+
 public class PaymentPayloadValidator implements ConstraintValidator<ValidPaymentPayload, PaymentPayloadAware> {
     private static final String PROPERTY_IBAN = "iban";
     private static final String CREDIT_CARD = "CREDIT_CARD";
     private static final String PROPERTY_CARD_NUMBER = "cardNumber";
     private static final String SEPA_DIRECT_DEBIT = "SEPA_DIRECT_DEBIT";
     private static final String PROPERTY_PAYMENT_METHOD = "paymentMethod";
-    private static final String MSG_UNSUPPORTED_METHOD_PREFIX = "Unsupported payment method: ";
-    private static final String MSG_IBAN_MANDATORY = "IBAN is mandatory for SEPA_DIRECT_DEBIT payments";
-    private static final String MSG_CARD_MANDATORY = "Card number and CVV are mandatory for CREDIT_CARD payments";
 
     @Override
     public boolean isValid(PaymentPayloadAware paymentPayloadAware, ConstraintValidatorContext constraintValidatorContext) {

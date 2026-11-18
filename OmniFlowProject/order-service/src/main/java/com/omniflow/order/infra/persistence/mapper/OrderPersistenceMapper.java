@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.MSG_ORDER_NULL;
+
 @Component
 public class OrderPersistenceMapper {
     public OrderJpaEntity toNewEntity(OrderAggregate orderAggregate) {
-        Objects.requireNonNull(orderAggregate, "OrderAggregate cannot be null");
+        Objects.requireNonNull(orderAggregate, MSG_ORDER_NULL);
         OrderJpaEntity orderJpaEntity = getOrderJpaEntity(orderAggregate);
 
         if (CollectionUtils.isNotEmpty(orderAggregate.orderItemList())) {

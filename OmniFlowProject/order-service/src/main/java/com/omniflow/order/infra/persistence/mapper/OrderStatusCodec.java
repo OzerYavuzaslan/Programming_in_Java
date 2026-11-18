@@ -4,6 +4,8 @@ import com.omniflow.order.domain.model.OrderStatus;
 
 import java.util.Objects;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Type-safe codec converting between sealed {@link OrderStatus} domain representations
  * and database-level status string codes.
@@ -16,14 +18,13 @@ public final class OrderStatusCodec {
     public static final String CODE_CREATED = "CREATED";
     public static final String CODE_CANCELLED = "CANCELLED";
     public static final String CODE_PAYMENT_PENDING = "PAYMENT_PENDING";
-    private static final String MSG_UNKNOWN_CODE = "Unknown order status code in database: ";
 
     private OrderStatusCodec() {
     }
 
     public static String toCode(OrderStatus orderStatus) {
         if (Objects.isNull(orderStatus)) {
-            throw new IllegalArgumentException("OrderStatus cannot be null");
+            throw new IllegalArgumentException(MSG_ORDER_STATUS_NULL);
         }
 
         return switch (orderStatus) {
@@ -36,7 +37,7 @@ public final class OrderStatusCodec {
 
     public static OrderStatus fromCode(String code) {
         if (Objects.isNull(code) || code.isBlank()) {
-            throw new IllegalArgumentException("Status code cannot be null or blank");
+            throw new IllegalArgumentException(MSG_STATUS_CODE_BLANK);
         }
 
         return switch (code) {
@@ -44,7 +45,7 @@ public final class OrderStatusCodec {
             case CODE_PAYMENT_PENDING -> new OrderStatus.PaymentPending();
             case CODE_PAID -> new OrderStatus.Paid();
             case CODE_CANCELLED -> new OrderStatus.Cancelled();
-            default -> throw new IllegalStateException(MSG_UNKNOWN_CODE + code);
+            default -> throw new IllegalStateException(MSG_UNKNOWN_STATUS_CODE + code);
         };
     }
 }

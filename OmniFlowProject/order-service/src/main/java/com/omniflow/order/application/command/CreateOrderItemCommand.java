@@ -3,6 +3,8 @@ package com.omniflow.order.application.command;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Application command representing a single basket line of an order creation request.
  *
@@ -15,10 +17,6 @@ import java.util.Objects;
  * @version 1.0.0
  */
 public record CreateOrderItemCommand(String productId, String productName, int quantity, BigDecimal unitPrice, String currency) {
-    private static final String MSG_CURRENCY_NULL = "Currency cannot be null";
-    private static final String MSG_PRODUCT_ID_NULL = "Product ID cannot be null";
-    private static final String MSG_UNIT_PRICE_NULL = "Unit price cannot be null";
-    private static final String MSG_PRODUCT_NAME_NULL = "Product name cannot be null";
 
     public CreateOrderItemCommand {
         if (Objects.isNull(productId)) {

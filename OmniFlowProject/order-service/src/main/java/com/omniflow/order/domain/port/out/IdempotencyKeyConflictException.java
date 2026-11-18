@@ -4,6 +4,8 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
+
 /**
  * Thrown when an order creation violates the unique idempotency constraint.
  *
@@ -16,8 +18,8 @@ public class IdempotencyKeyConflictException extends RuntimeException {
     private final String idempotencyKey;
 
     public IdempotencyKeyConflictException(String tenantId, String idempotencyKey) {
-        super(String.format("Idempotency conflict for tenant '%s' and key '%s'", tenantId, idempotencyKey));
-        this.tenantId = Objects.requireNonNull(tenantId, "tenantId cannot be null");
-        this.idempotencyKey = Objects.requireNonNull(idempotencyKey, "idempotencyKey cannot be null");
+        super(String.format(MSG_IDEMPOTENCY_CONFLICT_TEMPLATE, tenantId, idempotencyKey));
+        this.tenantId = Objects.requireNonNull(tenantId, MSG_TENANT_ID_NULL);
+        this.idempotencyKey = Objects.requireNonNull(idempotencyKey, MSG_IDEMPOTENCY_KEY_NULL);
     }
 }
