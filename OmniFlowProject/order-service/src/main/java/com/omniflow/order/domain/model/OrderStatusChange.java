@@ -21,7 +21,6 @@ import static com.omniflow.order.domain.constant.OrderErrorMessages.*;
  * @version 1.0.0
  */
 public record OrderStatusChange(UUID id, OrderStatus fromStatus, OrderStatus toStatus, String reason, Instant changedAt) {
-
     public OrderStatusChange {
         if (Objects.isNull(id)) {
             throw new IllegalArgumentException(MSG_ID_NULL);

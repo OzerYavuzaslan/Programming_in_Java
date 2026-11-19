@@ -13,8 +13,8 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "orders")
+@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(onlyExplicitlyIncluded = true, callSuper = false)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class OrderJpaEntity extends BaseJpaEntity {
     @Id
