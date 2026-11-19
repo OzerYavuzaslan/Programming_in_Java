@@ -37,20 +37,20 @@ public sealed interface Result<T, E> permits Result.Success, Result.Failure {
     }
 
     default T getOrThrow(Function<E, ? extends RuntimeException> exceptionSupplier) {
-        if (this instanceof Result.Success<T, E> success) {
-            return success.value();
-        } else if (this instanceof Result.Failure<T, E> failure) {
-            throw exceptionSupplier.apply(failure.error());
+        if (this instanceof Success<T, E>(T value)) {
+            return value;
+        } else if (this instanceof Failure<T, E>(E error)) {
+            throw exceptionSupplier.apply(error);
         } else {
             throw new IllegalStateException(MSG_UNEXPECTED_RESULT_STATE);
         }
     }
 
     default <R> Result<R, E> map(Function<T, R> mapper) {
-        if (this instanceof Result.Success<T, E> success) {
-            return Result.success(mapper.apply(success.value()));
-        } else if (this instanceof Result.Failure<T, E> failure) {
-            return Result.failure(failure.error());
+        if (this instanceof Success<T, E>(T value)) {
+            return Result.success(mapper.apply(value));
+        } else if (this instanceof Failure<T, E>(E error)) {
+            return Result.failure(error);
         } else {
             throw new IllegalStateException(MSG_UNEXPECTED_RESULT_STATE);
         }
