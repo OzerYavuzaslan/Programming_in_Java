@@ -46,13 +46,10 @@ public class OrderApplicationService implements CreateOrderUseCase, CancelOrderU
     @Transactional
     public Result<OrderAggregate, OrderError> cancelOrder(CancelOrderCommand cancelOrderCommand) {
         Objects.requireNonNull(cancelOrderCommand, MSG_CANCEL_COMMAND_NULL);
-        Optional<OrderAggregate> optionalOrderAggregate = orderRepositoryPort.findById(cancelOrderCommand.orderId());
+        OrderAggregate orderAggregate = orderRepositoryPort.findById(cancelOrderCommand.orderId())
+                .filter(aggregate -> aggregate.tenantId().equals(cancelOrderCommand.tenantId()))
+                .orElseThrow(() -> new OrderNotFoundException(cancelOrderCommand.tenantId(), cancelOrderCommand.orderId()));
 
-        if (optionalOrderAggregate.isEmpty()) {
-            throw new OrderNotFoundException(cancelOrderCommand.tenantId(), cancelOrderCommand.orderId());
-        }
-
-        OrderAggregate orderAggregate = optionalOrderAggregate.get();
         return orderAggregate.cancel(cancelOrderCommand.reason()).map(orderRepositoryPort::save);
     }
 
@@ -116,6 +113,8 @@ public class OrderApplicationService implements CreateOrderUseCase, CancelOrderU
     @Override
     @Transactional(readOnly = true)
     public List<OrderSummaryDTO> listOrders(String tenantId, OrderStatus orderStatus, Instant createdBefore, int limit) {
+        validateListOrdersCriteria(tenantId, limit);
+
         if (Objects.isNull(createdBefore)) {
             createdBefore = Instant.now(clock);
         }
@@ -123,12 +122,12 @@ public class OrderApplicationService implements CreateOrderUseCase, CancelOrderU
         return orderRepositoryPort.findRecentSummaries(tenantId, orderStatus, createdBefore, limit);
     }
 
-    private void customValidation(String tenantId, OrderStatus status, Instant createdBefore, int limit) {
+    private void validateListOrdersCriteria(String tenantId, int limit) {
         if (Objects.isNull(tenantId) || tenantId.isBlank()) {
             throw new IllegalArgumentException(MSG_TENANT_ID_BLANK);
         }
 
-        if (limit < 0 || limit > 100) {
+        if (limit < 1 || limit > 100) {
             throw new IllegalArgumentException(MSG_LIMIT_OUT_OF_RANGE + limit);
         }
     }
